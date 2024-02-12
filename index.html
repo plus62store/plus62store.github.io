@@ -144,17 +144,18 @@ animation-iteration-count: infinite;
             <h2>Sign In</h2>
             <p>Untuk melanjutkan silahkan Sign in dengan akun google anda.</p>
             <ion-button id="sign-in-button" color="primary" style="margin-top:10px;"><ion-icon slot="start" name="logo-google"></ion-icon> Sign In</ion-button>
-
+              
+            
     <script type="module">
       const firebaseConfig = {
-          apiKey: "{{ site.env.API_KEY }}",
-          authDomain: "{{ site.env.AUTH_DOMAIN }}",
-          databaseURL: "{{ site.env.DATABASE_URL }}",
-          projectId: "{{ site.env.PROJECT_ID }}",
-          storageBucket: "{{ site.env.STORAGE_BUCKET }}",
-          messagingSenderId: "{{ site.env.SENDER_ID }}",
-          appId: "{{ site.env.APP_ID }}",
-          measurementId: "{{ site.env.MEASUREMENT_ID }}"
+          apiKey: "AIzaSyCV3i_KliUAxYTI4RoC_VpFZxJ8-EjO2bA",
+          authDomain: "jekyll-onlineshop.firebaseapp.com",
+          databaseURL: "https://jekyll-onlineshop-default-rtdb.asia-southeast1.firebasedatabase.app",
+          projectId: "jekyll-onlineshop",
+          storageBucket: "jekyll-onlineshop.appspot.com",
+          messagingSenderId: "1080130094512",
+          appId: "fda6d8485c8d0ed6a78275",
+          measurementId: "G-75QG8P9ZSM"
       };
       firebase.initializeApp(firebaseConfig);
       
