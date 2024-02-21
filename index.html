@@ -6,6 +6,10 @@ image: /image/logo/maskable_icon.png
 ---
 
 <head>
+    <script type="module">
+      import { alertController } from "{{ '/assets/vendor/@ionic/core/dist/ionic/index.esm.js?v=6.0' | relative_url }}";
+      window.alertController = alertController;
+    </script>
 <style>
 :root {
     --ion-safe-area-top: 20px;
