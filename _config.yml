@@ -30,14 +30,14 @@ plugins:
 
 # Google Login
  SITE_KEY:
- API_KEY:
- AUTH_DOMAIN:
- DATABASE_URL:
- PROJECT_ID:
- STORAGE_BUCKET:
+ API_KEY: AIzaSyA0opEFyc9T75trELkLCU5ekSlLIhCAXkk
+ AUTH_DOMAIN: plus62store-7dc57.firebaseapp.com
+ DATABASE_URL: https://plus62store-7dc57-default-rtdb.asia-southeast1.firebasedatabase.app
+ PROJECT_ID: plus62store-7dc57
+ STORAGE_BUCKET: plus62store-7dc57.appspot.com
  SENDER_ID:
- APP_ID:
- MEASUREMENT_ID:
+ APP_ID: 1:664419859650:web:7ec677e044d58fc0010f5b
+ MEASUREMENT_ID: G-PJJYNDK3YC
 
 # Collection Page
 collections:
