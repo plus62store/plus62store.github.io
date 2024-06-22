@@ -1,7 +1,5 @@
 # Welcome to Jekyll!
-BlogID: 2141768081939130795
 dev: NdanG
-admin: '85156416662'
 title: Plus62store
 email: plus6store.info@gmail.com
 avatar: https://1.bp.blogspot.com/-1bWHHqO2Jt0/X2ZgjgIVRVI/AAAAAAAAFZ8/XCb6roqGxhIn-K34II1L8BuLDoAePrmsgCLcBGAsYHQ/s0/192x192.png
@@ -9,13 +7,13 @@ description: Jual Masker Bordir Tasikmalaya..
 baseurl: "" 
 url: "https://plus62store.github.io"
 twitter_username: x1666
-github_username:  daffadevhosting
+github_username: daffadevhosting
 fb-pixel: 904845437026791
 fb-appID: 437300347340287
 fb-admin: 158878762428839
 fb-profile: 435671100899312
 fb-pages: 107881477662203
-signal-id: 23925364-ab76-466d-b529-44ea74b5d7c1
+signal-id: 6cc17e38-ff1c-4853-8a7e-a513caa8ac27
 safari-web-ID: web.onesignal.auto.0f4ef0fc-d020-4184-9066-253532c318fc
 G-verify: 
 comen: 30234
@@ -40,18 +38,6 @@ plugins:
   - jekyll-archives
   - jekyll-figure
 
-# Google Login
- SITE_KEY:
- API_KEY: AIzaSyA0opEFyc9T75trELkLCU5ekSlLIhCAXkk
- AUTH_DOMAIN: plus62store-7dc57.firebaseapp.com
- DATABASE_URL: https://plus62store-7dc57-default-rtdb.asia-southeast1.firebasedatabase.app
- PROJECT_ID: plus62store-7dc57
- STORAGE_BUCKET: plus62store-7dc57.appspot.com
- SENDER_ID:
- APP_ID: 1:664419859650:web:7ec677e044d58fc0010f5b
- MEASUREMENT_ID: G-PJJYNDK3YC
-
-# Collection Page
 collections:
   blog:
     output: true
