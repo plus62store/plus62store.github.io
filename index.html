@@ -5,13 +5,6 @@ description: Static online-shop simpleCart jekyllrb & ionic v.6
 image: /image/logo/maskable_icon.png
 ---
 
-<head>
-    <script type="module">
-      import { alertController } from "{{ '/assets/vendor/@ionic/core/dist/ionic/index.esm.js?v=6.0' | relative_url }}";
-      window.alertController = alertController;
-    </script>
-    <script src="https://www.gstatic.com/firebasejs/8.9.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.9.1/firebase-auth.js"></script>
 <style>
 :root {
     --ion-safe-area-top: 20px;
@@ -144,52 +137,32 @@ animation-iteration-count: infinite;
             <p>
               <b>CS (Customer Service)</b> kami akan dengan senang hati untuk melayani 24 Jam :)
             </p>
+			
           </ion-slide>
 
           <ion-slide>
             <img src="https://img.freepik.com/free-icon/google_318-278809.jpg" />
             <h2>Sign In</h2>
             <p>Untuk melanjutkan silahkan Sign in dengan akun google anda.</p>
-            <ion-button onClick="myProduct()" color="primary" style="margin-top:10px;"><ion-icon slot="start" name="logo-google"></ion-icon> Sign In</ion-button>
-<script src="https://accounts.google.com/gsi/client" async></script>
-    <script type="module">
-      const firebaseConfig = {
-          apiKey: "{{ site.env.API_KEY }}",
-          authDomain: "{{ site.env.AUTH_DOMAIN }}",
-          databaseURL: "{{ site.env.DATABASE_URL }}",
-          projectId: "{{ site.env.PROJECT_ID }}",
-          storageBucket: "{{ site.env.STORAGE_BUCKET }}",
-          messagingSenderId: "{{ site.env.SENDER_ID }}",
-          appId: "{{ site.env.APP_ID }}",
-          measurementId: "{{ site.env.MEASUREMENT_ID }}"
-      };
-      firebase.initializeApp(firebaseConfig);
-      
-      const auth = firebase.auth();
-      
-      const userSignedInDiv = document.getElementById('user-signed-in');
-      const signInButton = document.getElementById('sign-in-button');
-      
-      function toggleUI() {
-        if (auth.currentUser) {
-          location.href = "{{site.baseurl}}/product";
-        } else {
-        }
-      }
-      
-      signInButton.addEventListener('click', () => {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        auth.signInWithPopup(provider);
-      });
-      
-      auth.onAuthStateChanged(user => {
-        toggleUI();
-      });
-    </script>
+			<p><ion-button class="btn_login" id="sign-in-button" color="primary" style="margin-top:10px;"><ion-icon slot="start" name="logo-google"></ion-icon> Sign In</ion-button>
           </ion-slide>
         </ion-slides>
       </ion-content>
     </ion-app>
+	
+  <script type="module">
+    const firebaseConfig = {
+    apiKey: "{{ site.API_KEY }}",
+    authDomain: "{{ site.AUTH_DOMAIN }}",
+    databaseURL: "{{ site.DATABASE_URL }}",
+    projectId: "{{ site.PROJECT_ID }}",
+    storageBucket: "{{ site.STORAGE_BUCKET }}",
+    messagingSenderId: "{{ site.SENDER_ID }}",
+    appId: "{{ site.APP_ID }}",
+    measurementId: "{{ site.MEASUREMENT_ID }}"
+    };firebase.initializeApp(firebaseConfig);const auth=firebase.auth();const userSignedInDiv=document.getElementById('user-signed-in');const signInButton=document.getElementById('sign-in-button');function toggleUI(){if(auth.currentUser){location.href="{{site.baseurl}}/product"}else{}}
+	signInButton.addEventListener('click',()=>{const provider=new firebase.auth.GoogleAuthProvider();auth.signInWithPopup(provider)});auth.onAuthStateChanged(user=>{toggleUI()})
+  </script>
 
     <style>
       ion-slides {
@@ -241,20 +214,6 @@ slides.options = {
   speed: 500
 }
 </script>
-<script>
-      const button = document.querySelector('note');
-      button.addEventListener('click', handleButtonClick);
-
-      async function handleButtonClick() {
-        const alert = await alertController.create({
-          message: '<h4><center><ion-note>MAAF<p /> <br /> Kami sedang melakukan pemeliharaan, untuk sementara webshop TUTUP.</ion-note></center></h4>',
-          buttons: ['Nanti Saja'],
-        });
-
-        await alert.present();
-      }
-</script>
-      
 <div class="hidden">
           <ion-chip slot="end" onclick="setDarkMode(true)" id="darkBtn">
             <div>
