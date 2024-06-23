@@ -113,3 +113,51 @@ if(firebase.auth().currentUser.photoURL){document.querySelector('#userImg').src=
 signOutButton.addEventListener('click',()=>{auth.signOut()});auth.onAuthStateChanged(user=>{toggleUI()})
 </script>
 
+
+<ion-modal>
+  <ion-header>
+  <ion-toolbar>
+  <ion-title>Profile</ion-title>
+  <ion-buttons slot="end">
+    <ion-button onclick="profile.isOpen = false"><ion-icon slot="icon-only" name="close-circle"></ion-icon></ion-button>
+  </ion-buttons>
+  </ion-toolbar>
+  </ion-header>
+  <ion-content id="user-signed-in" class="ion-padding">
+  <style>
+  ion-thumbnail {
+  --border-radius: 4px;
+  }
+  </style>
+  <ion-thumbnail>
+  <img id="userImg" alt="" src="https://ionicframework.com/docs/img/demos/thumbnail.svg" />
+  </ion-thumbnail>
+  <ion-item>
+  <ion-label>
+  <h3>Nama</h3>
+  <ion-text color="primary" id="user-display-name"></ion-text>
+  </ion-label>
+  </ion-item>
+  <ion-item>
+  <ion-label>
+  <h3>E-mail</h3>
+  <ion-text color="primary" id="user-email"></ion-text>
+  </ion-label>
+  </ion-item>
+  <ion-item>
+  <ion-label>
+  <h3>Item Keranjang</h3>
+  <ion-text class="simpleCart_quantity" color="primary"></ion-text>
+  </ion-label>
+  </ion-item>
+  <ion-item>
+  <ion-label>
+  <h3>Saldo Wallet</h3>
+  <ion-text color="primary">Rp. 0.00</ion-text>
+  </ion-label>
+  </ion-item>
+  </ion-content>
+  </ion-modal>
+  <script>
+  var profile = document.querySelector('ion-modal');
+  </script>
