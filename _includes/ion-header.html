@@ -3,17 +3,17 @@
 {% if page.layout == "default" %}
     <ion-chip onclick="profile.isOpen = true" slot="start">
       <ion-avatar>
-      <img id="userImg" src="{{ site.avatar }}" />
+      <img src="{{ site.avatar }}" />
       </ion-avatar>
-      <ion-label id="user-display-name">{{ site.title }}</ion-label>
+      <ion-label>{{ site.title }}</ion-label>
     </ion-chip>
 {% endif %}
 {% if page.layout == "webshop" %}
     <ion-chip onclick="profile.isOpen = true" slot="start">
       <ion-avatar>
-      <img id="userImg" src="{{ site.avatar }}" />
+      <img src="{{ site.avatar }}" />
       </ion-avatar>
-      <ion-label id="user-display-name">{{ site.title }}</ion-label>
+      <ion-label>{{ site.title }}</ion-label>
     </ion-chip>
 <ion-buttons slot="end">
 <ion-button id="trigger-cart">
