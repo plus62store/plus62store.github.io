@@ -86,12 +86,12 @@ location.replace('/p=p62s_cart')
  </script>
 
 <script type="text/javascript">
-function myBtpn() {
-var copyText = document.getElementById("btpn");
+function myMandiri() {
+var copyText = document.getElementById("mndr");
 copyText.select();
 copyText.setSelectionRange(0, 99999)
 document.execCommand("copy");
-alert("Nomor rekening " + copyText.value + " Untuk BANK BTPN berhasil disalin, Silahkan melakukan pembayaran.");
+alert("Nomor rekening " + copyText.value + " Untuk BANK MANDIRI berhasil disalin, Silahkan melakukan pembayaran.");
 }
 </script>
 
@@ -102,6 +102,16 @@ copyText.select();
 copyText.setSelectionRange(0, 99999)
 document.execCommand("copy");
 alert("Nomor rekening " + copyText.value + " Untuk BANK BRI berhasil disalin, Silahkan melakukan pembayaran.");
+}
+</script>
+
+<script type="text/javascript">
+function myBca() {
+var copyText = document.getElementById("bca");
+copyText.select();
+copyText.setSelectionRange(0, 99999)
+document.execCommand("copy");
+alert("Nomor rekening " + copyText.value + " Untuk BANK BCA berhasil disalin, Silahkan melakukan pembayaran.");
 }
 </script>
 
