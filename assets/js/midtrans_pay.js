@@ -7,7 +7,7 @@ $('.chatWhatsapp').click(function () {
 
 // Tangani klik tombol order
 $('#order').on("click", function (event) {
-    event.preventDefault(); // Mencegah navigasi default pada <ion-router-link>
+    event.preventDefault();
     prosesPembayaran();
 });
 
@@ -19,6 +19,16 @@ $("#whatsapp-order input, #whatsapp-order textarea").keypress(function (event) {
     }
 });
 
+function showAlert(message) {
+    const alert = document.createElement('ion-alert');
+    alert.header = 'Peringatan';
+    alert.message = message;
+    alert.buttons = ['OK'];
+
+    document.body.appendChild(alert);
+    return alert.present();
+}
+
 function prosesPembayaran() {
     let nama = $('#whatsapp-order .nama').val().trim();
     let nomor = $('#whatsapp-order .nomor').val().trim();
@@ -29,16 +39,14 @@ function prosesPembayaran() {
     let kodepos = $('#whatsapp-order .kodepos').val().trim();
     let kurir = $('#whatsapp-order .informasi').val();
 
-    // Bersihkan format angka dari SimpleCart
-    let total = $('.simpleCart_total').text().replace(/[^\d]/g, "").trim(); // Hanya ambil angka
+    let total = $('.simpleCart_total').text().replace(/[^\d]/g, "").trim();
 
     // Validasi form
     if (!nama || !nomor || !email || !alamat || !kota || !provinsi || !kodepos || total === "0") {
-        alert("Harap isi semua data dengan benar dan pastikan keranjang tidak kosong.");
+        showAlert("Harap isi semua data dengan benar dan pastikan keranjang tidak kosong.");
         return false;
     }
 
-    // Ambil item dari SimpleCart
     let cartItems = [];
     let simpleCartData = JSON.parse(localStorage.getItem('simpleCart_items')) || {};
 
@@ -53,18 +61,16 @@ function prosesPembayaran() {
     });
 
     if (cartItems.length === 0) {
-        alert("Keranjang belanja kosong.");
+        showAlert("Keranjang belanja kosong.");
         return;
     }
 
-    // Data yang dikirim ke backend
     let orderData = {
         nama, nomor, email, alamat, kota, provinsi, kodepos, kurir, total, items: cartItems
     };
 
     console.log("Mengirim data ke backend:", orderData);
 
-    // Kirim ke backend
     fetch("https://paymentlink-plus62store.vercel.app/api/create-transaction", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -73,15 +79,15 @@ function prosesPembayaran() {
     .then(response => response.json())
     .then(data => {
         if (data.redirect_url) {
-            window.location.href = data.redirect_url; // Redirect ke Midtrans
+            window.location.href = data.redirect_url;
         } else {
-            alert("Gagal membuat transaksi. Silakan coba lagi.");
+            showAlert("Gagal membuat transaksi. Silakan coba lagi.");
             console.error("Respon tidak valid:", data);
         }
     })
     .catch(error => {
         console.error("Terjadi kesalahan:", error);
-        alert("Terjadi kesalahan dalam proses pembayaran.");
+        showAlert("Terjadi kesalahan dalam proses pembayaran.");
     });
 }
 //]]>
