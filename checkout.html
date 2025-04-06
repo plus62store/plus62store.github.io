@@ -26,20 +26,20 @@ permalink: /p=p62s_checkout.html
 </div>
 <p/><br/>
 <form id="checkout-form" method="post" action="/">
-  <label>First Name</label>
-  <input type="text" name="First Name">
+  <ion-label>First Name</ion-label>
+  <ion-input type="text" name="First Name"></ion-input>
 
-  <label>Last Name</label>
-  <input type="text" name="Last Name">
+  <ion-label>Last Name</ion-label>
+  <ion-input type="text" name="Last Name"></ion-input>
 
-  <label>Email Address</label>
-  <input type="text" name="Email">
+  <ion-label>Email Address</ion-label>
+  <ion-input type="text" name="Email"></ion-input>
 
-  <label>Mailing Address</label>
-  <input type="text" name="Street" placeholder="Street">
-  <input type="text" name="City" placeholder="City">
-  <input type="text" name="State" placeholder="State">
-  <input type="text" name="Zip Code" placeholder="Zip Code">
+  <ion-label>Mailing Address</ion-label>
+  <ion-input type="text" name="Street" placeholder="Street"></ion-input>
+  <ion-input type="text" name="City" placeholder="City"></ion-input>
+  <ion-input type="text" name="State" placeholder="State"></ion-input>
+  <ion-input type="text" name="Zip Code" placeholder="Zip Code"></ion-input>
 
   <input type="hidden" name="_to" value="{{ page.emails | join: ',' }}">
   <input type="text" name="_gotcha" style="display: none;">
