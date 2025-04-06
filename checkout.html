@@ -28,7 +28,7 @@ permalink: /p=p62s_checkout.html
 <p/><br/>
 <ion-item>
   <ion-label position="stacked">Nama Lengkap</ion-label>
-                  <ion-input id="nama" type="text" name="Name" placeholder="Nama Lengkap"></ion-input>
+                  <ion-input id="nama" type="text" name="nama" placeholder="Nama Lengkap"></ion-input>
 </ion-item>
 <ion-item>
   <ion-label position="stacked">No. WhatsApp</ion-label>
@@ -78,7 +78,7 @@ document.getElementById('pay-button').addEventListener('click', function () {
 
 // Simpan data pembeli ke localStorage
 localStorage.setItem('buyer', JSON.stringify({
-  name: formData.get('Name'),
+  name: formData.get('nama'),
   number: formData.get('no_wa'),
   email: formData.get('Email'),
   kurir: formData.get('kurir'),
@@ -92,7 +92,7 @@ localStorage.setItem('buyer', JSON.stringify({
       if (formData.get('_gotcha')) return;
 
       const customer = {
-        name: formData.get('Name'),
+        name: formData.get('nama'),
         number: formData.get('no_wa'),
         email: formData.get('Email'),
         kurir: formData.get('kurir'),
