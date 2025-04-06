@@ -19,57 +19,33 @@ permalink: /p=p62s_checkout.html
 </ion-card>
 
 <ion-card class="card-form" style="max-width: 680px;padding:6px;width: 100%;border: 1px solid #eee;border-radius: 5px;box-shadow: rgb(0 0 0 / 20%) 0px 3px 1px -2px, rgb(0 0 0 / 14%) 0px 2px 2px 0px, rgb(0 0 0 / 12%) 0px 1px 5px 0px;">
-<form id="checkout-form" method="post" action="/">
 <div class="not_if">
       <span>Total belanja </span>sebesar <b style="font-size:larger;font-weight:900;"><span class="simpleCart_total"></span></b><p/>
 <span style="font-size:10px;"> ( *Belum Termasuk Ongkir )</span><p/>
 <ion-note color="danger">Silahkan isi data pengiriman dibawah ini..</ion-note>
 </div>
 <p/><br/>
-<ion-item>
-  <ion-label position="stacked">Nama Lengkap</ion-label>
-                  <ion-input id="nama" type="text" name="nama" placeholder="Nama Lengkap"></ion-input>
-</ion-item>
-<ion-item>
-  <ion-label position="stacked">No. WhatsApp</ion-label>
-                  <ion-input id="nomor" type="number" min="11" name="no_wa" placeholder="Nomor WhatsApp"></ion-input>
-</ion-item>
-<ion-item>
-  <ion-label position="stacked">E-Mail</ion-label>
-                  <ion-input id="email" type="email" name="email" placeholder="Alamat E-mail"></ion-input>
-</ion-item>
-        <ion-item>
-          <ion-label>Kurir</ion-label>
-          <ion-select name="kurir" value="J%26T Express" placeholder="Pilih Kurir " interface="action-sheet">
-            <ion-select-option value="J%26T Express">J&amp;T Express</ion-select-option>
-            <ion-select-option value="JNE Express">JNE Express</ion-select-option>
-            <ion-select-option value="*Grab Express">*GrabExpress</ion-select-option>
-            <ion-select-option value="*GoSend">*GoSend</ion-select-option>
-          </ion-select>
-        </ion-item>
-        <ion-item>
-          <ion-label position="stacked">Alamat Pengiriman</ion-label>
-          <ion-input id="alamat" name="alamat" placeholder="Alamat Rumah"></ion-input>
-          <ion-input id="kota" name="kota" placeholder="Kota"></ion-input>
-          <ion-input id="provinsi" name="provinsi" placeholder="Provinsi"></ion-input>
-          <ion-input id="kodepos" name="kodepos" placeholder="Kode Pos"></ion-input>
-        </ion-item>
-<br/><p/>
-      <ion-router-link id='pay-button' class="order">
-<ion-chip color="success" style="float:right;">
-<ion-icon name="logo-whatsapp"></ion-icon>
-<ion-label>Send Order</ion-label>
-</ion-chip>
-</ion-router-link>
+<form id="checkout-form" method="post" action="/">
+  <label>First Name</label>
+  <input type="text" name="First Name">
+
+  <label>Last Name</label>
+  <input type="text" name="Last Name">
+
+  <label>Email Address</label>
+  <input type="text" name="Email">
+
+  <label>Mailing Address</label>
+  <input type="text" name="Street" placeholder="Street">
+  <input type="text" name="City" placeholder="City">
+  <input type="text" name="State" placeholder="State">
+  <input type="text" name="Zip Code" placeholder="Zip Code">
+
+  <input type="hidden" name="_to" value="{{ page.emails | join: ',' }}">
+  <input type="text" name="_gotcha" style="display: none;">
+
+  <button type="button" id="pay-button">bayar</button>
 </form>
-<style>.grecaptcha-badge{z-index:1;}</style>
-<div class="g-recaptcha"
-      data-sitekey="{{ site.env.SITE_KEY }}"
-      data-callback="onSubmit"
-      data-size="invisible">
-</div>
-<script>grecaptcha.execute();</script>
-</ion-card>
 
 <script>
 document.getElementById('pay-button').addEventListener('click', function () {
@@ -78,10 +54,9 @@ document.getElementById('pay-button').addEventListener('click', function () {
 
 // Simpan data pembeli ke localStorage
 localStorage.setItem('buyer', JSON.stringify({
-  name: formData.get('nama'),
-  number: formData.get('no_wa'),
+  first_name: formData.get('First Name'),
+  last_name: formData.get('Last Name'),
   email: formData.get('Email'),
-  kurir: formData.get('kurir'),
   street: formData.get('Street'),
   city: formData.get('City'),
   state: formData.get('State'),
@@ -92,10 +67,9 @@ localStorage.setItem('buyer', JSON.stringify({
       if (formData.get('_gotcha')) return;
 
       const customer = {
-        name: formData.get('nama'),
-        number: formData.get('no_wa'),
+        first_name: formData.get('First Name'),
+        last_name: formData.get('Last Name'),
         email: formData.get('Email'),
-        kurir: formData.get('kurir'),
         address: {
           street: formData.get('Street'),
           city: formData.get('City'),
