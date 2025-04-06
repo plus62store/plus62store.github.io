@@ -7,27 +7,25 @@ permalink: /confirm-success
 <h2>Pembayaran Kamu Berhasil!</h2>
 
 <div class="simpleCart_items" style="display:none;"></div>
-<iin-text>Total: <span class="simpleCart_total"></span></ion-text>
+<p>Total: <span class="simpleCart_total"></span></p>
 
-<ion-button type="button" id="whatsapp-button">Konfirmasi via WhatsApp</ion-button>
+<button type="button" id="whatsapp-button">Konfirmasi via WhatsApp</button>
 
 <script>
   document.getElementById("whatsapp-button").addEventListener("click", function () {
     const buyer = JSON.parse(localStorage.getItem("buyer")) || {};
 
-    const name = buyer.nama || "";
-    const number = buyer.no_wa || "";
+    const firstName = buyer.first_name || "";
+    const lastName = buyer.last_name || "";
     const email = buyer.email || "";
     const street = buyer.street || "";
     const city = buyer.city || "";
-    const kurir = buyer.kurir || "";
     const state = buyer.state || "";
     const zip = buyer.zip || "";
 
     let message = `Halo, saya ingin konfirmasi pembayaran:\n\n`;
-    message += `Nama: ${name}\n`;
+    message += `Nama: ${firstName} ${lastName}\n`;
     message += `Email: ${email}\n`;
-    message += `Kurir: ${kurir}\n`;
     message += `Alamat: ${street}, ${city}, ${state}, ${zip}\n\n`;
     message += `Detail Pesanan:\n`;
 
