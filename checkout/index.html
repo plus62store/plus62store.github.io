@@ -8,7 +8,8 @@ sitemap: false
 permalink: /checkout
 ---
 
-<ion-content>
+<ion-card>
+<ion-card-content>
 <form id="checkout-form" method="post" action="/">
     <ion-list>
       <ion-item>
@@ -52,14 +53,14 @@ permalink: /checkout
 
     <ion-button expand="block" id="pay-button">Bayar</ion-button>
   </form>
-
+</ion-card-content>
+</ion-card>
   <ion-alert
     id="payment-alert"
     header="Info Pembayaran"
     message=""
     buttons={['OK']}>
   </ion-alert>
-</ion-content>
 
 <script>
   const alert = document.getElementById('payment-alert');
