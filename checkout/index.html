@@ -54,23 +54,26 @@ permalink: /checkout
   </form>
 </ion-card-content>
 </ion-card>
-  <ion-alert
-    id="payment-alert"
-    header="Info Pembayaran"
-    message=""
-    buttons={['OK']}>
-  </ion-alert>
 
 
-<script>
-  async function handlePayment() {
+<script type="module">
+  import { alertController } from 'https://cdn.jsdelivr.net/npm/@ionic/core@6.0.0/dist/ionic/index.esm.js';
+
+  async function showAlert(message) {
+    const alert = await alertController.create({
+      header: 'Info Pembayaran',
+      message: message,
+      buttons: ['OK']
+    });
+    await alert.present();
+  }
+
+  window.handlePayment = async function () {
     const form = document.getElementById('checkout-form');
     const formData = new FormData(form);
 
-    // Honeypot check
     if (formData.get('_gotcha')) return;
 
-    // Simpan ke localStorage
     localStorage.setItem('buyer', JSON.stringify({
       first_name: formData.get('First Name'),
       last_name: formData.get('Last Name'),
@@ -133,11 +136,5 @@ permalink: /checkout
       console.error(err);
       showAlert("Gagal memulai pembayaran, isi semua data di atas.");
     }
-  }
-
-  function showAlert(message) {
-    const alert = document.getElementById('payment-alert');
-    alert.message = message;
-    alert.present();
-  }
+  };
 </script>
