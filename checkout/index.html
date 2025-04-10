@@ -8,106 +8,142 @@ sitemap: false
 permalink: /checkout
 ---
 
-<div class="container">
-<div class="form-contain">
+<ion-content>
 <form id="checkout-form" method="post" action="/">
-  <label>First Name</label>
-  <input type="text" name="First Name">
+    <ion-list>
+      <ion-item>
+        <ion-label position="stacked">First Name</ion-label>
+        <ion-input name="First Name"></ion-input>
+      </ion-item>
 
-  <label>Last Name</label>
-  <input type="text" name="Last Name">
+      <ion-item>
+        <ion-label position="stacked">Last Name</ion-label>
+        <ion-input name="Last Name"></ion-input>
+      </ion-item>
 
-  <label>Email Address</label>
-  <input type="text" name="Email">
+      <ion-item>
+        <ion-label position="stacked">Email Address</ion-label>
+        <ion-input name="Email" type="email"></ion-input>
+      </ion-item>
 
-  <label>Mailing Address</label>
-  <input type="text" name="Street" placeholder="Street">
-  <input type="text" name="City" placeholder="City">
-  <input type="text" name="State" placeholder="State">
-  <input type="text" name="Zip Code" placeholder="Zip Code">
+      <ion-item>
+        <ion-label position="stacked">Street</ion-label>
+        <ion-input name="Street" placeholder="Street"></ion-input>
+      </ion-item>
 
-  <input type="hidden" name="_to" value="{{ page.emails | join: ',' }}">
-  <input type="text" name="_gotcha" style="display: none;">
+      <ion-item>
+        <ion-label position="stacked">City</ion-label>
+        <ion-input name="City" placeholder="City"></ion-input>
+      </ion-item>
 
-  <button type="button" id="pay-button">bayar</button>
-</form>
-</div>
-</div>
+      <ion-item>
+        <ion-label position="stacked">State</ion-label>
+        <ion-input name="State" placeholder="State"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Zip Code</ion-label>
+        <ion-input name="Zip Code" placeholder="Zip Code"></ion-input>
+      </ion-item>
+
+      <input type="hidden" name="_to" value="{{ page.emails | join: ',' }}">
+      <input type="text" name="_gotcha" style="display: none;">
+    </ion-list>
+
+    <ion-button expand="block" id="pay-button">Bayar</ion-button>
+  </form>
+
+  <ion-alert
+    id="payment-alert"
+    header="Info Pembayaran"
+    message=""
+    buttons={['OK']}>
+  </ion-alert>
+</ion-content>
+
 <script>
-document.getElementById('pay-button').addEventListener('click', function () {
-      const form = document.getElementById('checkout-form');
-      const formData = new FormData(form);
+  const alert = document.getElementById('payment-alert');
+  const form = document.getElementById('checkout-form');
+  const button = document.getElementById('pay-button');
 
-// Simpan data pembeli ke localStorage
-localStorage.setItem('buyer', JSON.stringify({
-  first_name: formData.get('First Name'),
-  last_name: formData.get('Last Name'),
-  email: formData.get('Email'),
-  street: formData.get('Street'),
-  city: formData.get('City'),
-  state: formData.get('State'),
-  zip: formData.get('Zip Code')
-}));
+  function showAlert(message) {
+    alert.message = message;
+    alert.present();
+  }
 
-      // Cek jika ada isian honeypot (bot)
-      if (formData.get('_gotcha')) return;
+  button.addEventListener('click', () => {
+    const formData = new FormData(form);
 
-      const customer = {
-        first_name: formData.get('First Name'),
-        last_name: formData.get('Last Name'),
-        email: formData.get('Email'),
-        address: {
-          street: formData.get('Street'),
-          city: formData.get('City'),
-          state: formData.get('State'),
-          postal_code: formData.get('Zip Code')
-        }
-      };
+    // Cek honeypot
+    if (formData.get('_gotcha')) return;
 
-      let items = [];
-      let total = 0;
+    // Simpan data pembeli
+    localStorage.setItem('buyer', JSON.stringify({
+      first_name: formData.get('First Name'),
+      last_name: formData.get('Last Name'),
+      email: formData.get('Email'),
+      street: formData.get('Street'),
+      city: formData.get('City'),
+      state: formData.get('State'),
+      zip: formData.get('Zip Code')
+    }));
 
-      simpleCart.each(function (item) {
-        items.push({
-          id: item.get('id') || item.get('name'),
-          name: item.get('name'),
-          quantity: item.get('quantity'),
-          price: item.get('price')
-        });
-        total += item.get('total');
-      });
-
-      if (items.length === 0) {
-        alert("Keranjang belanja masih kosong!");
-        return;
+    const customer = {
+      first_name: formData.get('First Name'),
+      last_name: formData.get('Last Name'),
+      email: formData.get('Email'),
+      address: {
+        street: formData.get('Street'),
+        city: formData.get('City'),
+        state: formData.get('State'),
+        postal_code: formData.get('Zip Code')
       }
+    };
 
-      fetch('/midtrans', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ total: total, items: items, customer: customer })
-      })
-      .then(res => res.json())
-      .then(data => {
-        snap.pay(data.token, {
-          onSuccess: function(result) {                                
-            localStorage.removeItem('simpleCart_items');
-            showAlert("Pembayaran berhasil!");
-          },
-          onPending: function(result) {
-            showAlert("Pembayaran tertunda. Silakan selesaikan pembayaran.");
-          },
-          onError: function(result) {
-            showAlert("Terjadi kesalahan saat pembayaran.");
-          },
-          onClose: function() {
-            showAlert("Pembayaran dibatalkan.");
-          }
-        });
-      })
-      .catch(err => {
-        showAlert("Gagal memulai pembayaran, isi semua data diatas.");
-        console.error(err);
+    let items = [];
+    let total = 0;
+
+    simpleCart.each(function (item) {
+      items.push({
+        id: item.get('id') || item.get('name'),
+        name: item.get('name'),
+        quantity: item.get('quantity'),
+        price: item.get('price')
       });
+      total += item.get('total');
     });
+
+    if (items.length === 0) {
+      showAlert("Keranjang belanja masih kosong!");
+      return;
+    }
+
+    fetch('/midtrans', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ total: total, items: items, customer: customer })
+    })
+    .then(res => res.json())
+    .then(data => {
+      snap.pay(data.token, {
+        onSuccess: function(result) {
+          localStorage.removeItem('simpleCart_items');
+          showAlert("Pembayaran berhasil!");
+        },
+        onPending: function(result) {
+          showAlert("Pembayaran tertunda. Silakan selesaikan pembayaran.");
+        },
+        onError: function(result) {
+          showAlert("Terjadi kesalahan saat pembayaran.");
+        },
+        onClose: function() {
+          showAlert("Pembayaran dibatalkan.");
+        }
+      });
+    })
+    .catch(err => {
+      console.error(err);
+      showAlert("Gagal memulai pembayaran, isi semua data di atas.");
+    });
+  });
 </script>
