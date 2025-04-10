@@ -50,8 +50,7 @@ permalink: /checkout
       <input type="hidden" name="_to" value="{{ page.emails | join: ',' }}">
       <input type="text" name="_gotcha" style="display: none;">
     </ion-list>
-
-    <ion-button expand="block" id="pay-button">Bayar</ion-button>
+<ion-button expand="block" onclick="handlePayment()">Bayar</ion-button>
   </form>
 </ion-card-content>
 </ion-card>
@@ -62,23 +61,16 @@ permalink: /checkout
     buttons={['OK']}>
   </ion-alert>
 
+
 <script>
-  const alert = document.getElementById('payment-alert');
-  const form = document.getElementById('checkout-form');
-  const button = document.getElementById('pay-button');
-
-  function showAlert(message) {
-    alert.message = message;
-    alert.present();
-  }
-
-  button.addEventListener('click', () => {
+  async function handlePayment() {
+    const form = document.getElementById('checkout-form');
     const formData = new FormData(form);
 
-    // Cek honeypot
+    // Honeypot check
     if (formData.get('_gotcha')) return;
 
-    // Simpan data pembeli
+    // Simpan ke localStorage
     localStorage.setItem('buyer', JSON.stringify({
       first_name: formData.get('First Name'),
       last_name: formData.get('Last Name'),
@@ -119,32 +111,33 @@ permalink: /checkout
       return;
     }
 
-    fetch('/midtrans', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ total: total, items: items, customer: customer })
-    })
-    .then(res => res.json())
-    .then(data => {
+    try {
+      const res = await fetch('/midtrans', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ total: total, items: items, customer: customer })
+      });
+
+      const data = await res.json();
+
       snap.pay(data.token, {
-        onSuccess: function(result) {
+        onSuccess: () => {
           localStorage.removeItem('simpleCart_items');
           showAlert("Pembayaran berhasil!");
         },
-        onPending: function(result) {
-          showAlert("Pembayaran tertunda. Silakan selesaikan pembayaran.");
-        },
-        onError: function(result) {
-          showAlert("Terjadi kesalahan saat pembayaran.");
-        },
-        onClose: function() {
-          showAlert("Pembayaran dibatalkan.");
-        }
+        onPending: () => showAlert("Pembayaran tertunda. Silakan selesaikan pembayaran."),
+        onError: () => showAlert("Terjadi kesalahan saat pembayaran."),
+        onClose: () => showAlert("Pembayaran dibatalkan.")
       });
-    })
-    .catch(err => {
+    } catch (err) {
       console.error(err);
       showAlert("Gagal memulai pembayaran, isi semua data di atas.");
-    });
-  });
+    }
+  }
+
+  function showAlert(message) {
+    const alert = document.getElementById('payment-alert');
+    alert.message = message;
+    alert.present();
+  }
 </script>
