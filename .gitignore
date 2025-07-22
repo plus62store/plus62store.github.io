@@ -1,0 +1,11 @@
+_site
+node_modules
+.sass-cache
+.jekyll-cache
+.jekyll-metadata
+.DS_Store
+.env
+src
+assets/js/src
+package-lock.json
+Gemfile.lock

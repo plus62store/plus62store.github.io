@@ -1,0 +1,50 @@
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>{{ page.title }} | {{site.title}}</title>
+
+  <meta name="description" content="{{ page.excerpt | strip_html | normalize_whitespace | truncate: 155 | escape | default: '{{site.description}}' }}">
+
+  <meta name="keywords" content="UI Transformer, AI to Tailwind CSS, konversi desain ke kode, Tailwind CSS AI, L Y Я A, otomatisasi desain, developer tools, web design">
+
+  <meta property="og:title" content="{{ page.title | default: '{{site.title}}' }}">
+  <meta property="og:description" content="{{ page.excerpt | strip_html | normalize_whitespace | truncate: 160 | escape | default: '{{site.description}}' }}">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="{{ page.url | replace:'index.html','' | absolute_url }}">
+  <meta property="og:image" content="{{site.url}}{{ '/assets/images/og-image.png' | relative_url }}"> <meta property="og:site_name" content="UI Transformer">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ page.title | default: '{{site.title}}' }}">
+  <meta name="twitter:description" content="{{ page.excerpt | strip_html | normalize_whitespace | truncate: 160 | escape | default: '{{site.description}}' }}">
+  <meta name="twitter:image" content="{{site.url}}{{ '/assets/images/og-image.png' | relative_url }}"> <meta name="twitter:creator" content="@namatwitteranda"> <link rel="canonical" href="{{ page.url | replace:'index.html','' | absolute_url }}">
+
+  {% feed_meta %}
+
+    <!-- Ionic CDN -->
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.esm.js"></script>
+  <script nomodule src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ionic/core/css/ionic.bundle.css" />
+
+  <!-- Google Fonts & Custom Styles -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="{{ '/assets/css/tailwind.css' | relative_url }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.5/dist/purify.min.js"></script>
+
+  {% if page.extra_head %}{{ page.extra_head }}{% endif %}
+  <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ site.MIDTRANS_CLIENT_KEY }}"></script>
+  <script src="https://www.paypal.com/sdk/js?client-id={{ site.PAYPAL_CLIENT_ID }}&currency=USD"></script>
+{% include scripts/config.html %}
+</head>

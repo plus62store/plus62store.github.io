@@ -1,0 +1,45 @@
+
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        ion-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .chat-bubble-user {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-top-right-radius: 0;
+        }
+        .chat-bubble-ai {
+            background-color: #f1f5f9;
+            border-top-left-radius: 0;
+        }
+        /* Custom scrollbar hiding for chat */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        /* Ensure content has proper padding */
+        ion-content.main-content::part(scroll) {
+            padding: 1.5rem;
+        }
+        ion-menu::part(container) {
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .typing-indicator span {
+            height: 8px;
+            width: 8px;
+            background-color: #9ca3af;
+            display: inline-block;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1.0); }
+        }
+ion-content.main-content::part(scroll) {
+    padding: 0%;
+}

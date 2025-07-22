@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="{{ site.lang | default: page.lang | default: 'id-ID' }}">
+
+  {% include head.html %}
+
+  <body>
+    <ion-app>
+        <ion-split-pane content-id="main-content" when="md">
+            <!-- Sidebar Menu -->
+          {% include ion-menu.html %}
+
+            <!-- Main Content -->
+            <div class="ion-page" id="main-content">
+              {{ content }}
+            <!-- Mobile Chat FAB -->
+          {% include chat-fab.html %}
+            </div>
+
+                <!-- Description Modal -->
+          {% include description-modal.html %}
+
+                <!-- Mobile Chat Modal -->
+          {% include mobile-chat-modal.html %}
+        </ion-split-pane>
+    </ion-app>
+  </body>
+
+</html>

@@ -1,0 +1,441 @@
+                      <div id="desktop-chat-panel" class="hidden lg:flex w-96 border-l border-gray-200 bg-white flex-col h-full" >
+                            <div class="p-4 border-b border-gray-200 flex-shrink-0">
+                                <div class="flex items-center">
+                                    <img src="https://lyra-ai-nine.vercel.app/logo.png" alt="LYRA" class="rounded-full h-10 mr-2">
+                                    <div>
+                                        <h5 class="font-semibold text-gray-900">L Y Я A Assistant</h5>
+                                        <p class=" text-xs text-gray-500 sm:inline">🕛️Active 10:08</p>
+                                        <p class="hidden text-xs text-gray-500">Online</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Chat Messages -->
+                            <div id="chat-messages-desktop" class="flex-1 overflow-y-auto py-2 px-4 space-y-4 scrollbar-hide">
+                                <!-- AI Welcome Message -->
+                                <div class="flex items-start">
+                                    <img src="https://lyra-ai-nine.vercel.app/logo.png" alt="LYRA" class="h-8 w-8 rounded-full mt-1">
+                                    <div class="ml-3">
+                                        <div class="bg-gray-100 p-3 rounded-lg chat-bubble-ai">
+                                            <p class="text-sm">Hai! Saya L Y Я A, asisten AI toko online ini. Tanyakan apa saja tentang produk kami! 🤗</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Chat Input -->
+                            <div class="p-4 border-t border-gray-200 bg-gray-50 flex-shrink-0">
+                                <div class="relative flex items-center">
+                                    <input id="chat-input-desktop" type="text" placeholder="Tanyakan apapun..." class="w-full pl-4 pr-12 py-3 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                  <ion-buttons>
+                                    <ion-button id="chat-send-btn-desktop" fill="clear" class="absolute right-1 top-1/2 -translate-y-1/2 text-gray-400 hover:text-purple-500">
+                                        <ion-icon slot="icon-only" name="send"></ion-icon>
+                                    </ion-button>
+                                  </ion-buttons>
+                                </div>
+                            </div>
+                        </div>
+
+<script type="module">
+// --- DOM Elements ---
+const chatMessagesDesktop = document.getElementById('chat-messages-desktop');
+const chatInputDesktop = document.getElementById('chat-input-desktop');
+const chatSendBtnDesktop = document.getElementById('chat-send-btn-desktop');
+
+const mobileChatModal = document.getElementById('mobile-chat-modal');
+const openMobileChatBtn = document.getElementById('open-mobile-chat');
+const chatMessagesMobile = document.getElementById('chat-messages-mobile');
+const chatInputMobile = document.getElementById('chat-input-mobile');
+const chatSendBtnMobile = document.getElementById('chat-send-btn-mobile');
+
+// --- Utils ---
+/**
+ * Mencari dan mem-parsing array JSON dari dalam sebuah string teks.
+ * @param {string} text - Teks respons dari AI.
+ * @returns {{parsed: Array|null, remaining: string}} Objek berisi data JSON yang sudah diparsing dan sisa teks.
+ */
+function findJsonArray(text) {
+  const start = text.indexOf("[");
+  const end = text.lastIndexOf("]");
+  if (start !== -1 && end !== -1 && end > start) {
+    const jsonPart = text.substring(start, end + 1);
+    try {
+      const parsed = JSON.parse(jsonPart);
+      // Hapus bagian JSON dari teks asli untuk mendapatkan sisa pesan
+      const remaining = text.replace(jsonPart, '').trim();
+      return { parsed, remaining };
+    } catch (e) {
+      console.warn("Gagal parsing JSON dari respons AI:", e);
+    }
+  }
+  // Jika tidak ada JSON, kembalikan teks asli
+  return { parsed: null, remaining: text };
+}
+
+// --- Core Chat Logic ---
+/**
+ * Menampilkan pesan di jendela chat.
+ * @param {string} text - Isi pesan.
+ * @param {'user' | 'ai'} sender - Pengirim pesan.
+ * @param {HTMLElement} targetChatMessages - Elemen kontainer chat.
+ */
+function appendMessage(text, sender, targetChatMessages) {
+  const wrapper = document.createElement('div');
+  wrapper.className = `flex items-start mb-4 ${sender === 'user' ? 'justify-end' : ''}`;
+
+  // [PENYESUAIAN] Menggunakan marked.parse untuk AI, dan sanitasi teks biasa untuk user.
+  // Backend kita sudah diinstruksikan untuk tidak mengirim Markdown, tapi ini sebagai pengaman.
+  const content = (sender === 'ai')
+    ? DOMPurify.sanitize(marked.parse(text))
+    : `<p class="text-sm">${DOMPurify.sanitize(text)}</p>`;
+
+  if (sender === 'ai') {
+    wrapper.innerHTML = `
+      <img src="https://lyra-ai-nine.vercel.app/logo.png" alt="LYRA" class="h-8 w-8 rounded-full mt-1 flex-shrink-0">
+      <div class="ml-3 max-w-sm">
+        <div class="p-3 rounded-lg chat-bubble-ai text-sm bg-white shadow">${content}</div>
+      </div>
+    `;
+  } else {
+    wrapper.innerHTML = `
+      <div class="mr-3 max-w-sm">
+        <div class="p-3 rounded-lg chat-bubble-user text-sm bg-purple-100">${content}</div>
+      </div>
+    `;
+  }
+
+  targetChatMessages.appendChild(wrapper);
+  targetChatMessages.scrollTop = targetChatMessages.scrollHeight;
+}
+
+/**
+ * Menampilkan kartu produk di jendela chat.
+ * @param {object} product - Objek produk.
+ * @param {HTMLElement} targetChatMessages - Elemen kontainer chat.
+ */
+function appendProductCard(product, targetChatMessages) {
+  const wrapper = document.createElement("div");
+  // [PENYESUAIAN] Menambahkan margin bottom agar ada jarak antar kartu
+  wrapper.className = "flex items-start mb-4";
+
+  // [PENYESUAIAN] Kartu produk dibuat lebih informatif dan menarik
+  wrapper.innerHTML = `
+    <img src="https://lyra-ai-nine.vercel.app/logo.png" alt="LYRA" class="h-8 w-8 rounded-full mt-1 flex-shrink-0">
+    <div class="ml-3">
+      <div class="bg-gray-100 p-3 rounded-lg max-w-xs shadow-md border border-gray-200">
+        <div class="space-y-2">
+          <img src="${product.image}" alt="${product.title}" class="w-full h-auto rounded-md" onerror="this.onerror=null;this.src='https://placehold.co/400x300/E0E0E0/333333?text=Gambar+Error';">
+          <h4 class="font-semibold text-base">${product.title}</h4>
+          <div class="text-sm">
+            ${product.price ? `<span class="text-gray-500">Harga: <del>Rp ${product.price}</del></span><br>` : ''}
+            <strong class="text-purple-600 text-lg">Rp ${product.discount}</strong>
+          </div>
+          <p class="text-xs font-medium ${product.stok?.toLowerCase() === 'tersedia' ? 'text-green-600' : 'text-red-600'}">${product.stok || 'Stok tidak diketahui'}</p>
+          <!-- [PENYESUAIAN] Tombol CTA dibuat lebih jelas -->
+          <ion-button onclick="handleProductClickFromChat('${encodeURIComponent(JSON.stringify(product))}')" class="text-sm text-white bg-purple-600 hover:bg-purple-700 w-full px-3 py-2 mt-2 rounded-lg font-semibold transition-colors">
+            Lihat Detail & Warna
+          </ion-button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  targetChatMessages.appendChild(wrapper);
+  targetChatMessages.scrollTop = targetChatMessages.scrollHeight;
+}
+
+// [PENYESUAIAN BARU] Fungsi ini akan dipanggil dari tombol di dalam kartu chat
+window.handleProductClickFromChat = async function(encodedProduct) {
+    const product = JSON.parse(decodeURIComponent(encodedProduct));
+
+    // Buat elemen ion-modal baru
+    const newProductDetailModal = document.createElement('ion-modal');
+    newProductDetailModal.id = `product-detail-modal-${product.id || Date.now()}`; // ID unik
+    newProductDetailModal.innerHTML = `
+        <ion-header>
+            <ion-toolbar>
+                <ion-title>${product.title}</ion-title>
+                <ion-buttons slot="end">
+                    <ion-button onclick="document.getElementById('${newProductDetailModal.id}').dismiss()">Tutup</ion-button>
+                </ion-buttons>
+            </ion-toolbar>
+        </ion-header>
+        <ion-content class="ion-padding">
+            <img src="${product.image}" alt="${product.title}" class="w-full h-64 object-cover rounded-md mb-4" onerror="this.onerror=null;this.src='https://placehold.co/400x300/E0E0E0/333333?text=Gambar+Tidak+Tersedia';">
+            <h2 class="text-xl font-bold mb-2">${product.title}</h2>
+            ${product.price ? `<p class="text-gray-500 line-through">Harga Awal: Rp ${product.price}</p>` : ''}
+            <p class="text-purple-600 text-2xl font-bold mb-4">Rp ${product.discount}</p>
+            <p class="text-sm mb-4">${product.description || 'Tidak ada deskripsi rinci untuk produk ini.'}</p>
+
+            ${product.stok ? `<ion-chip color="${product.stok === 'Tersedia' ? 'success' : 'danger'}"><ion-label>${product.stok}</ion-label></ion-chip>` : ''}
+
+            ${(product.styles && product.styles.length > 0) ? `
+                <div class="mt-4">
+                    <h3 class="font-semibold text-md mb-2">Pilihan Warna:</h3>
+                    <div class="flex gap-2">
+                        ${product.styles.map(style => `
+                            <button class="w-8 h-8 rounded-full border border-gray-300" title="${style.name}" style="background-color: ${style.color}"></button>
+                        `).join('')}
+                    </div>
+                </div>
+            ` : ''}
+
+            <ion-button expand="block" class="mt-6" href="https://wa.me/6281234567890?text=Saya tertarik beli ${encodeURIComponent(product.title)}" target="_blank">
+                Beli Sekarang via WhatsApp
+                <ion-icon slot="end" name="logo-whatsapp"></ion-icon>
+            </ion-button>
+        </ion-content>
+    `;
+
+    document.body.appendChild(newProductDetailModal); // Penting: Tambahkan modal ke body
+    await newProductDetailModal.present();
+
+    // Event listener untuk memastikan modal dihapus dari DOM setelah dismiss
+    newProductDetailModal.addEventListener('ionModalDidDismiss', () => {
+        newProductDetailModal.remove();
+    });
+}
+
+function showTypingIndicator(targetChatMessages) {
+  const typing = document.createElement('div');
+  typing.id = 'typing-indicator';
+  typing.className = 'flex items-start mb-4';
+  typing.innerHTML = `
+    <img src="https://lyra-ai-nine.vercel.app/logo.png" alt="LYRA" class="h-8 w-8 rounded-full mt-1 flex-shrink-0">
+    <div class="ml-3">
+      <div class="bg-white p-3 rounded-lg chat-bubble-ai shadow">
+        <div class="typing-indicator"><span></span><span></span><span></span></div>
+      </div>
+    </div>
+  `;
+  targetChatMessages.appendChild(typing);
+  targetChatMessages.scrollTop = targetChatMessages.scrollHeight;
+}
+
+function hideTypingIndicator(targetChatMessages) {
+  const indicator = targetChatMessages.querySelector('#typing-indicator');
+  if (indicator) indicator.remove();
+}
+
+/**
+ * [OPTIMASI] Fungsi utama untuk memanggil API AI.
+ * Sekarang lebih tangguh dalam menangani error.
+ * @param {string} message - Pesan dari user (bisa string biasa atau JSON yang di-string-kan).
+ * @returns {Promise<string>} Respons teks dari AI.
+ */
+async function callGemini(message) {
+  try {
+    const response = await fetch("https://gemini.sendaljepit.workers.dev/ai-assistant", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      // [PERBAIKAN] Tidak perlu double JSON.stringify. Backend mengharapkan { "message": "..." }
+      body: JSON.stringify({ message: message })
+    });
+
+    const data = await response.json();
+
+    // [PERBAIKAN] Jika response tidak OK (error 4xx/5xx), tampilkan pesan error dari backend.
+    if (!response.ok) {
+        // 'data.error' berasal dari backend kita: `return new Response({ error: '...' })`
+        throw new Error(data.error || 'Terjadi kesalahan pada server.');
+    }
+
+    return data.reply;
+  } catch (error) {
+    console.error("AI error:", error);
+    // Kembalikan pesan error yang didapat agar bisa ditampilkan ke user.
+    return error.message || "Waduh, koneksiku lagi bermasalah nih. Coba lagi nanti ya! 😔";
+  }
+}
+
+/**
+ * Meng-handle pengiriman pesan dari user.
+ */
+async function handleChatSubmit(chatInput, chatSendBtn, targetChatMessages) {
+  const userMessage = chatInput.value.trim();
+  if (!userMessage) return;
+
+  chatInput.disabled = true;
+  chatSendBtn.disabled = true;
+
+  appendMessage(userMessage, 'user', targetChatMessages);
+  chatInput.value = '';
+  showTypingIndicator(targetChatMessages);
+
+  // Langsung kirim teks mentah dari user
+  const aiResponse = await callGemini(userMessage);
+
+  hideTypingIndicator(targetChatMessages);
+
+  // Proses respons AI
+  const { parsed: productData, remaining: cleanResponse } = findJsonArray(aiResponse);
+
+  if (productData && Array.isArray(productData)) {
+    productData.forEach(prod => appendProductCard(prod, targetChatMessages));
+  }
+
+  if (cleanResponse) {
+    appendMessage(cleanResponse, 'ai', targetChatMessages);
+  }
+
+  chatInput.disabled = false;
+  chatSendBtn.disabled = false;
+  chatInput.focus();
+}
+
+/**
+ * [OPTIMASI] Fungsi baru yang lebih jelas untuk meminta detail produk.
+ * @param {object} product - Objek produk lengkap.
+ * @param {HTMLElement} targetChatMessages - Elemen kontainer chat.
+ */
+async function requestProductDetail(product, targetChatMessages) { // Hanya menerima 1 targetChatMessages
+    // 1. Tampilkan pesan "pancingan" dari user di chat
+    appendMessage(`Boleh lihat detail untuk ${product.title}?`, 'user', targetChatMessages);
+    showTypingIndicator(targetChatMessages);
+
+    // 2. Siapkan payload sesuai format yang diharapkan backend
+    const payload = {
+        type: "product_detail",
+        data: product
+    };
+
+    // 3. Panggil AI dengan payload yang sudah di-string-kan
+    const aiResponse = await callGemini(JSON.stringify(payload));
+
+    hideTypingIndicator(targetChatMessages);
+
+    // 4. Proses respons dari AI
+    const { parsed, remaining } = findJsonArray(aiResponse);
+    if (parsed) {
+        parsed.forEach(p => appendProductCard(p, targetChatMessages));
+    }
+    if (remaining) {
+        appendMessage(remaining, 'ai', targetChatMessages);
+    }
+}
+
+
+// --- Product Listing & Events ---
+let allProducts = [];
+let showOnlyAvailable = false;
+
+async function renderProducts(keyword = "") {
+  const productGrid = document.getElementById('product-grid');
+  productGrid.innerHTML = `<div class="w-full flex justify-center py-8"><ion-spinner name="dots"></ion-spinner></div>`;
+
+  try {
+    if (!allProducts.length) {
+      // Menggunakan cache sederhana untuk menghindari fetch berulang
+      const res = await fetch("https://as-syariahbordir.github.io/produk.json");
+      const data = await res.json();
+      allProducts = data.produk;
+    }
+
+    const keywordLower = keyword.toLowerCase();
+    const filtered = allProducts.filter(p => {
+      const matchKeyword = p.title.toLowerCase().includes(keywordLower) || (p.description && p.description.toLowerCase().includes(keywordLower));
+      const matchStok = showOnlyAvailable ? p.stok?.toLowerCase() === "tersedia" : true;
+      return matchKeyword && matchStok;
+    });
+
+    productGrid.innerHTML = '';
+
+    if (filtered.length === 0) {
+      productGrid.innerHTML = `<div class="text-center w-full text-gray-500 col-span-full py-8">Produk tidak ditemukan.</div>`;
+      return;
+    }
+
+    filtered.forEach(product => {
+      const card = document.createElement('ion-card');
+      card.className = 'transition duration-300 ease-in-out transform shadow-md';
+      
+      const styleSwatches = (product.styles || [])
+        .map(style => `<button class="w-5 h-5 rounded-full border border-gray-300" title="${style.name}" style="background-color: ${style.color}"></button>`).join('');
+
+      card.innerHTML = `
+        <div class="relative h-48 overflow-hidden">
+          <img src="${product.image}" alt="${product.title}" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/400x300/E0E0E0/333333?text=Gambar+Tidak+Tersedia';">
+          <ion-chip class="absolute top-2 right-2" color="${product.stok === 'Tersedia' ? 'success' : 'danger'}">
+            <ion-label>${product.stok}</ion-label>
+          </ion-chip>
+        </div>
+        <ion-card-header>
+          <ion-card-title class="text-lg">${product.title}</ion-card-title>
+          <ion-card-subtitle class="text-purple-600 font-bold mt-1">Rp ${product.discount}</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="flex gap-2 mb-3 mt-1">${styleSwatches || '<span class="text-xs text-gray-400">Tidak ada variasi warna</span>'}</div>
+          <div class="flex justify-between items-center">
+            <!-- [PERBAIKAN] Tombol ini sekarang memanggil fungsi requestProductDetail -->
+            <ion-button fill="outline" size="small" color="primary" class="ask-ai-btn">
+              <ion-icon name="sparkles-outline" slot="start"></ion-icon>
+              Tanya AI
+            </ion-button>
+            <ion-button size="small" fill="solid" color="primary" class="buy-btn">
+              Beli
+            </ion-button>
+          </div>
+        </ion-card-content>
+      `;
+      
+      // [PERBAIKAN] Event listener lebih efisien, tidak pakai setTimeout
+      card.querySelector('.ask-ai-btn').addEventListener('click', () => {
+        // Tentukan elemen chat yang benar berdasarkan lebar layar
+        const targetChatMessages = window.innerWidth < 768 ? chatMessagesMobile : chatMessagesDesktop;
+
+        // Buka modal mobile jika di tampilan mobile
+        if (window.innerWidth < 768) {
+            mobileChatModal.present();
+        }
+        
+        // Panggil fungsi baru yang sudah dioptimalkan dengan target yang benar
+        requestProductDetail(product, targetChatMessages);
+      });
+      
+      card.querySelector('.buy-btn').addEventListener('click', () => {
+          // Arahkan ke WhatsApp atau halaman checkout
+          window.open(`https://wa.me/6281234567890?text=Saya tertarik beli ${encodeURIComponent(product.title)}`, '_blank');
+      });
+
+      productGrid.appendChild(card);
+    });
+
+  } catch (err) {
+    console.error("Gagal fetch produk:", err);
+    productGrid.innerHTML = `<div class="w-full text-center text-red-600 py-4 col-span-full">❌ Gagal memuat produk.</div>`;
+  }
+}
+
+// --- Initial Setup & Event Listeners ---
+document.addEventListener('DOMContentLoaded', () => {
+  renderProducts();
+});
+
+// Search
+document.getElementById('product-searchbar').addEventListener('ionInput', (e) => renderProducts(e.detail.value));
+
+// Toggle Stok
+document.getElementById('toggle-stok').addEventListener('click', (e) => {
+  showOnlyAvailable = !showOnlyAvailable;
+  e.target.textContent = showOnlyAvailable ? 'Tampilkan Semua Produk' : 'Hanya yang Tersedia';
+  renderProducts(document.getElementById('product-searchbar').value);
+});
+
+// Events Desktop
+chatSendBtnDesktop.addEventListener('click', () => handleChatSubmit(chatInputDesktop, chatSendBtnDesktop, chatMessagesDesktop));
+chatInputDesktop.addEventListener('keypress', e => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    handleChatSubmit(chatInputDesktop, chatSendBtnDesktop, chatMessagesDesktop);
+  }
+});
+
+// Events Mobile
+openMobileChatBtn.addEventListener('click', () => mobileChatModal.present());
+chatSendBtnMobile.addEventListener('click', () => handleChatSubmit(chatInputMobile, chatSendBtnMobile, chatMessagesMobile));
+chatInputMobile.addEventListener('keypress', e => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    handleChatSubmit(chatInputMobile, chatSendBtnMobile, chatMessagesMobile);
+  }
+});
+</script>
+

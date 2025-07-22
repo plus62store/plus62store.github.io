@@ -1,0 +1,9 @@
+{% assign items = site.products | where: "layout", "product" %}
+<script>
+  const productList = [
+    {% for item in items %}
+      "{{ item.title | escape }}"{% unless forloop.last %},{% endunless %}
+    {% endfor %}
+  ];
+  window.productContext = { productList };
+</script>
