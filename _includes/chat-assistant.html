@@ -130,7 +130,7 @@ function appendProductCard(product, targetChatMessages) {
           </div>
           <p class="text-xs font-medium ${product.stok?.toLowerCase() === 'tersedia' ? 'text-green-600' : 'text-red-600'}">${product.stok || 'Stok tidak diketahui'}</p>
           <!-- [PENYESUAIAN] Tombol CTA dibuat lebih jelas -->
-          <ion-button onclick="handleProductClickFromChat('${encodeURIComponent(JSON.stringify(product))}')" class="text-sm text-white bg-purple-600 hover:bg-purple-700 w-full px-3 py-2 mt-2 rounded-lg font-semibold transition-colors">
+          <ion-button onclick="handleProductClickFromChat('${encodeURIComponent(JSON.stringify(product))}')" color="primary" fill="solid" class="w-full mt-2">
             Lihat Detail & Warna
           </ion-button>
         </div>
@@ -151,7 +151,7 @@ window.handleProductClickFromChat = async function(encodedProduct) {
     newProductDetailModal.id = `product-detail-modal-${product.id || Date.now()}`; // ID unik
     newProductDetailModal.innerHTML = `
         <ion-header>
-            <ion-toolbar>
+            <ion-toolbar class="text-gray-700 px-4">
                 <ion-title>${product.title}</ion-title>
                 <ion-buttons slot="end">
                     <ion-button onclick="document.getElementById('${newProductDetailModal.id}').dismiss()">Tutup</ion-button>
@@ -165,7 +165,7 @@ window.handleProductClickFromChat = async function(encodedProduct) {
             <p class="text-purple-600 text-2xl font-bold mb-4">Rp ${product.discount}</p>
             <p class="text-sm mb-4">${product.description || 'Tidak ada deskripsi rinci untuk produk ini.'}</p>
 
-            ${product.stok ? `<ion-chip color="${product.stok === 'Tersedia' ? 'success' : 'danger'}"><ion-label>${product.stok}</ion-label></ion-chip>` : ''}
+            ${product.stok ? `<ion-chip class="px-4" color="${product.stok === 'Tersedia' ? 'success' : 'danger'}"><ion-label>${product.stok}</ion-label></ion-chip>` : ''}
 
             ${(product.styles && product.styles.length > 0) ? `
                 <div class="mt-4">
