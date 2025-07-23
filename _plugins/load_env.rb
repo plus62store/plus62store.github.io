@@ -10,4 +10,5 @@ Jekyll::Hooks.register :site, :after_init do |site|
   site.config['MIDTRANS_CLIENT_KEY'] = ENV['MIDTRANS_CLIENT_KEY']
   site.config['MIDTRANS_URL'] = ENV['MIDTRANS_URL']
   site.config['GEMINI_API'] = ENV['GEMINI_API']
+  site.config['WEB_ID'] = ENV['WEB_ID']
 end

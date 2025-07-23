@@ -16,12 +16,11 @@
           {% include chat-fab.html %}
             </div>
 
-                <!-- Description Modal -->
-          {% include description-modal.html %}
-
-                <!-- Mobile Chat Modal -->
-          {% include mobile-chat-modal.html %}
         </ion-split-pane>
+        <ion-alert trigger="clear-chat-mobile" header="Alert!"></ion-alert>
+        <ion-toast duration="3000" message="Hello World!"></ion-toast>
+   <small id="footer" class="text-xs text-gray-500">{{site.author}}</small>
+{% include scripts/simpleCart.html %}
     </ion-app>
   </body>
 
