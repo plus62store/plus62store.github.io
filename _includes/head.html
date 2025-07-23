@@ -22,10 +22,14 @@
 
   {% feed_meta %}
 
-    <!-- Ionic CDN -->
-  <script type="module" src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.esm.js"></script>
-  <script nomodule src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ionic/core/css/ionic.bundle.css" />
+    <!-- Ionic v8 -->
+<script type="module" src="{{ '/assets/vendor/@ionic/core/dist/ionic/ionic.esm.js' | relative_url }}"></script>
+<script nomodule src="{{ '/assets/vendor/@ionic/core/dist/ionic/ionic.js' | relative_url }}"></script>
+<link rel="stylesheet" href="{{ '/assets/vendor/@ionic/core/css/ionic.bundle.css' | relative_url }}" />
+<link rel="stylesheet" href="{{ '/assets/vendor/@ionic/ionicons' | relative_url }}" />
+
+<script type="module" src="{{ '/assets/vendor/@ionic/ionicons/dist/ionicons/ionicons.esm.js' | relative_url }}"></script>
+<script nomodule src="{{ '/assets/vendor/@ionic/ionicons/dist/ionicons/ionicons.js' | relative_url }}"></script>
 
   <!-- Google Fonts & Custom Styles -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
