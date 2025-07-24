@@ -18,15 +18,15 @@
 .keranjang-box .simpleCart_items{height: auto;overflow-y:auto;margin-bottom:20px;}
 .keranjang-box .itemRow{overflow:hidden;font-size:12px;line-height:1.5;width:100%;font-weight:700;display:inline-block;}
 .keranjang-box .simpleCart_items::after {content: "";text-align: center;z-index: 0;position: absolute;top: 50px;left: 50%;padding: 10px;transform: translate(-50%,-45%);max-width: 500px;width: 90%;overflow: hidden;margin: auto;}
-.keranjang-box .item-thumb{float:left;}
-.keranjang-box .item-thumb img{width:95px;height:auto;border-radius:.3rem;float:left;margin:0 10px 0 0}
+.keranjang-box .item-thumb{float:left;overflow: hidden;}
+.keranjang-box .item-thumb img{position: relative;width:60px;height:auto;border-radius:.3rem;float:left;margin:0 10px 0 0;z-index: 1;overflow: hidden;}
 .keranjang-box .item-decrement,.item-quantity,.keranjang-box .item-increment{font-size:12px;display:table-cell}
 .keranjang-box .item-berat {display: none;}
 .keranjang-box .item-totalberat {display: none;}
 .keranjang-box .item-name{font-size:13px;display:inline-block}
 .keranjang-box .item-pilihan1,.keranjang-box .item-pilihan2,.keranjang-box .item-varian1,.keranjang-box .item-varian2,.item-total{font-size:10px}
 .keranjang-box .item-pilihan1,.keranjang-box .item-pilihan2{float:left;margin-right:5px}
-.keranjang-box .item-quantity{position: absolute;left: 110px;padding:0 10px;font-size:14px;vertical-align:middle}
+.keranjang-box .item-quantity{position: absolute;left: 75px;padding:0 10px;font-size:14px;vertical-align:middle}.keranjang-box .item-quantity::after{content: "pcs";font-size:10px;position:relative;left:-27px;top:-2px;color:#666;overflow: hidden;}
 .keranjang-box .item-total{color:#ff460c;font-weight:600;font-size:14px}
 .keranjang-box sp.sub-total{display:inline-block;color:#333}
 .keranjang-box .item-remove,.simpleCart_items .item-remove{float:right;display:block;position:relative;}
@@ -50,7 +50,19 @@ span.simpleCart_shipping, span.simpleCart_grandTotal {font-weight: 600;color:#ff
   <div class="keranjang-box simplecart-cart">
     <ion-card class="simpleCart_items" style="box-shadow:none;background:transparent;"></ion-card>
     <div class="harga-total">
-      <span>Grand Total: </span><span class="simpleCart_quantity"></span> items = <span class="simpleCart_total"></span><br/>
+      <span>Grand Total: </span><span class="simpleCart_quantity"></span> items = <span class="simpleCart_grandTotal"></span><br/>
  <ion-text><sub>*Belum Termasuk Ongkir</sub></ion-text>
  </div>
 </div>
+<ion-footer class="ion-no-border ck-btn bg-white p-4">
+  <ion-toolbar class="ion-no-border">
+ <ion-button flex-fill slot="end" class="close-keranjang" onclick="toggleCart()">
+    <ion-icon slot="icon-only" name="bag-check-outline"></ion-icon>
+ </ion-button>
+  </ion-toolbar>
+ </ion-footer>
+ <script>
+  function toggleCart() {
+    window.location.href = "/checkout";
+  }
+</script>

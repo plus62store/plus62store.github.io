@@ -1,16 +1,36 @@
-                        <div class="flex-1 overflow-y-auto">
-                            <div class="max-w-7xl p-4 mx-auto">
-                                <div class="flex gap-3 flex-wrap justify-between items-center mb-6">
-                                <div class="flex items-center justify-between md:grid md:items-start gap-2 my-3">
-                                    <h2 class="text-2xl font-bold text-gray-800">Popular Products</h2>
-                                    <p id="toggle-stok" class="cursor-pointer bg-purple-100 text-purple-800 px-3 py-2.5 rounded-full text-sm">Tampilkan yang tersedia</p>
-                                </div>
-                                    <ion-searchbar id="product-searchbar" placeholder="Search products..." class="w-full md:max-w-xs"></ion-searchbar>
-                                </div>
+    <div class="flex-1 overflow-y-auto">
+        <div class="max-w-7xl p-4 mx-auto">
+            <div class="flex gap-3 flex-wrap justify-between items-center mb-6">
+            <div class="flex items-center justify-between md:grid md:items-start gap-2 my-3">
+                <h2 class="text-2xl font-bold text-gray-800">Popular Products</h2>
+                <p id="toggle-stok" class="cursor-pointer bg-purple-100 text-purple-800 px-3 py-2.5 rounded-full text-sm">Tampilkan yang tersedia</p>
+            </div>
+                <ion-searchbar id="product-searchbar" placeholder="Search products..." class="w-full md:max-w-xs"></ion-searchbar>
+            </div>
 
-                                <!-- Product Grid -->
-                                <div class="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 xl:grid-cols-2 gap-4" id="product-grid">
-                                    <!-- Product JS -->
-                                </div>
-                            </div>
+            <!-- Product Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 xl:grid-cols-2 gap-4" id="product-grid">
+                <!-- Product JS (Templating Jekyll) -->
+                {% for product in site.data.products.product %}
+                <ion-card class="transition duration-300 ease-in-out transform shadow-md" data-product="{{ product | jsonify | uri_escape }}">
+                    <div class="relative h-68 overflow-hidden">
+                        <img src="{{ product.image }}" alt="{{ product.title }}" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='https:\//placehold.co/400x300/E0E0E0/333333?text=Gambar+Tidak+Tersedia';">
+                    </div>
+                    <ion-card-header class="p-4">
+                        <ion-card-title class="text-lg">{{ product.title }}</ion-card-title>
+                        <ion-card-subtitle class="text-purple-600 font-bold mt-1">Rp {{ product.discount }}</ion-card-subtitle>
+                    </ion-card-header>
+                    <ion-card-content>
+                        <div class="flex justify-end-safe items-center">
+                            <ion-button fill="outline" size="small" color="primary" class="ask-ai-btn">
+                                <ion-icon name="sparkles-outline" slot="start"></ion-icon>
+                                Tanya AI
+                            </ion-button>
                         </div>
+                    </ion-card-content>
+                </ion-card>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
