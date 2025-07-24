@@ -351,23 +351,39 @@ function appendMessage(text, sender, targetChatMessages, isHistorical = false) {
   wrapper.className = `flex items-start mb-4 ${sender === 'user' ? 'justify-end' : ''}`;
 
   let contentHtml = '';
-  // [NEW] Jika pengirim adalah AI, kita cek apakah ada JSON di dalam teks
+  let finalMessageText = String(text); // Default: use original text
+
+  // Jika pengirim adalah AI, kita cek apakah ada JSON di dalam teks
   if (sender === 'ai') {
       const { parsed, remaining } = findJsonInText(String(text));
-      // Jika ada JSON aksi 'viewProductDetails' atau JSON produk (array), itu akan ditangani oleh processAiCartAction
-      // atau appendProductCard secara terpisah, jadi kita hanya perlu menampilkan 'remaining' teksnya.
-      // Jika tidak ada JSON, atau JSON-nya sudah diproses, baru kita parse sisanya dengan Marked.
-      const textToRender = remaining || String(text); // Use remaining text, or original if no JSON found
 
-      // Only parse with marked if it's AI text and not an empty string after JSON extraction
-      if (textToRender.trim().length > 0) {
-          contentHtml = DOMPurify.sanitize(marked.parse(textToRender));
+      if (parsed && typeof parsed === 'object' && parsed.action === 'viewProductDetails' && parsed.product) {
+          // Jika ada JSON aksi 'viewProductDetails', tampilkan kartu produk
+          appendProductCard(parsed.product, targetChatMessages);
+          finalMessageText = remaining; // Teks yang tersisa setelah JSON diekstraksi
+      } else if (parsed && Array.isArray(parsed)) {
+          // Jika ada JSON array (hasil pencarian produk), tampilkan kartu produk
+          parsed.forEach(prod => appendProductCard(prod, targetChatMessages));
+          finalMessageText = remaining; // Teks yang tersisa setelah JSON diekstraksi
+      } else if (parsed && typeof parsed === 'object' && parsed.action) {
+          // Untuk aksi lain (addToCart, dll.), proses aksinya
+          processAiCartAction(parsed, targetChatMessages);
+          finalMessageText = remaining; // Teks yang tersisa setelah JSON diekstraksi
       } else {
-          contentHtml = ''; // No text to display after JSON extraction
+          finalMessageText = String(text); // Jika tidak ada JSON yang dikenali, gunakan teks asli
+      }
+  }
+
+  // Hanya parse dengan marked jika finalMessageText bukan string kosong setelah ekstraksi JSON
+  // dan ini adalah pesan AI, atau jika ini adalah pesan pengguna.
+  if (finalMessageText.trim().length > 0) {
+      if (sender === 'ai') {
+          contentHtml = DOMPurify.sanitize(marked.parse(finalMessageText));
+      } else {
+          contentHtml = `<p class="text-sm">${DOMPurify.sanitize(finalMessageText)}</p>`;
       }
   } else {
-      // Untuk user, langsung sanitasi dan bungkus di paragraf
-      contentHtml = `<p class="text-sm">${DOMPurify.sanitize(text)}</p>`;
+      contentHtml = ''; // Tidak ada teks untuk ditampilkan
   }
 
   // Jika tidak ada konten HTML yang dihasilkan (misalnya, jika pesan AI hanya berisi JSON dan tidak ada teks lain),
