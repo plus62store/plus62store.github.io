@@ -302,7 +302,6 @@ const chatInputMobile = document.getElementById('chat-input-mobile');
 const chatSendBtnMobile = document.getElementById('chat-send-btn-mobile');
 const clearChatMobileBtn = document.getElementById('clear-chat-mobile');
 
-// Elements for real-time status
 const aiActiveTimeElement = document.getElementById('ai-active-time');
 const aiOnlineIndicatorElement = document.getElementById('ai-online-indicator');
 
@@ -336,6 +335,7 @@ function findJsonInText(text) {
 // --- Core Chat Logic ---
 /**
  * Menampilkan pesan di jendela chat.
+ * [MODIFIED] Menganalisis teks untuk JSON sebelum memparsing Markdown
  * @param {string} text - Isi pesan.
  * @param {'user' | 'ai'} sender - Pengirim pesan.
  * @param {HTMLElement} targetChatMessages - Elemen kontainer chat.
@@ -350,22 +350,43 @@ function appendMessage(text, sender, targetChatMessages, isHistorical = false) {
   const wrapper = document.createElement('div');
   wrapper.className = `flex items-start mb-4 ${sender === 'user' ? 'justify-end' : ''}`;
 
-  const parsedText = marked.parse(String(text));
-  const content = (sender === 'ai')
-    ? DOMPurify.sanitize(parsedText)
-    : `<p class="text-sm">${DOMPurify.sanitize(text)}</p>`;
+  let contentHtml = '';
+  // [NEW] Jika pengirim adalah AI, kita cek apakah ada JSON di dalam teks
+  if (sender === 'ai') {
+      const { parsed, remaining } = findJsonInText(String(text));
+      // Jika ada JSON aksi 'viewProductDetails' atau JSON produk (array), itu akan ditangani oleh processAiCartAction
+      // atau appendProductCard secara terpisah, jadi kita hanya perlu menampilkan 'remaining' teksnya.
+      // Jika tidak ada JSON, atau JSON-nya sudah diproses, baru kita parse sisanya dengan Marked.
+      const textToRender = remaining || String(text); // Use remaining text, or original if no JSON found
+
+      // Only parse with marked if it's AI text and not an empty string after JSON extraction
+      if (textToRender.trim().length > 0) {
+          contentHtml = DOMPurify.sanitize(marked.parse(textToRender));
+      } else {
+          contentHtml = ''; // No text to display after JSON extraction
+      }
+  } else {
+      // Untuk user, langsung sanitasi dan bungkus di paragraf
+      contentHtml = `<p class="text-sm">${DOMPurify.sanitize(text)}</p>`;
+  }
+
+  // Jika tidak ada konten HTML yang dihasilkan (misalnya, jika pesan AI hanya berisi JSON dan tidak ada teks lain),
+  // jangan tambahkan wrapper kosong.
+  if (contentHtml.trim() === '') {
+      return;
+  }
 
   if (sender === 'ai') {
     wrapper.innerHTML = `
       <img src="https://lyra-ai-nine.vercel.app/logo.png" alt="LYRA" class="h-8 w-8 rounded-full mt-1 flex-shrink-0">
       <div class="ml-3 max-w-sm">
-        <div class="p-3 rounded-lg chat-bubble-ai text-sm bg-white shadow">${content}</div>
+        <div class="p-3 rounded-lg chat-bubble-ai text-sm bg-white shadow">${contentHtml}</div>
       </div>
     `;
   } else {
     wrapper.innerHTML = `
       <div class="mr-3 max-w-sm">
-        <div class="p-3 rounded-lg chat-bubble-user text-sm bg-purple-100">${content}</div>
+        <div class="p-3 rounded-lg chat-bubble-user text-sm bg-purple-100">${contentHtml}</div>
       </div>
     `;
   }
@@ -553,7 +574,9 @@ async function callGemini(message, cartItems, userId) {
 
 /**
  * Memproses aksi keranjang yang dikirim oleh AI.
+ * [MODIFIED] Menangani viewProductDetails action.
  * @param {object} actionData - Objek JSON yang berisi detail aksi keranjang.
+ * @param {HTMLElement} targetChatMessages - Elemen kontainer chat untuk menampilkan kartu produk.
  * @returns {boolean} True jika ada redirect, false jika tidak.
  */
 function processAiCartAction(actionData, targetChatMessages) { // Added targetChatMessages parameter
@@ -623,7 +646,7 @@ function processAiCartAction(actionData, targetChatMessages) { // Added targetCh
             }
             break;
         
-        // [NEW] Handle viewProductDetails action
+        // [MODIFIED] Handle viewProductDetails action
         case 'viewProductDetails':
             if (actionData.product) {
                 // Reuse appendProductCard to display the product details visually
@@ -686,6 +709,7 @@ async function handleChatSubmit(chatInput, chatSendBtn, targetChatMessages) {
   if (!redirected && cleanResponse) {
     appendMessage(cleanResponse, 'ai', targetChatMessages);
   } else if (!redirected) { 
+    // Only show fallback if no action was taken and no text was provided
     appendMessage("Maaf, ada masalah dalam merespons. Bisa ulangi?", 'ai', targetChatMessages);
   }
 
@@ -702,6 +726,7 @@ async function requestProductDetail(product, targetChatMessages) {
     appendMessage(`Boleh lihat detail untuk ${product.title}?`, 'user', targetChatMessages);
     showTypingIndicator(targetChatMessages);
 
+    // [MODIFIED] Kirim objek produk lengkap ke AI
     const payloadString = JSON.stringify({
         type: "product_detail",
         data: product
@@ -733,6 +758,7 @@ async function requestProductDetail(product, targetChatMessages) {
     if (!redirected && remaining) {
         appendMessage(remaining, 'ai', targetChatMessages);
     } else if (!redirected) {
+         // Only show fallback if no action was taken and no text was provided
          appendMessage("Maaf, ada masalah dalam merespons detail produk. Bisa ulangi?", 'ai', targetChatMessages);
     }
 }
@@ -752,6 +778,7 @@ function getOrCreateUserId() {
 
 /**
  * Fungsi untuk memuat riwayat chat dari backend (KV).
+ * [MODIFIED] Lebih pintar dalam menampilkan riwayat JSON sebagai kartu produk
  * @param {string} userId - ID pengguna.
  * @param {HTMLElement} desktopChatMessages - Elemen chat desktop.
  * @param {HTMLElement} mobileChatMessages - Elemen chat mobile.
@@ -772,23 +799,36 @@ async function loadChatHistory(userId, desktopChatMessages, mobileChatMessages) 
         } else if (data.history && data.history.length > 0) {
             data.history.forEach(entry => {
                 let textToDisplay = entry.text;
-                // [NEW] If it's a viewProductDetails action, try to display as a card
-                if (entry.role === 'ai' && entry.text.includes('"action":"viewProductDetails"')) {
+                let isActionHandled = false;
+
+                // [NEW] Coba parse JSON dari entri riwayat jika itu dari AI
+                if (entry.role === 'ai') {
                     const { parsed, remaining } = findJsonInText(entry.text);
-                    if (parsed && parsed.action === 'viewProductDetails' && parsed.product) {
+                    
+                    if (parsed && typeof parsed === 'object' && parsed.action === 'viewProductDetails' && parsed.product) {
                         appendProductCard(parsed.product, desktopChatMessages); // Display card on desktop
                         appendProductCard(parsed.product, mobileChatMessages);   // Display card on mobile
-                        textToDisplay = remaining; // Display remaining text if any
-                    } else {
+                        textToDisplay = remaining; // Use remaining text for message content
+                        isActionHandled = true;
+                    } else if (parsed && typeof parsed === 'object' && parsed.action) {
+                        // For other actions, just process the action (e.g., addToCart)
+                        // but don't re-display the text that contained the JSON
+                        processAiCartAction(parsed, desktopChatMessages); // Process action (no redirect on load)
                         textToDisplay = remaining;
+                        isActionHandled = true;
+                    } else if (parsed && Array.isArray(parsed)) { // For product search results (arrays)
+                        parsed.forEach(p => appendProductCard(p, desktopChatMessages));
+                        parsed.forEach(p => appendProductCard(p, mobileChatMessages));
+                        textToDisplay = remaining;
+                        isActionHandled = true;
+                    } else {
+                        textToDisplay = remaining; // If no recognizable JSON, just use remaining text
                     }
-                } else if (entry.role === 'ai') {
-                    const { remaining } = findJsonInText(entry.text);
-                    textToDisplay = remaining;
                 }
-                
-                // Only append message if there's actual text content to display
-                if (textToDisplay.trim().length > 0 || (entry.role === 'ai' && !parsed && !remaining)) {
+
+                // Only append message if there's actual text content to display OR if it's a user message
+                // and the AI action wasn't fully displayed as a card/action
+                if (entry.role === 'user' || (textToDisplay && textToDisplay.trim().length > 0) || !isActionHandled) {
                     appendMessage(textToDisplay, entry.role, desktopChatMessages, true);
                     appendMessage(textToDisplay, entry.role, mobileChatMessages, true);
                 }
@@ -834,7 +874,7 @@ async function clearChatHistory(desktopChatMessages, mobileChatMessages) {
             role: 'cancel',
             cssClass: 'secondary',
             handler: () => {
-                alert.remove();
+                alert.dismiss(); // Use dismiss() instead of alert.remove()
             }
         },
         {
@@ -878,7 +918,7 @@ async function clearChatHistory(desktopChatMessages, mobileChatMessages) {
                     await toast.present();
                     toast.onDidDismiss(() => toast.remove());
                 } finally {
-                    alert.remove();
+                    alert.dismiss(); // Use dismiss() instead of alert.remove()
                 }
             },
         },
