@@ -40,6 +40,7 @@ permalink: /checkout
             display: none !important;
         }
     </style>
+ 
         <ion-content class="ion-padding">
             <!-- Loading Spinner (tampil saat memuat, sembunyi setelah status auth diketahui) -->
             <div id="loading-spinner" class="loading-overlay">
@@ -112,14 +113,15 @@ permalink: /checkout
                     </div>
 
                     <ion-button expand="block" type="submit" class="mt-8">Kirim Pesanan & Konfirmasi</ion-button>
-   <small id="footer" class="text-xs text-center mt-5 text-gray-500">{{site.AUTHOR}}</small>
                 </form>
             </div>
         </ion-content>
     </ion-app>
 
+
   {% include scripts/simpleCart.html %}
-    <script type="module">
+
+    <script>
         // DOM Elements
         const loadingSpinner = document.getElementById('loading-spinner');
         const loginSection = document.getElementById('login-section');
@@ -130,13 +132,14 @@ permalink: /checkout
         const cartSummary = document.getElementById('cartSummary');
         const totalPriceElement = document.getElementById('totalPrice');
         const checkoutForm = document.getElementById('checkoutForm');
-        const confirmWhatsappBtn = document.getElementById('confirm-whatsapp-btn'); // ID baru untuk tombol WhatsApp
+        const confirmWhatsappBtn = document.getElementById('confirm-whatsapp-btn');
 
 
-        // Function to handle Google Sign-In
+        // Function to handle Google Sign-In (menggunakan auth dari namespace global)
         async function signInWithGoogle() {
             try {
-                const result = await signInWithPopup(auth, provider);
+                const provider = new firebase.auth.GoogleAuthProvider(); // Menggunakan GoogleAuthProvider dari namespace global
+                const result = await auth.signInWithPopup(provider); // Menggunakan auth instance global
                 console.log('User signed in:', result.user);
                 // Listener onAuthStateChanged akan menangani pembaruan UI
             } catch (error) {
@@ -152,10 +155,10 @@ permalink: /checkout
             }
         }
 
-        // Function to handle Sign Out
+        // Function to handle Sign Out (menggunakan auth dari namespace global)
         async function handleSignOut() {
             try {
-                await signOut(auth);
+                await auth.signOut(); // Menggunakan auth instance global
                 console.log('User signed out.');
                 // Listener onAuthStateChanged akan menangani pembaruan UI
             } catch (error) {
@@ -214,8 +217,8 @@ permalink: /checkout
             confirmWhatsappBtn.href = `https://wa.me/6281234567890?text=${encodeURIComponent(whatsappText)}`;
         }
 
-        // Firebase Auth State Listener
-        onAuthStateChanged(auth, (user) => {
+        // Firebase Auth State Listener (menggunakan auth dari namespace global)
+        auth.onAuthStateChanged((user) => {
             loadingSpinner.classList.add('hidden'); // Sembunyikan spinner loading setelah status auth diketahui
             if (user) {
                 // Pengguna sudah login
@@ -244,11 +247,10 @@ permalink: /checkout
             googleSignInBtn.addEventListener('click', signInWithGoogle);
             logoutBtn.addEventListener('click', handleSignOut);
 
-            checkoutForm.addEventListener('submit', (e) => {
+            checkoutForm.addEventListener('submit', async (e) => { // Make it async to await alert.present()
                 e.preventDefault();
                 
-                // Panggil renderCartSummary() lagi untuk memastikan link WhatsApp diperbarui
-                renderCartSummary();
+                renderCartSummary(); // Panggil lagi untuk memastikan link WhatsApp diperbarui
 
                 const alert = document.createElement('ion-alert');
                 alert.header = 'Pesanan Terkirim!';
@@ -261,7 +263,7 @@ permalink: /checkout
                     }
                 }];
                 document.body.appendChild(alert);
-                alert.present();
+                await alert.present(); // Await the alert to finish presenting
                 alert.onDidDismiss(() => alert.remove());
             });
 
@@ -269,7 +271,7 @@ permalink: /checkout
             checkoutForm.querySelectorAll('ion-input, ion-textarea').forEach(input => {
                 // Menggunakan 'ionChange' untuk komponen Ionic
                 input.addEventListener('ionChange', renderCartSummary);
-                // Fallback untuk input HTML standar
+                // Fallback untuk input HTML standar (walaupun Ionic components biasanya memancarkan ionChange)
                 if (input.tagName === 'INPUT' || input.tagName === 'TEXTAREA') {
                     input.addEventListener('input', renderCartSummary);
                 }
