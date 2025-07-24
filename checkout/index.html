@@ -1,5 +1,302 @@
 ---
-layout: default
+layout: compress
 title: Checkout
 permalink: /checkout
 ---
+
+<!DOCTYPE html>
+<html lang="{{ site.lang | default: page.lang | default: 'id-ID' }}">
+
+  {% include head.html %}
+
+<body class="bg-gray-100 font-sans">
+    <ion-app>
+        <ion-header>
+            <ion-toolbar>
+                <ion-buttons slot="start">
+                    <ion-buttons>
+                        <ion-button href="{{ site.baseurl | absolute_url }}">
+                                <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
+                        </ion-button>
+                </ion-buttons>
+                <ion-title>Checkout</ion-title>
+            </ion-toolbar>
+        </ion-header>
+    <style>
+        /* Gaya tambahan untuk spinner loading */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .hidden {
+            display: none !important;
+        }
+    </style>
+        <ion-content class="ion-padding">
+            <!-- Loading Spinner (tampil saat memuat, sembunyi setelah status auth diketahui) -->
+            <div id="loading-spinner" class="loading-overlay">
+                <ion-spinner name="circles"></ion-spinner>
+            </div>
+
+            <!-- Bagian Login (tampil jika belum login) -->
+            <div id="login-section" class="flex flex-col items-center justify-center h-full text-center p-4 hidden">
+                <h1 class="text-2xl font-bold mb-4">Lanjutkan Checkout</h1>
+                <p class="text-gray-700 mb-6">Silakan login dengan akun Google Anda untuk melanjutkan pesanan.</p>
+                <ion-button id="google-sign-in-btn" expand="block" fill="solid" color="primary" class="max-w-xs">
+                    <ion-icon slot="start" name="logo-google"></ion-icon>
+                    Login dengan Google
+                </ion-button>
+            </div>
+
+            <!-- Bagian Checkout (tampil setelah login) -->
+            <div id="checkout-section" class="hidden">
+                <h1 class="text-2xl font-bold mb-3">Lengkapi Detail Pengiriman</h1>
+                <p class="text-sm text-gray-600 mb-6">Login sebagai: <strong id="user-display-name"></strong> <ion-button id="logout-btn" fill="clear" size="small" color="danger">Logout</ion-button></p>
+
+                <form id="checkoutForm" class="bg-white p-6 rounded-lg shadow-md mb-8">
+                    <ion-item>
+                        <ion-input label="Nama Lengkap" label-placement="floating" placeholder="Nama Anda" required></ion-input>
+                    </ion-item>
+                    <ion-item>
+                        <ion-textarea label="Alamat Lengkap" label-placement="floating" placeholder="Jalan, Nomor Rumah, RT/RW, Kelurahan, Kecamatan, Kota, Provinsi, Kode Pos" rows="4" required></ion-textarea>
+                    </ion-item>
+                    <ion-item>
+                        <ion-input type="tel" label="Nomor Telepon (WhatsApp)" label-placement="floating" placeholder="Contoh: 081234567890" required></ion-input>
+                    </ion-item>
+                    <ion-item>
+                        <ion-input label="Catatan Tambahan (Opsional)" label-placement="floating" placeholder="Misal: Warna cadangan, ukuran, dll."></ion-input>
+                    </ion-item>
+
+                    <h2 class="text-xl font-bold mt-8 mb-4">Ringkasan Pesanan</h2>
+                    <div id="cartSummary" class="mb-6 border rounded-lg p-4 bg-gray-50">
+                        <!-- Ringkasan keranjang akan dimuat di sini oleh JavaScript -->
+                        <p class="text-gray-600">Keranjang kosong. Silakan kembali ke toko untuk berbelanja.</p>
+                    </div>
+                    <div class="flex justify-between items-center text-lg font-semibold mb-6">
+                        <span>Total Belanja:</span>
+                        <span id="totalPrice">Rp 0</span>
+                    </div>
+
+                    <h2 class="text-xl font-bold mt-8 mb-4">Metode Pembayaran</h2>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <p class="text-gray-700 mb-4">Silakan transfer pembayaran ke salah satu rekening berikut:</p>
+                        <ion-list lines="full">
+                            <ion-item>
+                                <ion-label>
+                                    <h3>Bank BCA</h3>
+                                    <p>No. Rek: 123-456-7890</p>
+                                    <p>A.N: As-Syariah Bordir</p>
+                                </ion-label>
+                            </ion-item>
+                            <ion-item>
+                                <ion-label>
+                                    <h3>Bank Mandiri</h3>
+                                    <p>No. Rek: 098-765-4321</p>
+                                    <p>A.N: As-Syariah Bordir</p>
+                                </ion-label>
+                            </ion-item>
+                        </ion-list>
+                        <p class="text-sm text-gray-600 mt-4">Setelah transfer, mohon konfirmasi pembayaran Anda melalui WhatsApp:</p>
+                        <ion-button expand="block" class="mt-4" id="confirm-whatsapp-btn" target="_blank">
+                            Konfirmasi Pembayaran via WhatsApp
+                            <ion-icon slot="end" name="logo-whatsapp"></ion-icon>
+                        </ion-button>
+                    </div>
+
+                    <ion-button expand="block" type="submit" class="mt-8">Kirim Pesanan & Konfirmasi</ion-button>
+   <small id="footer" class="text-xs text-center text-gray-500">{{site.AUTHOR}}</small>
+                </form>
+            </div>
+        </ion-content>
+    </ion-app>
+
+  {% include scripts/simpleCart.html %}
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+
+        // Firebase Configuration (Ganti dengan variabel global dari Jekyll/Environment Anda)
+        // Pastikan variabel ini tersedia di scope global saat halaman dimuat
+        const firebaseConfig = {
+            apiKey: "{{ site.config.FIREBASE_API_KEY }}", // Ganti dengan variabel Jekyll Anda
+            authDomain: "{{ site.config.FIREBASE_AUTH_DOMAIN }}", // Ganti dengan variabel Jekyll Anda
+            projectId: "{{ site.config.FIREBASE_PROJECT_ID }}", // Ganti dengan variabel Jekyll Anda
+            appId: "{{ site.config.FIREBASE_APP_ID }}" // Ganti dengan variabel Jekyll Anda
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+
+        // DOM Elements
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const loginSection = document.getElementById('login-section');
+        const checkoutSection = document.getElementById('checkout-section');
+        const googleSignInBtn = document.getElementById('google-sign-in-btn');
+        const userDisplayName = document.getElementById('user-display-name');
+        const logoutBtn = document.getElementById('logout-btn');
+        const cartSummary = document.getElementById('cartSummary');
+        const totalPriceElement = document.getElementById('totalPrice');
+        const checkoutForm = document.getElementById('checkoutForm');
+        const confirmWhatsappBtn = document.getElementById('confirm-whatsapp-btn'); // ID baru untuk tombol WhatsApp
+
+
+        // Function to handle Google Sign-In
+        async function signInWithGoogle() {
+            try {
+                const result = await signInWithPopup(auth, provider);
+                console.log('User signed in:', result.user);
+                // Listener onAuthStateChanged akan menangani pembaruan UI
+            } catch (error) {
+                console.error('Error signing in with Google:', error);
+                const errorMessage = error.message;
+                const errorAlert = document.createElement('ion-alert');
+                errorAlert.header = 'Login Gagal';
+                errorAlert.message = `Terjadi kesalahan saat login: ${errorMessage}`;
+                errorAlert.buttons = ['OK'];
+                document.body.appendChild(errorAlert);
+                errorAlert.present();
+                errorAlert.onDidDismiss(() => errorAlert.remove());
+            }
+        }
+
+        // Function to handle Sign Out
+        async function handleSignOut() {
+            try {
+                await signOut(auth);
+                console.log('User signed out.');
+                // Listener onAuthStateChanged akan menangani pembaruan UI
+            } catch (error) {
+                console.error('Error signing out:', error);
+                const errorMessage = error.message;
+                const errorAlert = document.createElement('ion-alert');
+                errorAlert.header = 'Logout Gagal';
+                errorAlert.message = `Terjadi kesalahan saat logout: ${errorMessage}`;
+                errorAlert.buttons = ['OK'];
+                document.body.appendChild(errorAlert);
+                errorAlert.present();
+                errorAlert.onDidDismiss(() => errorAlert.remove());
+            }
+        }
+
+        // Render Cart Summary
+        function renderCartSummary() {
+            // Pastikan simpleCart sudah dimuat dan siap
+            if (typeof simpleCart === 'undefined') {
+                console.error("simpleCart is not defined. Make sure simpleCart.min.js is loaded.");
+                return;
+            }
+
+            if (simpleCart.items().length === 0) {
+                cartSummary.innerHTML = '<p class="text-gray-600">Keranjang kosong. Silakan kembali ke toko untuk berbelanja.</p>';
+                totalPriceElement.textContent = 'Rp 0';
+                checkoutForm.querySelector('ion-button[type="submit"]').disabled = true;
+                confirmWhatsappBtn.href = "https://wa.me/6281234567890?text=Halo,%20saya%20punya%20pertanyaan%20tentang%20pesanan.";
+                return;
+            }
+
+            let summaryHtml = '<ion-list lines="full">';
+            simpleCart.items().forEach(item => {
+                summaryHtml += `
+                    <ion-item>
+                        <ion-label>
+                            <h3>${item.get('name')}</h3>
+                            <p>${item.quantity()} x Rp ${item.price()}</p>
+                        </ion-label>
+                        <ion-note slot="end">Rp ${simpleCart.toCurrency(item.quantity() * item.price())}</ion-note>
+                    </ion-item>
+                `;
+            });
+            summaryHtml += '</ion-list>';
+            cartSummary.innerHTML = summaryHtml;
+            totalPriceElement.textContent = simpleCart.toCurrency(simpleCart.total());
+            checkoutForm.querySelector('ion-button[type="submit"]').disabled = false;
+
+            // Perbarui link WhatsApp dengan detail keranjang dan info form
+            const nameInput = checkoutForm.querySelector('ion-input[label="Nama Lengkap"]').value || '';
+            const addressInput = checkoutForm.querySelector('ion-textarea[label="Alamat Lengkap"]').value || '';
+            const phoneInput = checkoutForm.querySelector('ion-input[label="Nomor Telepon (WhatsApp)"]').value || '';
+
+            let orderDetails = simpleCart.items().map(item => `${item.quantity()}x ${item.get('name')} (Rp ${item.price()})`).join(', ');
+            let whatsappText = `Halo, saya ingin memesan produk berikut:%0A%0A${orderDetails}%0A%0ATotal Pembayaran: ${simpleCart.toCurrency(simpleCart.total())}%0A%0ADetail Pengiriman:%0ANama: ${nameInput}%0AAlamat: ${addressInput}%0ANomor Telepon: ${phoneInput}%0A%0ASaya sudah melakukan pembayaran.`;
+            confirmWhatsappBtn.href = `https://wa.me/6281234567890?text=${encodeURIComponent(whatsappText)}`;
+        }
+
+        // Firebase Auth State Listener
+        onAuthStateChanged(auth, (user) => {
+            loadingSpinner.classList.add('hidden'); // Sembunyikan spinner loading setelah status auth diketahui
+            if (user) {
+                // Pengguna sudah login
+                loginSection.classList.add('hidden');
+                checkoutSection.classList.remove('hidden');
+                userDisplayName.textContent = user.displayName || user.email;
+
+                // Muat data simpleCart dan render ringkasan
+                simpleCart.load(); // Memastikan simpleCart membaca dari localStorage
+                renderCartSummary();
+                // Bind event listener simpleCart agar summary selalu update jika ada perubahan
+                simpleCart.bind('afterUpdate', renderCartSummary); 
+            } else {
+                // Pengguna belum login
+                loginSection.classList.remove('hidden');
+                checkoutSection.classList.add('hidden');
+                userDisplayName.textContent = '';
+                // Pastikan simpleCart juga dimuat di sini jika pengguna logout dan ingin melihat keranjang kosong
+                simpleCart.load(); 
+                renderCartSummary(); // Tampilkan keranjang kosong
+            }
+        });
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            googleSignInBtn.addEventListener('click', signInWithGoogle);
+            logoutBtn.addEventListener('click', handleSignOut);
+
+            checkoutForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                // Panggil renderCartSummary() lagi untuk memastikan link WhatsApp diperbarui
+                renderCartSummary();
+
+                const alert = document.createElement('ion-alert');
+                alert.header = 'Pesanan Terkirim!';
+                alert.message = 'Terima kasih atas pesanan Anda. Silakan lanjutkan konfirmasi pembayaran via WhatsApp.';
+                alert.buttons = [{
+                    text: 'OK',
+                    handler: () => {
+                        simpleCart.empty(); // Kosongkan keranjang setelah pesanan "terkirim"
+                        window.location.href = '/'; // Arahkan kembali ke halaman utama
+                    }
+                }];
+                document.body.appendChild(alert);
+                alert.present();
+                alert.onDidDismiss(() => alert.remove());
+            });
+
+            // Perbarui link WhatsApp secara dinamis saat input form berubah
+            checkoutForm.querySelectorAll('ion-input, ion-textarea').forEach(input => {
+                // Menggunakan 'ionChange' untuk komponen Ionic
+                input.addEventListener('ionChange', renderCartSummary);
+                // Fallback untuk input HTML standar
+                if (input.tagName === 'INPUT' || input.tagName === 'TEXTAREA') {
+                    input.addEventListener('input', renderCartSummary);
+                }
+            });
+
+            // Muat simpleCart saat DOMContentLoaded untuk memastikan datanya ada
+            simpleCart.load();
+        });
+    </script>
+</body>
+</html>
+

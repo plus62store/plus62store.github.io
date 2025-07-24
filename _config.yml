@@ -1,12 +1,12 @@
 # Welcome to Jekyll!
-# port: 8800
+port: 8800
 
 # Site settings
 title: Plus62 Store
 author: "<%= ENV['AUTHOR'] %>"
 description: > # this means to ignore newlines until "baseurl:"
   Toko Online AI commerce - Plus62 Store
-logo: https://plus62store.github.io/assets/images/logo/plus62.webp
+logo: /assets/images/icon_x512.png
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site
 
@@ -38,3 +38,8 @@ plugins:
   - dotenv
 
 plugins_dir: _plugins
+
+compress_html:
+  clippings: all
+  ignore:
+    envs: development
