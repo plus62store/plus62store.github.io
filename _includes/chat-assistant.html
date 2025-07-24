@@ -80,7 +80,7 @@ const chatInputMobile = document.getElementById('chat-input-mobile');
 const chatSendBtnMobile = document.getElementById('chat-send-btn-mobile');
 const clearChatMobileBtn = document.getElementById('clear-chat-mobile');
 
-// NEW: Elements for real-time status
+// Elements for real-time status
 const aiActiveTimeElement = document.getElementById('ai-active-time');
 const aiOnlineIndicatorElement = document.getElementById('ai-online-indicator');
 
@@ -149,24 +149,21 @@ function appendMessage(text, sender, targetChatMessages, isHistorical = false) {
   }
 
   targetChatMessages.appendChild(wrapper);
+
   if (!isHistorical) {
-      // NEW: Periksa apakah ini modal chat mobile dan gulirkan ion-content
-      if (targetChatMessages === chatMessagesMobile) {
-          // Cari elemen ion-content di dalam modal chat mobile
-          const ionContentEl = mobileChatModal.querySelector('ion-content');
-          if (ionContentEl && typeof ionContentEl.getScrollElement === 'function') {
-              ionContentEl.getScrollElement().then(scrollEl => {
-                  scrollEl.scrollTop = scrollEl.scrollHeight;
-              }).catch(e => console.error("Error getting scroll element for mobile chat:", e));
-          } else {
-              // Fallback jika ion-content tidak ditemukan atau getScrollElement tidak tersedia
-              targetChatMessages.scrollTop = targetChatMessages.scrollHeight;
-          }
-      } else {
-          // Untuk pesan chat desktop atau scroller div standar lainnya
-          targetChatMessages.scrollTop = targetChatMessages.scrollHeight;
-      }
+    if (targetChatMessages === chatMessagesMobile) {
+        const ionContentEl = mobileChatModal.querySelector('ion-content');
+        if (ionContentEl && typeof ionContentEl.getScrollElement === 'function') {
+            ionContentEl.getScrollElement().then(scrollEl => {
+                scrollEl.scrollTop = scrollEl.scrollHeight;
+            }).catch(e => console.error("Error getting scroll element for mobile chat:", e));
+        } else {
+            targetChatMessages.scrollTop = targetChatMessages.scrollHeight;
+        }
+    } else {
+        targetChatMessages.scrollTop = targetChatMessages.scrollHeight;
     }
+  }
 }
 
 /**
@@ -183,7 +180,7 @@ function appendProductCard(product, targetChatMessages) {
     <div class="ml-3">
       <div class="bg-gray-100 p-3 rounded-lg max-w-xs shadow-md border border-gray-200">
         <div class="space-y-2">
-          <img src="${product.image}" alt="${product.title}" class="w-full h-auto rounded-md" onerror="this.onerror=null;this.src='https://placehold.co/400x300/E0E0E0/333333?text=Gambar+Error';">
+          <img src="${product.image}" alt="${product.title}" class="w-full h-auto rounded-md" onerror="this.onerror=null;this.src='https://placehold.co/400x300/E0E0E0/333333?text=Gambar+Tidak+Tersedia';">
           <h4 class="font-semibold text-base">${product.title}</h4>
           <div class="text-sm">
             ${product.price ? `<span class="text-gray-500">Harga: <del>Rp ${product.price}</del></span><br>` : ''}
@@ -199,7 +196,18 @@ function appendProductCard(product, targetChatMessages) {
   `;
 
   targetChatMessages.appendChild(wrapper);
-  targetChatMessages.scrollTop = targetChatMessages.scrollHeight;
+  if (targetChatMessages === chatMessagesMobile) {
+      const ionContentEl = mobileChatModal.querySelector('ion-content');
+      if (ionContentEl && typeof ionContentEl.getScrollElement === 'function') {
+          ionContentEl.getScrollElement().then(scrollEl => {
+              scrollEl.scrollTop = scrollEl.scrollHeight;
+          }).catch(e => console.error("Error getting scroll element for mobile product card:", e));
+      } else {
+          targetChatMessages.scrollTop = targetChatMessages.scrollHeight;
+      }
+  } else {
+      targetChatMessages.scrollTop = targetChatMessages.scrollHeight;
+  }
 }
 
 window.handleProductClickFromChat = async function(encodedProduct) {
@@ -264,7 +272,18 @@ function showTypingIndicator(targetChatMessages) {
     </div>
   `;
   targetChatMessages.appendChild(typing);
-  targetChatMessages.scrollTop = targetChatMessages.scrollHeight;
+  if (targetChatMessages === chatMessagesMobile) {
+      const ionContentEl = mobileChatModal.querySelector('ion-content');
+      if (ionContentEl && typeof ionContentEl.getScrollElement === 'function') {
+          ionContentEl.getScrollElement().then(scrollEl => {
+              scrollEl.scrollTop = scrollEl.scrollHeight;
+          }).catch(e => console.error("Error getting scroll element for mobile typing indicator:", e));
+      } else {
+          targetChatMessages.scrollTop = targetChatMessages.scrollHeight;
+      }
+  } else {
+      targetChatMessages.scrollTop = targetChatMessages.scrollHeight;
+  }
 }
 
 function hideTypingIndicator(targetChatMessages) {
@@ -290,10 +309,12 @@ async function callGemini(message, cartItems, userId) {
     const data = await response.json();
 
     if (!response.ok) {
+        if (response.status === 429) {
+            throw new Error(data.error || 'Anda telah mencapai batas chat harian.');
+        }
         throw new Error(data.error || 'Terjadi kesalahan pada server.');
     }
 
-    // NEW: Show online indicator if API call is successful
     if (aiOnlineIndicatorElement) {
         aiOnlineIndicatorElement.classList.remove('hidden');
     }
@@ -301,7 +322,6 @@ async function callGemini(message, cartItems, userId) {
     return data.reply;
   } catch (error) {
     console.error("AI error:", error);
-    // NEW: Hide online indicator if API call fails
     if (aiOnlineIndicatorElement) {
         aiOnlineIndicatorElement.classList.add('hidden');
     }
@@ -314,11 +334,13 @@ async function callGemini(message, cartItems, userId) {
  * @param {object} actionData - Objek JSON yang berisi detail aksi keranjang.
  * @returns {boolean} True jika ada redirect, false jika tidak.
  */
-function processAiCartAction(actionData) {
+function processAiCartAction(actionData, targetChatMessages) { // Added targetChatMessages parameter
     if (typeof simpleCart === 'undefined') {
-        console.error("simpleCart is not defined. Make sure simpleCart.html is loaded.");
+        console.error("simpleCart is not defined. Make sure simpleCart.min.js is loaded.");
         return false;
     }
+
+    let redirected = false;
 
     switch (actionData.action) {
         case 'addToCart':
@@ -373,9 +395,19 @@ function processAiCartAction(actionData) {
         case 'checkout':
             if (actionData.redirectUrl) {
                 window.location.href = actionData.redirectUrl;
-                return true; 
+                redirected = true;
             } else {
                 console.warn("Checkout action: Missing redirect URL.");
+            }
+            break;
+        
+        // [NEW] Handle viewProductDetails action
+        case 'viewProductDetails':
+            if (actionData.product) {
+                // Reuse appendProductCard to display the product details visually
+                appendProductCard(actionData.product, targetChatMessages);
+            } else {
+                console.warn("viewProductDetails action: Missing product data.");
             }
             break;
 
@@ -384,7 +416,7 @@ function processAiCartAction(actionData) {
             break;
     }
     simpleCart.update();
-    return false; 
+    return redirected; 
 }
 
 
@@ -420,11 +452,13 @@ async function handleChatSubmit(chatInput, chatSendBtn, targetChatMessages) {
   const { parsed, remaining: cleanResponse } = findJsonInText(aiResponse);
 
   let redirected = false;
+  // If AI returns an array, it's typically product search results
   if (parsed && Array.isArray(parsed)) {
     parsed.forEach(prod => appendProductCard(prod, targetChatMessages));
   }
+  // If AI returns an object with an action
   else if (parsed && typeof parsed === 'object' && parsed.action) {
-      redirected = processAiCartAction(parsed); 
+      redirected = processAiCartAction(parsed, targetChatMessages); // Pass targetChatMessages
   }
 
   if (!redirected && cleanResponse) {
@@ -472,7 +506,7 @@ async function requestProductDetail(product, targetChatMessages) {
         parsed.forEach(p => appendProductCard(p, targetChatMessages));
     }
     else if (parsed && typeof parsed === 'object' && parsed.action) {
-        redirected = processAiCartAction(parsed);
+        redirected = processAiCartAction(parsed, targetChatMessages); // Pass targetChatMessages
     }
     if (!redirected && remaining) {
         appendMessage(remaining, 'ai', targetChatMessages);
@@ -516,15 +550,38 @@ async function loadChatHistory(userId, desktopChatMessages, mobileChatMessages) 
         } else if (data.history && data.history.length > 0) {
             data.history.forEach(entry => {
                 let textToDisplay = entry.text;
-                if (entry.role === 'ai') {
+                // [NEW] If it's a viewProductDetails action, try to display as a card
+                if (entry.role === 'ai' && entry.text.includes('"action":"viewProductDetails"')) {
+                    const { parsed, remaining } = findJsonInText(entry.text);
+                    if (parsed && parsed.action === 'viewProductDetails' && parsed.product) {
+                        appendProductCard(parsed.product, desktopChatMessages); // Display card on desktop
+                        appendProductCard(parsed.product, mobileChatMessages);   // Display card on mobile
+                        textToDisplay = remaining; // Display remaining text if any
+                    } else {
+                        textToDisplay = remaining;
+                    }
+                } else if (entry.role === 'ai') {
                     const { remaining } = findJsonInText(entry.text);
                     textToDisplay = remaining;
                 }
-                appendMessage(textToDisplay, entry.role, desktopChatMessages, true);
-                appendMessage(textToDisplay, entry.role, mobileChatMessages, true);
+                
+                // Only append message if there's actual text content to display
+                if (textToDisplay.trim().length > 0 || (entry.role === 'ai' && !parsed && !remaining)) {
+                    appendMessage(textToDisplay, entry.role, desktopChatMessages, true);
+                    appendMessage(textToDisplay, entry.role, mobileChatMessages, true);
+                }
             });
-            desktopChatMessages.scrollTop = desktopChatMessages.scrollHeight;
-            mobileChatMessages.scrollTop = mobileChatMessages.scrollHeight;
+            if (desktopChatMessages.scrollHeight > desktopChatMessages.clientHeight) {
+                desktopChatMessages.scrollTop = desktopChatMessages.scrollHeight;
+            }
+            const ionContentMobile = mobileChatModal.querySelector('ion-content');
+            if (ionContentMobile && typeof ionContentMobile.getScrollElement === 'function') {
+                ionContentMobile.getScrollElement().then(scrollEl => {
+                    if (scrollEl.scrollHeight > scrollEl.clientHeight) {
+                        scrollEl.scrollTop = scrollEl.scrollHeight;
+                    }
+                }).catch(e => console.error("Error scrolling mobile chat history:", e));
+            }
             historyLoaded = true;
         }
     } catch (error) {
@@ -546,7 +603,6 @@ async function clearChatHistory(desktopChatMessages, mobileChatMessages) {
         return;
     }
 
-    // Menggunakan document.createElement untuk membuat Ionic Alert secara dinamis
     const alert = document.createElement('ion-alert');
     alert.header = 'Konfirmasi';
     alert.message = 'Apakah Anda yakin ingin menghapus seluruh riwayat chat?';
@@ -609,7 +665,7 @@ async function clearChatHistory(desktopChatMessages, mobileChatMessages) {
     await alert.present();
 }
 
-// --- NEW: Real-time Clock Function ---
+// --- Real-time Clock Function ---
 function updateAiActiveTime() {
     const now = new Date();
     const hours = String(now.getHours()).padStart(2, '0');
@@ -695,7 +751,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   loadChatHistory(currentUserId, chatMessagesDesktop, chatMessagesMobile);
 
-  // NEW: Initialize and update real-time clock
   updateAiActiveTime(); // Initial call
   setInterval(updateAiActiveTime, 1000); // Update every second
 
@@ -706,12 +761,11 @@ document.addEventListener('DOMContentLoaded', () => {
   renderProducts();
 });
 
-
-// modal dissmis
+// Dismiss modal function
 window.dismissModal = (modalId) => {
     const modalToDismiss = document.getElementById(modalId);
-        if (modalToDismiss) {
-        modalToDismiss.dismiss();
+      if (modalToDismiss) {
+      modalToDismiss.dismiss();
     }
 }
 

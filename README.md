@@ -2,6 +2,37 @@
 
 Ini adalah proyek asisten chat AI yang terintegrasi dengan toko online **PLUS62STORE**, dirancang untuk membantu pengguna dalam menjelajahi produk, mengelola keranjang belanja, dan melakukan proses checkout. Asisten ini menggunakan Google Gemini AI untuk memberikan respons yang cerdas dan Cloudflare Workers + KV untuk fungsionalitas backend dan persistensi data.
 
+```bash
+/**
+ * =============================================================================
+ * Cloudflare Worker yang Dioptimalkan untuk Asisten AI Gemini Ramah **LYRA**
+ * =============================================================================
+ *
+ * Peningkatan:
+ * 1.  Kepribadian: Prompt untuk "LYRA" di **plus62store** kini jauh lebih mendetail agar terdengar ceria, ramah, dan membantu.
+ * 2.  Efisiensi: Beralih ke 'gemini-2.5-flash', model cepat dan canggih yang cocok untuk aplikasi AI chat.
+ * 3.  Penanganan Error: Memberikan pesan kesalahan yang lebih ramah pengguna jika terjadi kegagalan.
+ * 4.  Fleksibilitas: Asal CORS dapat dikonfigurasi melalui variabel lingkungan.
+ * 5.  Pembatasan Chat Harian menggunakan Cloudflare KV.
+ * 6.  Peningkatan pemilihan URL gambar untuk AI.
+ * 7.  **BARU** AI memberikan objek produk lebih lengkap untuk aksi 'viewProductDetails'.
+ *
+ */
+
+// =============================================================================
+// HELPER FUNCTIONS
+// =============================================================================
+
+/**
+ * Membangun prompt yang komprehensif untuk asisten AI LYRA.
+ * @param {string} userMessage - Pesan dari pengguna saat ini.
+ * @param {Array<Object>} productData - Data produk yang tersedia.
+ * @param {Array<Object>} cartItems - Item-item yang saat ini ada di keranjang simpleCart *modify.
+ * @param {Array<Object>} fullChatHistory - Seluruh riwayat chat dari KV.
+ * @returns {string} Prompt yang diformat untuk AI.
+ */
+```
+
 ## Fitur Utama
 
 - **Asisten Chat AI Interaktif**: Pengguna dapat berinteraksi dengan AI untuk mendapatkan informasi produk dan bantuan belanja.
