@@ -3,6 +3,7 @@
 
 # Site settings
 title: Plus62 Store
+author: "<%= ENV['AUTHOR'] %>"
 description: > # this means to ignore newlines until "baseurl:"
   Toko Online AI commerce - Plus62 Store
 logo: https://plus62store.github.io/assets/images/logo/plus62.webp
