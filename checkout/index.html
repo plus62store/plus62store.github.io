@@ -15,7 +15,7 @@ permalink: /checkout
             <ion-toolbar>
                 <ion-buttons slot="start">
                     <ion-buttons>
-                        <ion-button href="{{ site.baseurl | absolute_url }}">
+                        <ion-button href="{{ site.baseurl }}/">
                                 <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
                         </ion-button>
                 </ion-buttons>
@@ -112,32 +112,14 @@ permalink: /checkout
                     </div>
 
                     <ion-button expand="block" type="submit" class="mt-8">Kirim Pesanan & Konfirmasi</ion-button>
-   <small id="footer" class="text-xs text-center text-gray-500">{{site.AUTHOR}}</small>
+   <small id="footer" class="text-xs text-center mt-5 text-gray-500">{{site.AUTHOR}}</small>
                 </form>
             </div>
         </ion-content>
     </ion-app>
 
   {% include scripts/simpleCart.html %}
-    <!-- Firebase SDKs -->
     <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-
-        // Firebase Configuration (Ganti dengan variabel global dari Jekyll/Environment Anda)
-        // Pastikan variabel ini tersedia di scope global saat halaman dimuat
-        const firebaseConfig = {
-            apiKey: "{{ site.config.FIREBASE_API_KEY }}", // Ganti dengan variabel Jekyll Anda
-            authDomain: "{{ site.config.FIREBASE_AUTH_DOMAIN }}", // Ganti dengan variabel Jekyll Anda
-            projectId: "{{ site.config.FIREBASE_PROJECT_ID }}", // Ganti dengan variabel Jekyll Anda
-            appId: "{{ site.config.FIREBASE_APP_ID }}" // Ganti dengan variabel Jekyll Anda
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const provider = new GoogleAuthProvider();
-
         // DOM Elements
         const loadingSpinner = document.getElementById('loading-spinner');
         const loginSection = document.getElementById('login-section');
