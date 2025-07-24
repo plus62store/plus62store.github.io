@@ -2,10 +2,10 @@
                             <div class="p-1 border-b border-gray-200 flex-shrink-0">
                                 <div class="flex items-center justify-between">
                                     <img src="https://lyra-ai-nine.vercel.app/logo.png" alt="LYRA" class="rounded-full h-10 mr-2">
-                                    <div>
-                                        <h5 class="font-semibold text-gray-900">L Y Я A Assistant</h5>
-                                            <span id="ai-active-time">🕛️Active --:--</span>
-                                            <span id="ai-online-indicator" class="ml-2 hidden">🟢 Online</span>
+                                    <div class="flex flex-1 flex-col text-sm text-gray-700">
+                                        <span class="font-semibold text-gray-900">L Y Я A Assistant</span>
+                                            <span id="ai-active-time" class="mt-1.5 text-xs">🕛️Active --:--</span>
+                                            <span id="ai-online-indicator" class="mt-1.5 text-xs hidden">🟢 Online</span>
                                     </div>
                                   <ion-buttons>
                                       <ion-button id="clear-chat-desktop" color="danger">
@@ -33,24 +33,30 @@
                         <!-- Mobile Chat Modal (dalam ion-modal) -->
                         <ion-modal id="mobile-chat-modal" class="h-full">
                             <ion-header>
-                                <ion-toolbar class="text-gray-700 px-4">
+                                <ion-toolbar class="text-gray-700">
                                     <ion-buttons slot="start">
                                         <ion-button onclick="dismissModal('mobile-chat-modal')">
-                                            <ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
+                                            <span class="w-2.5 h-2.5 bottom-5 left-0 text-red-600 text-[20px] absolute simpleCart_quantity"></span>
+                                            <ion-icon slot="icon-only" name="storefront-outline"></ion-icon>
                                         </ion-button>
                                     </ion-buttons>
-                                    <ion-title>L Y Я A Assistant</ion-title>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex flex-1 flex-col text-sm text-gray-700">
+                                        <span class="font-semibold text-gray-900">L Y Я A Assistant</span>
+                                            <span id="ai-active-mobile" class="mt-1.5 text-xs">🕛️Active --:--</span>
+                                            <span id="ai-online-mobile" class="mt-1.5 text-xs hidden">🟢 Online</span>
+                                    </div>
                                     <ion-buttons slot="end">
-                                        <!-- NEW: Delete Chat History button for Mobile -->
                                         <ion-button id="clear-chat-mobile" fill="clear" color="danger">
                                             <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
                                         </ion-button>
                                     </ion-buttons>
+                                </div>
                                 </ion-toolbar>
                             </ion-header>
                             <ion-content class="ion-padding bg-gray-50">
                                 <!-- Chat Messages Mobile -->
-                                <div id="chat-messages-mobile" class="h-full flex flex-col space-y-4 py-2 px-1 scrollbar-hide overflow-y-auto">
+                                <div id="chat-messages-mobile" class="relative h-full flex flex-col space-y-4 py-2 px-1 scrollbar-hide overflow-y-auto">
                                     <!-- Pesan akan dimuat secara dinamis oleh JS -->
                                 </div>
                             </ion-content>
@@ -82,7 +88,11 @@ const clearChatMobileBtn = document.getElementById('clear-chat-mobile');
 
 const aiActiveTimeElement = document.getElementById('ai-active-time');
 const aiOnlineIndicatorElement = document.getElementById('ai-online-indicator');
+const aiActiveMobileElement = document.getElementById('ai-active-mobile');
+const aiOnlineMobileElement = document.getElementById('ai-online-mobile');
 
+const PRODUCT_LISTING_URL = "https://plus62store.github.io/products.json";
+const currentApiUrl = "http://localhost:8787"; // Updated to use the new API URL https://gemini.sendaljepit.workers.dev
 
 let currentUserId = null;
 
@@ -313,11 +323,6 @@ function appendProductCard(product, targetChatMessages) {
                   </div>
               </div>
           ` : ''}
-
-          <ion-button expand="block" class="mt-6" href="https://wa.me/6281234567890?text=Saya tertarik beli ${encodeURIComponent(product.title)}" target="_blank">
-              Beli Sekarang via WhatsApp
-              <ion-icon slot="end" name="logo-whatsapp"></ion-icon>
-          </ion-button>
       </ion-content>
   `;
 
@@ -389,7 +394,7 @@ function hideTypingIndicator(targetChatMessages) {
  */
 async function callGemini(message, cartItems, userId) {
   try {
-    const response = await fetch("https://gemini.sendaljepit.workers.dev/ai-assistant", {
+    const response = await fetch(`${currentApiUrl}/ai-assistant`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message: message, cartItems: cartItems, userId: userId })
@@ -406,6 +411,12 @@ async function callGemini(message, cartItems, userId) {
 
     if (aiOnlineIndicatorElement) {
         aiOnlineIndicatorElement.classList.remove('hidden');
+        aiActiveTimeElement.classList.add('hidden');
+    }
+
+    if (aiOnlineMobileElement) {
+        aiOnlineMobileElement.classList.remove('hidden');
+        aiActiveMobileElement.classList.add('hidden');
     }
 
     return data.reply;
@@ -413,6 +424,11 @@ async function callGemini(message, cartItems, userId) {
     console.error("AI error:", error);
     if (aiOnlineIndicatorElement) {
         aiOnlineIndicatorElement.classList.add('hidden');
+        aiActiveTimeElement.classList.remove('hidden');
+    }
+    if (aiOnlineMobileElement) {
+        aiOnlineMobileElement.classList.add('hidden');
+        aiActiveMobileElement.classList.remove('hidden');
     }
     return error.message || "Waduh, koneksiku lagi bermasalah nih. Coba lagi nanti ya! 😔";
   }
@@ -626,7 +642,7 @@ async function loadChatHistory(userId, desktopChatMessages, mobileChatMessages) 
     let historyLoaded = false;
 
     try {
-        const response = await fetch(`https://gemini.sendaljepit.workers.dev/chat-history?userId=${userId}`);
+        const response = await fetch(`${currentApiUrl}/chat-history?userId=${userId}`);
         const data = await response.json();
 
         if (!response.ok) {
@@ -686,7 +702,7 @@ async function clearChatHistory(desktopChatMessages, mobileChatMessages) {
             text: 'Hapus',
             handler: async () => {
                 try {
-                    const response = await fetch(`https://gemini.sendaljepit.workers.dev/chat-history?userId=${currentUserId}`, {
+                    const response = await fetch(`${currentApiUrl}/chat-history?userId=${currentUserId}`, {
                         method: 'DELETE',
                         headers: {
                             'Content-Type': 'application/json'
@@ -738,6 +754,7 @@ function updateAiActiveTime() {
     const hours = String(now.getHours()).padStart(2, '0');
     const minutes = String(now.getMinutes()).padStart(2, '0');
     aiActiveTimeElement.textContent = `🕛️Active ${hours}:${minutes}`;
+    aiActiveMobileElement.textContent = `🕛️Active ${hours}:${minutes}`;
 }
 
 
@@ -751,9 +768,9 @@ async function renderProducts(keyword = "") {
 
   try {
     if (!allProducts.length) {
-      const res = await fetch("https://as-syariahbordir.github.io/produk.json");
+      const res = await fetch(PRODUCT_LISTING_URL);
       const data = await res.json();
-      allProducts = data.produk;
+      allProducts = data.product;
     }
 
     const keywordLower = keyword.toLowerCase();
@@ -783,10 +800,10 @@ async function renderProducts(keyword = "") {
           <ion-card-subtitle class="text-purple-600 font-bold mt-1">Rp ${product.discount}</ion-card-subtitle>
         </ion-card-header>
         <ion-card-content>
-          <div class="flex justify-end-safe items-center">
+          <div class="flex justify-end-safe gap-1 items-center">
             <ion-button fill="outline" size="small" color="primary" class="ask-ai-btn">
               <ion-icon name="sparkles-outline" slot="start"></ion-icon>
-              Tanya AI
+              <ion-label class="ml-2">Tanya AI</ion-label>
             </ion-button>
           </div>
         </ion-card-content>
