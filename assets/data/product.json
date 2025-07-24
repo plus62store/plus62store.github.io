@@ -1,0 +1,31 @@
+---
+layout: none
+permalink: /products.json
+---
+
+{
+  "product": [
+    {% assign items = site.products | where: "layout", "product" %}
+    {% for item in items %}
+      {
+        "title": "{{ item.title | slugify  }}",
+        "url": "{{ item.url }}",
+        "sku": "{{ item.sku }}",
+        "price": "{{ item.price }}",
+        "discount": "{{ item.discount }}",
+        "stok": "{{ item.stok }}",
+        "description": "{{ item.description | escape }}",
+        "image": "{{ item.image }}",
+        "styles": [
+          {% for style in item.styles %}
+            {
+              "name": "{{ style.name }}",
+              "color": "{{ style.color }}",
+              "image_path": "{{ style.image_path }}"
+            }{% unless forloop.last %},{% endunless %}
+          {% endfor %}
+        ]
+      }{% unless forloop.last %},{% endunless %}
+    {% endfor %}
+  ]
+}
