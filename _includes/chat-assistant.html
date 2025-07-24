@@ -89,23 +89,64 @@ let currentUserId = null;
 // --- Utils ---
 /**
  * Mencari dan mem-parsing array JSON atau objek JSON dari dalam sebuah string teks.
+ * Ini mencari blok JSON paling awal yang valid.
  * @param {string} text - Teks respons dari AI.
  * @returns {{parsed: Array|Object|null, remaining: string}} Objek berisi data JSON yang sudah diparsing dan sisa teks.
  */
 function findJsonInText(text) {
-  const jsonRegex = /(\[[^\]]*\]|\{[^}]*\})/;
-  const match = text.match(jsonRegex);
+  if (typeof text !== 'string' || text.length === 0) {
+      return { parsed: null, remaining: String(text || '') };
+  }
 
-  if (match) {
-    const jsonPart = match[0];
+  // Cari posisi kurung kurawal atau kurung siku pertama
+  const firstBrace = text.indexOf('{');
+  const firstBracket = text.indexOf('[');
+
+  let startIndex = -1;
+  let endIndex = -1;
+
+  // Tentukan apakah kita mencari objek atau array, dimulai dari yang pertama ditemukan
+  if (firstBrace !== -1 && (firstBrace < firstBracket || firstBracket === -1)) {
+    startIndex = firstBrace;
+    // Cari kurung kurawal penutup terakhir yang cocok
+    let openBraceCount = 0;
+    for (let i = startIndex; i < text.length; i++) {
+        if (text[i] === '{') openBraceCount++;
+        else if (text[i] === '}') openBraceCount--;
+        if (openBraceCount === 0 && text[i] === '}') {
+            endIndex = i;
+            break;
+        }
+    }
+  } else if (firstBracket !== -1) {
+    startIndex = firstBracket;
+    // Cari kurung siku penutup terakhir yang cocok
+    let openBracketCount = 0;
+    for (let i = startIndex; i < text.length; i++) {
+        if (text[i] === '[') openBracketCount++;
+        else if (text[i] === ']') openBracketCount--;
+        if (openBracketCount === 0 && text[i] === ']') {
+            endIndex = i;
+            break;
+        }
+    }
+  }
+
+  // Jika JSON ditemukan dan kurung penutup cocok
+  if (startIndex !== -1 && endIndex !== -1 && endIndex > startIndex) {
+    const jsonPart = text.substring(startIndex, endIndex + 1);
     try {
       const parsed = JSON.parse(jsonPart);
-      const remaining = text.replace(jsonPart, '').trim();
+      // Buat 'remaining' dengan menggabungkan bagian sebelum dan setelah JSON
+      const remaining = (text.substring(0, startIndex).trim() + ' ' + text.substring(endIndex + 1).trim()).trim();
       return { parsed, remaining };
     } catch (e) {
       console.warn("Gagal parsing JSON dari respons AI:", e);
+      // Jika parsing gagal, perlakukan sebagai teks biasa
+      return { parsed: null, remaining: text };
     }
   }
+  // Jika tidak ada JSON yang ditemukan atau formatnya tidak valid
   return { parsed: null, remaining: text };
 }
 
@@ -113,7 +154,6 @@ function findJsonInText(text) {
 // --- Core Chat Logic ---
 /**
  * Menampilkan pesan di jendela chat.
- * [MODIFIED] Menganalisis teks untuk JSON sebelum memparsing Markdown
  * @param {string} text - Isi pesan.
  * @param {'user' | 'ai'} sender - Pengirim pesan.
  * @param {HTMLElement} targetChatMessages - Elemen kontainer chat.
@@ -129,31 +169,40 @@ function appendMessage(text, sender, targetChatMessages, isHistorical = false) {
   wrapper.className = `flex items-start mb-4 ${sender === 'user' ? 'justify-end' : ''}`;
 
   let contentHtml = '';
-  let finalMessageText = String(text); // Default: use original text
+  let finalMessageText = String(text); // Default: gunakan teks asli
 
-  // Jika pengirim adalah AI, kita cek apakah ada JSON di dalam teks
+  // Jika pengirim adalah AI, kita coba ekstrak JSON dan proses aksinya
   if (sender === 'ai') {
-      const { parsed, remaining } = findJsonInText(String(text));
+      const { parsed, remaining } = findJsonInText(finalMessageText); // Gunakan finalMessageText untuk mencari JSON
 
-      if (parsed && typeof parsed === 'object' && parsed.action === 'viewProductDetails' && parsed.product) {
-          // Jika ada JSON aksi 'viewProductDetails', tampilkan kartu produk
-          appendProductCard(parsed.product, targetChatMessages);
-          finalMessageText = remaining; // Teks yang tersisa setelah JSON diekstraksi
-      } else if (parsed && Array.isArray(parsed)) {
-          // Jika ada JSON array (hasil pencarian produk), tampilkan kartu produk
-          parsed.forEach(prod => appendProductCard(prod, targetChatMessages));
-          finalMessageText = remaining; // Teks yang tersisa setelah JSON diekstraksi
-      } else if (parsed && typeof parsed === 'object' && parsed.action) {
-          // Untuk aksi lain (addToCart, dll.), proses aksinya
-          processAiCartAction(parsed, targetChatMessages);
-          finalMessageText = remaining; // Teks yang tersisa setelah JSON diekstraksi
-      } else {
-          finalMessageText = String(text); // Jika tidak ada JSON yang dikenali, gunakan teks asli
+      if (parsed) { // Jika ada JSON yang berhasil diparse
+          let actionHandledByCard = false;
+
+          // Cek jika ini adalah aksi yang harus ditampilkan sebagai kartu produk
+          if (typeof parsed === 'object' && parsed.action === 'viewProductDetails' && parsed.product) {
+              appendProductCard(parsed.product, targetChatMessages);
+              actionHandledByCard = true;
+          } else if (Array.isArray(parsed)) { // Jika ini adalah array produk (misal dari hasil search)
+              parsed.forEach(prod => appendProductCard(prod, targetChatMessages));
+              actionHandledByCard = true;
+          } else if (typeof parsed === 'object' && parsed.action) {
+              // Untuk aksi lain, proses saja (misal addToCart, emptyCart, checkout)
+              // tanpa menampilkan kartu baru di sini (akan ditangani di fungsi sendiri)
+              processAiCartAction(parsed, targetChatMessages); // Pass targetChatMessages for potential redirect
+          }
+
+          finalMessageText = remaining; // Sisa teks setelah JSON dihapus
+          
+          // Jika aksi sudah ditangani sebagai kartu atau diproses, dan tidak ada teks narasi,
+          // maka tidak perlu menambahkan div pesan teks lagi.
+          if (actionHandledByCard && finalMessageText.trim() === '') {
+              // Jika JSON ditangani oleh kartu DAN tidak ada teks narasi, jangan tampilkan apa-apa
+              return;
+          }
       }
   }
 
-  // Hanya parse dengan marked jika finalMessageText bukan string kosong setelah ekstraksi JSON
-  // dan ini adalah pesan AI, atau jika ini adalah pesan pengguna.
+  // Jika masih ada teks yang perlu ditampilkan (setelah potensi ekstraksi JSON)
   if (finalMessageText.trim().length > 0) {
       if (sender === 'ai') {
           contentHtml = DOMPurify.sanitize(marked.parse(finalMessageText));
@@ -161,12 +210,7 @@ function appendMessage(text, sender, targetChatMessages, isHistorical = false) {
           contentHtml = `<p class="text-sm">${DOMPurify.sanitize(finalMessageText)}</p>`;
       }
   } else {
-      contentHtml = ''; // Tidak ada teks untuk ditampilkan
-  }
-
-  // Jika tidak ada konten HTML yang dihasilkan (misalnya, jika pesan AI hanya berisi JSON dan tidak ada teks lain),
-  // jangan tambahkan wrapper kosong.
-  if (contentHtml.trim() === '') {
+      // Jika finalMessageText kosong setelah semua proses, jangan tampilkan elemen chat
       return;
   }
 
@@ -581,7 +625,7 @@ async function loadChatHistory(userId, desktopChatMessages, mobileChatMessages) 
     desktopChatMessages.innerHTML = '';
     mobileChatMessages.innerHTML = '';
 
-    const defaultWelcomeMessage = "Hai! Saya L Y Я A, asisten AI toko online ini. Tanyakan apa saja tentang produk kami! 🤗";
+    const defaultWelcomeMessage = "Hai! Saya L Y Я A, asisten AI toko online ini. Tanyakan apa saja tentang produk kami! �";
     let historyLoaded = false;
 
     try {
@@ -816,14 +860,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   renderProducts();
 });
-
-// Dismiss modal function
-window.dismissModal = (modalId) => {
-    const modalToDismiss = document.getElementById(modalId);
-      if (modalToDismiss) {
-      modalToDismiss.dismiss();
-    }
-}
+        window.dismissModal = (modalId) => {
+            const modalToDismiss = document.getElementById(modalId);
+            if (modalToDismiss) {
+                modalToDismiss.dismiss();
+            }
+        }
 
 // Search
 document.getElementById('product-searchbar').addEventListener('ionInput', (e) => renderProducts(e.detail.value));
