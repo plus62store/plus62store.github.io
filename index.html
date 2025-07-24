@@ -133,15 +133,15 @@ const MIDTRANS_WORKER_URL = "https://payment.sendaljepit.workers.dev/";
 .keranjang-box .simpleCart_items{height: auto;overflow-y:auto;margin-bottom:20px;}
 .keranjang-box .itemRow{overflow:hidden;font-size:12px;line-height:1.5;width:100%;font-weight:700;display:inline-block;}
 .keranjang-box .simpleCart_items::after {content: "";text-align: center;z-index: 0;position: absolute;top: 50px;left: 50%;padding: 10px;transform: translate(-50%,-45%);max-width: 500px;width: 90%;overflow: hidden;margin: auto;}
-.keranjang-box .item-thumb{float:left;}
-.keranjang-box .item-thumb img{width:95px;height:auto;border-radius:.3rem;float:left;margin:0 10px 0 0}
+.keranjang-box .item-thumb{float:left;overflow: hidden;}
+.keranjang-box .item-thumb img{position: relative;width:60px;height:auto;border-radius:.3rem;float:left;margin:0 10px 0 0;z-index: 1;overflow: hidden;}
 .keranjang-box .item-decrement,.item-quantity,.keranjang-box .item-increment{font-size:12px;display:table-cell}
 .keranjang-box .item-berat {display: none;}
 .keranjang-box .item-totalberat {display: none;}
 .keranjang-box .item-name{font-size:13px;display:inline-block}
 .keranjang-box .item-pilihan1,.keranjang-box .item-pilihan2,.keranjang-box .item-varian1,.keranjang-box .item-varian2,.item-total{font-size:10px}
 .keranjang-box .item-pilihan1,.keranjang-box .item-pilihan2{float:left;margin-right:5px}
-.keranjang-box .item-quantity{position: absolute;left: 110px;padding:0 10px;font-size:14px;vertical-align:middle}
+.keranjang-box .item-quantity{position: absolute;left: 75px;padding:0 10px;font-size:14px;vertical-align:middle}.keranjang-box .item-quantity::after{content: "pcs";font-size:10px;position:relative;left:-27px;top:-2px;color:#666;overflow: hidden;}
 .keranjang-box .item-total{color:#ff460c;font-weight:600;font-size:14px}
 .keranjang-box sp.sub-total{display:inline-block;color:#333}
 .keranjang-box .item-remove,.simpleCart_items .item-remove{float:right;display:block;position:relative;}
@@ -165,10 +165,22 @@ span.simpleCart_shipping, span.simpleCart_grandTotal {font-weight: 600;color:#ff
   <div class="keranjang-box simplecart-cart">
     <ion-card class="simpleCart_items" style="box-shadow:none;background:transparent;"></ion-card>
     <div class="harga-total">
-      <span>Grand Total: </span><span class="simpleCart_quantity"></span> items = <span class="simpleCart_total"></span><br/>
+      <span>Grand Total: </span><span class="simpleCart_quantity"></span> items = <span class="simpleCart_grandTotal"></span><br/>
  <ion-text><sub>*Belum Termasuk Ongkir</sub></ion-text>
  </div>
 </div>
+<ion-footer class="ion-no-border ck-btn bg-white p-4">
+  <ion-toolbar class="ion-no-border">
+ <ion-button flex-fill slot="end" class="close-keranjang" onclick="toggleCart()">
+    <ion-icon slot="icon-only" name="bag-check-outline"></ion-icon>
+ </ion-button>
+  </ion-toolbar>
+ </ion-footer>
+ <script>
+  function toggleCart() {
+    window.location.href = "/checkout";
+  }
+</script>
                         </ion-list>
                     </div>
                 </ion-content>
@@ -203,31 +215,32 @@ span.simpleCart_shipping, span.simpleCart_grandTotal {font-weight: 600;color:#ff
                 <ion-content class="main-content">
                    <div class="relative flex h-full">
                         <!-- Products Section -->
-                                                <div class="flex-1 overflow-y-auto">
-                            <div class="max-w-7xl p-4 mx-auto">
-                                <div class="flex gap-3 flex-wrap justify-between items-center mb-6">
-                                <div class="flex items-center justify-between md:grid md:items-start gap-2 my-3">
-                                    <h2 class="text-2xl font-bold text-gray-800">Popular Products</h2>
-                                    <p id="toggle-stok" class="cursor-pointer bg-purple-100 text-purple-800 px-3 py-2.5 rounded-full text-sm">Tampilkan yang tersedia</p>
-                                </div>
-                                    <ion-searchbar id="product-searchbar" placeholder="Search products..." class="w-full md:max-w-xs"></ion-searchbar>
-                                </div>
+                            <div class="flex-1 overflow-y-auto">
+        <div class="max-w-7xl p-4 mx-auto">
+            <div class="flex gap-3 flex-wrap justify-between items-center mb-6">
+            <div class="flex items-center justify-between md:grid md:items-start gap-2 my-3">
+                <h2 class="text-2xl font-bold text-gray-800">Popular Products</h2>
+                <p id="toggle-stok" class="cursor-pointer bg-purple-100 text-purple-800 px-3 py-2.5 rounded-full text-sm">Tampilkan yang tersedia</p>
+            </div>
+                <ion-searchbar id="product-searchbar" placeholder="Search products..." class="w-full md:max-w-xs"></ion-searchbar>
+            </div>
 
-                                <!-- Product Grid -->
-                                <div class="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 xl:grid-cols-2 gap-4" id="product-grid">
-                                    <!-- Product JS -->
-                                </div>
-                            </div>
-                        </div>
-
+            <!-- Product Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 xl:grid-cols-2 gap-4" id="product-grid">
+                <!-- Product JS (Templating Jekyll) -->
+                
+            </div>
+        </div>
+    </div>
+    
                                               <div id="desktop-chat-panel" class="hidden lg:flex w-96 border-l border-gray-200 bg-white flex-col h-full" >
                             <div class="p-1 border-b border-gray-200 flex-shrink-0">
                                 <div class="flex items-center justify-between">
                                     <img src="https://lyra-ai-nine.vercel.app/logo.png" alt="LYRA" class="rounded-full h-10 mr-2">
-                                    <div>
-                                        <h5 class="font-semibold text-gray-900">L Y Я A Assistant</h5>
-                                            <span id="ai-active-time">🕛️Active --:--</span>
-                                            <span id="ai-online-indicator" class="ml-2 hidden">🟢 Online</span>
+                                    <div class="flex flex-1 flex-col text-sm text-gray-700">
+                                        <span class="font-semibold text-gray-900">L Y Я A Assistant</span>
+                                            <span id="ai-active-time" class="mt-1.5 text-xs">🕛️Active --:--</span>
+                                            <span id="ai-online-indicator" class="mt-1.5 text-xs hidden">🟢 Online</span>
                                     </div>
                                   <ion-buttons>
                                       <ion-button id="clear-chat-desktop" color="danger">
@@ -255,24 +268,30 @@ span.simpleCart_shipping, span.simpleCart_grandTotal {font-weight: 600;color:#ff
                         <!-- Mobile Chat Modal (dalam ion-modal) -->
                         <ion-modal id="mobile-chat-modal" class="h-full">
                             <ion-header>
-                                <ion-toolbar class="text-gray-700 px-4">
+                                <ion-toolbar class="text-gray-700">
                                     <ion-buttons slot="start">
                                         <ion-button onclick="dismissModal('mobile-chat-modal')">
-                                            <ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
+                                            <span class="w-2.5 h-2.5 p-2 bottom-3 flex justify-center items-center left-3 text-gray-200 text-[14px] bg-red-700 rounded-full absolute simpleCart_quantity"></span>
+                                            <ion-icon slot="icon-only" name="storefront-outline"></ion-icon>
                                         </ion-button>
                                     </ion-buttons>
-                                    <ion-title>L Y Я A Assistant</ion-title>
-                                    <ion-buttons slot="end">
-                                        <!-- NEW: Delete Chat History button for Mobile -->
-                                        <ion-button id="clear-chat-mobile" fill="clear" color="danger">
-                                            <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
-                                        </ion-button>
-                                    </ion-buttons>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex flex-1 flex-col text-sm text-gray-700">
+                                            <span class="font-semibold text-gray-900">L Y Я A Assistant</span>
+                                                <span id="ai-active-mobile" class="mt-1.5 text-xs">🕛️Active --:--</span>
+                                                <span id="ai-online-mobile" class="mt-1.5 text-xs hidden">🟢 Online</span>
+                                        </div>
+                                        <ion-buttons slot="end">
+                                            <ion-button id="clear-chat-mobile" fill="clear" color="danger">
+                                                <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+                                            </ion-button>
+                                        </ion-buttons>
+                                    </div>
                                 </ion-toolbar>
                             </ion-header>
                             <ion-content class="ion-padding bg-gray-50">
                                 <!-- Chat Messages Mobile -->
-                                <div id="chat-messages-mobile" class="h-full flex flex-col space-y-4 py-2 px-1 scrollbar-hide overflow-y-auto">
+                                <div id="chat-messages-mobile" class="relative h-full flex flex-col space-y-4 py-2 px-1 scrollbar-hide overflow-y-auto">
                                     <!-- Pesan akan dimuat secara dinamis oleh JS -->
                                 </div>
                             </ion-content>
@@ -304,7 +323,11 @@ const clearChatMobileBtn = document.getElementById('clear-chat-mobile');
 
 const aiActiveTimeElement = document.getElementById('ai-active-time');
 const aiOnlineIndicatorElement = document.getElementById('ai-online-indicator');
+const aiActiveMobileElement = document.getElementById('ai-active-mobile');
+const aiOnlineMobileElement = document.getElementById('ai-online-mobile');
 
+const PRODUCT_LISTING_URL = "https://plus62store.github.io/products.json";
+const currentApiUrl = "https://gemini.sendaljepit.workers.dev"; // Updated to use the new API URL 
 
 let currentUserId = null;
 
@@ -535,11 +558,6 @@ function appendProductCard(product, targetChatMessages) {
                   </div>
               </div>
           ` : ''}
-
-          <ion-button expand="block" class="mt-6" href="https://wa.me/6281234567890?text=Saya tertarik beli ${encodeURIComponent(product.title)}" target="_blank">
-              Beli Sekarang via WhatsApp
-              <ion-icon slot="end" name="logo-whatsapp"></ion-icon>
-          </ion-button>
       </ion-content>
   `;
 
@@ -611,7 +629,7 @@ function hideTypingIndicator(targetChatMessages) {
  */
 async function callGemini(message, cartItems, userId) {
   try {
-    const response = await fetch("https://gemini.sendaljepit.workers.dev/ai-assistant", {
+    const response = await fetch(`${currentApiUrl}/ai-assistant`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message: message, cartItems: cartItems, userId: userId })
@@ -628,6 +646,12 @@ async function callGemini(message, cartItems, userId) {
 
     if (aiOnlineIndicatorElement) {
         aiOnlineIndicatorElement.classList.remove('hidden');
+        aiActiveTimeElement.classList.add('hidden');
+    }
+
+    if (aiOnlineMobileElement) {
+        aiOnlineMobileElement.classList.remove('hidden');
+        aiActiveMobileElement.classList.add('hidden');
     }
 
     return data.reply;
@@ -635,6 +659,11 @@ async function callGemini(message, cartItems, userId) {
     console.error("AI error:", error);
     if (aiOnlineIndicatorElement) {
         aiOnlineIndicatorElement.classList.add('hidden');
+        aiActiveTimeElement.classList.remove('hidden');
+    }
+    if (aiOnlineMobileElement) {
+        aiOnlineMobileElement.classList.add('hidden');
+        aiActiveMobileElement.classList.remove('hidden');
     }
     return error.message || "Waduh, koneksiku lagi bermasalah nih. Coba lagi nanti ya! 😔";
   }
@@ -848,7 +877,7 @@ async function loadChatHistory(userId, desktopChatMessages, mobileChatMessages) 
     let historyLoaded = false;
 
     try {
-        const response = await fetch(`https://gemini.sendaljepit.workers.dev/chat-history?userId=${userId}`);
+        const response = await fetch(`${currentApiUrl}/chat-history?userId=${userId}`);
         const data = await response.json();
 
         if (!response.ok) {
@@ -908,7 +937,7 @@ async function clearChatHistory(desktopChatMessages, mobileChatMessages) {
             text: 'Hapus',
             handler: async () => {
                 try {
-                    const response = await fetch(`https://gemini.sendaljepit.workers.dev/chat-history?userId=${currentUserId}`, {
+                    const response = await fetch(`${currentApiUrl}/chat-history?userId=${currentUserId}`, {
                         method: 'DELETE',
                         headers: {
                             'Content-Type': 'application/json'
@@ -960,6 +989,7 @@ function updateAiActiveTime() {
     const hours = String(now.getHours()).padStart(2, '0');
     const minutes = String(now.getMinutes()).padStart(2, '0');
     aiActiveTimeElement.textContent = `🕛️Active ${hours}:${minutes}`;
+    aiActiveMobileElement.textContent = `🕛️Active ${hours}:${minutes}`;
 }
 
 
@@ -973,9 +1003,9 @@ async function renderProducts(keyword = "") {
 
   try {
     if (!allProducts.length) {
-      const res = await fetch("https://as-syariahbordir.github.io/produk.json");
+      const res = await fetch(PRODUCT_LISTING_URL);
       const data = await res.json();
-      allProducts = data.produk;
+      allProducts = data.product;
     }
 
     const keywordLower = keyword.toLowerCase();
@@ -1005,10 +1035,10 @@ async function renderProducts(keyword = "") {
           <ion-card-subtitle class="text-purple-600 font-bold mt-1">Rp ${product.discount}</ion-card-subtitle>
         </ion-card-header>
         <ion-card-content>
-          <div class="flex justify-end-safe items-center">
+          <div class="flex justify-end-safe gap-1 items-center">
             <ion-button fill="outline" size="small" color="primary" class="ask-ai-btn">
               <ion-icon name="sparkles-outline" slot="start"></ion-icon>
-              Tanya AI
+              <ion-label class="ml-2">Tanya AI</ion-label>
             </ion-button>
           </div>
         </ion-card-content>
@@ -1088,6 +1118,10 @@ chatInputMobile.addEventListener('keypress', e => {
   }
 });
 clearChatMobileBtn.addEventListener('click', () => clearChatHistory(chatMessagesDesktop, chatMessagesMobile));
+</script>
+
+<script nomodule>
+    // Fallback for non-module browsers if needed
 </script>
                    </div>
                 </ion-content>
