@@ -21,7 +21,7 @@ jobs:
       FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
       MIDTRANS_CLIENT_KEY: ${{ secrets.MIDTRANS_CLIENT_KEY }}
       MIDTRANS_URL: ${{ secrets.MIDTRANS_URL }}
-      AUTHOR: ${{ secrets.AUTHOR }}
+      author: ${{ secrets.AUTHOR }}
 
     steps:
       - name: Checkout Repository
