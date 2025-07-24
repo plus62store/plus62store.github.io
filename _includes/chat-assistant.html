@@ -150,10 +150,30 @@ function findJsonInText(text) {
   return { parsed: null, remaining: text };
 }
 
+/**
+ * [NEW] Fungsi pembantu untuk memformat objek produk menjadi teks yang rapi.
+ * Tidak menampilkan gambar atau tombol, hanya teks.
+ * @param {object} product - Objek produk.
+ * @returns {string} Teks terformat dari detail produk.
+ */
+function formatProductAsText(product) {
+    let details = `*${product.title}*\n`;
+    details += `Harga: Rp ${product.discount} ${product.price && product.price !== product.discount ? `(_Harga Normal: Rp ${product.price}_)` : ''}\n`;
+    details += `Stok: ${product.stok}\n`;
+    if (product.description) {
+        details += `Deskripsi: ${product.description}\n`;
+    }
+    if (product.styles && product.styles.length > 0) {
+        const colors = product.styles.map(s => s.name).join(', ');
+        details += `Varian Warna: ${colors}\n`;
+    }
+    // Tidak menyertakan URL gambar di sini, sesuai permintaan
+    return details;
+}
 
-// --- Core Chat Logic ---
 /**
  * Menampilkan pesan di jendela chat.
+ * [MODIFIED] Menganalisis teks untuk JSON sebelum memparsing Markdown
  * @param {string} text - Isi pesan.
  * @param {'user' | 'ai'} sender - Pengirim pesan.
  * @param {HTMLElement} targetChatMessages - Elemen kontainer chat.
@@ -176,28 +196,30 @@ function appendMessage(text, sender, targetChatMessages, isHistorical = false) {
       const { parsed, remaining } = findJsonInText(finalMessageText); // Gunakan finalMessageText untuk mencari JSON
 
       if (parsed) { // Jika ada JSON yang berhasil diparse
-          let actionHandledByCard = false;
+          let actionHandled = false;
 
-          // Cek jika ini adalah aksi yang harus ditampilkan sebagai kartu produk
+          // Cek jika ini adalah aksi yang harus ditampilkan sebagai teks produk
           if (typeof parsed === 'object' && parsed.action === 'viewProductDetails' && parsed.product) {
-              appendProductCard(parsed.product, targetChatMessages);
-              actionHandledByCard = true;
+              finalMessageText = remaining + '\n\n' + formatProductAsText(parsed.product); // Tambahkan detail produk sebagai teks
+              actionHandled = true;
           } else if (Array.isArray(parsed)) { // Jika ini adalah array produk (misal dari hasil search)
-              parsed.forEach(prod => appendProductCard(prod, targetChatMessages));
-              actionHandledByCard = true;
+              const productsAsText = parsed.map(p => formatProductAsText(p)).join('\n\n---\n\n');
+              finalMessageText = remaining + '\n\nBerikut produk yang saya temukan:\n\n' + productsAsText;
+              actionHandled = true;
           } else if (typeof parsed === 'object' && parsed.action) {
-              // Untuk aksi lain, proses saja (misal addToCart, emptyCart, checkout)
-              // tanpa menampilkan kartu baru di sini (akan ditangani di fungsi sendiri)
-              processAiCartAction(parsed, targetChatMessages); // Pass targetChatMessages for potential redirect
+              // Untuk aksi lain (addToCart, emptyCart, checkout), proses saja
+              let redirected = processAiCartAction(parsed, targetChatMessages); // Process action (may redirect)
+              if (redirected) return; // Jika ada redirect, berhenti di sini
+              finalMessageText = remaining; // Teks yang tersisa setelah JSON diproses
+              actionHandled = true; // Aksi diproses, jadi jangan tampilkan JSON mentah
+          } else {
+              finalMessageText = String(text); // Jika tidak ada JSON yang dikenali, gunakan teks asli
           }
 
-          finalMessageText = remaining; // Sisa teks setelah JSON dihapus
-          
-          // Jika aksi sudah ditangani sebagai kartu atau diproses, dan tidak ada teks narasi,
-          // maka tidak perlu menambahkan div pesan teks lagi.
-          if (actionHandledByCard && finalMessageText.trim() === '') {
-              // Jika JSON ditangani oleh kartu DAN tidak ada teks narasi, jangan tampilkan apa-apa
-              return;
+          // Jika aksi sudah ditangani (baik sebagai kartu atau teks), dan teks narasi kosong,
+          // maka ini mencegah penambahan div pesan teks kosong.
+          if (actionHandled && finalMessageText.trim() === '') {
+              return; // Jika JSON ditangani dan tidak ada teks narasi, jangan tampilkan apa-apa
           }
       }
   }
@@ -249,96 +271,82 @@ function appendMessage(text, sender, targetChatMessages, isHistorical = false) {
 
 /**
  * Menampilkan kartu produk di jendela chat.
+ * [NOTE: Fungsi ini sekarang hanya akan dipanggil untuk menampilkan modal detail produk,
+ * bukan lagi untuk menampilkan kartu produk di aliran chat utama.]
  * @param {object} product - Objek produk.
  * @param {HTMLElement} targetChatMessages - Elemen kontainer chat.
  */
 function appendProductCard(product, targetChatMessages) {
-  const wrapper = document.createElement("div");
-  wrapper.className = "flex items-start mb-4";
+  // Fungsi ini sekarang hanya untuk memicu modal detail atau tampilan grid, BUKAN untuk chat bubble.
+  // Jika Anda ingin kartu produk di chat, Anda perlu mengembalikan logika di appendMessage.
+  // Untuk saat ini, fungsi ini hanya dipanggil oleh handleProductClickFromChat (dari tombol "Lihat Detail & Warna" di kartu grid)
+  // dan diubah namanya menjadi openProductDetailModal untuk lebih jelas.
+  console.warn("appendProductCard (now openProductDetailModal) was called. It should only open a modal, not append to chat.");
 
-  wrapper.innerHTML = `
-    <img src="https://lyra-ai-nine.vercel.app/logo.png" alt="LYRA" class="h-8 w-8 rounded-full mt-1 flex-shrink-0">
-    <div class="ml-3">
-      <div class="bg-gray-100 p-3 rounded-lg max-w-xs shadow-md border border-gray-200">
-        <div class="space-y-2">
-          <img src="${product.image}" alt="${product.title}" class="w-full h-auto rounded-md" onerror="this.onerror=null;this.src='https://placehold.co/400x300/E0E0E0/333333?text=Gambar+Tidak+Tersedia';">
-          <h4 class="font-semibold text-base">${product.title}</h4>
-          <div class="text-sm">
-            ${product.price ? `<span class="text-gray-500">Harga: <del>Rp ${product.price}</del></span><br>` : ''}
-            <strong class="text-purple-600 text-lg">Rp ${product.discount}</strong>
-          </div>
-          <p class="text-xs font-medium ${product.stok?.toLowerCase() === 'tersedia' ? 'text-green-600' : 'text-red-600'}">${product.stok || 'Stok tidak diketahui'}</p>
-          <ion-button onclick="handleProductClickFromChat('${encodeURIComponent(JSON.stringify(product))}')" color="primary" fill="solid" class="w-full mt-2">
-            Lihat Detail & Warna
+  const newProductDetailModal = document.createElement('ion-modal');
+  newProductDetailModal.id = `product-detail-modal-${product.id || Date.now()}`;
+  newProductDetailModal.innerHTML = `
+      <ion-header>
+          <ion-toolbar class="text-gray-700 px-4">
+              <ion-title>${product.title}</ion-title>
+              <ion-buttons slot="end">
+                  <ion-button onclick="document.getElementById('${newProductDetailModal.id}').dismiss()">Tutup</ion-button>
+              </ion-buttons>
+          </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+          <img src="${product.image}" alt="${product.title}" class="w-full h-64 object-cover rounded-md mb-4" onerror="this.onerror=null;this.src='https://placehold.co/400x300/E0E0E0/333333?text=Gambar+Tidak+Tersedia';">
+          <h2 class="text-xl font-bold mb-2">${product.title}</h2>
+          ${product.price ? `<p class="text-gray-500 line-through">Harga Awal: Rp ${product.price}</p>` : ''}
+          <p class="text-purple-600 text-2xl font-bold mb-4">Rp ${product.discount}</p>
+          <p class="text-sm mb-4">${product.description || 'Tidak ada deskripsi rinci untuk produk ini.'}</p>
+
+          ${product.stok ? `<ion-chip class="px-4" color="${product.stok === 'Tersedia' ? 'success' : 'danger'}"><ion-label>${product.stok}</ion-label></ion-chip>` : ''}
+
+          ${(product.styles && product.styles.length > 0) ? `
+              <div class="mt-4">
+                  <h3 class="font-semibold text-md mb-2">Pilihan Warna:</h3>
+                  <div class="flex gap-2">
+                      ${product.styles.map(style => `
+                          <span class="w-8 h-8 rounded-full border border-gray-300" title="${style.name}" style="background-color: ${style.color}"></span>
+                      `).join('')}
+                  </div>
+              </div>
+          ` : ''}
+
+          <ion-button expand="block" class="mt-6" href="https://wa.me/6281234567890?text=Saya tertarik beli ${encodeURIComponent(product.title)}" target="_blank">
+              Beli Sekarang via WhatsApp
+              <ion-icon slot="end" name="logo-whatsapp"></ion-icon>
           </ion-button>
-        </div>
-      </div>
-    </div>
+      </ion-content>
   `;
 
-  targetChatMessages.appendChild(wrapper);
-  if (targetChatMessages === chatMessagesMobile) {
-      const ionContentEl = mobileChatModal.querySelector('ion-content');
-      if (ionContentEl && typeof ionContentEl.getScrollElement === 'function') {
-          ionContentEl.getScrollElement().then(scrollEl => {
-              scrollEl.scrollTop = scrollEl.scrollHeight;
-          }).catch(e => console.error("Error getting scroll element for mobile product card:", e));
-      } else {
-          targetChatMessages.scrollTop = targetChatMessages.scrollHeight;
-      }
-  } else {
-      targetChatMessages.scrollTop = targetChatMessages.scrollHeight;
-  }
+  document.body.appendChild(newProductDetailModal);
+  newProductDetailModal.present(); // await removed for non-blocking UI
+  
+  newProductDetailModal.addEventListener('ionModalDidDismiss', () => {
+      newProductDetailModal.remove();
+  });
 }
 
-window.handleProductClickFromChat = async function(encodedProduct) {
-    const product = JSON.parse(decodeURIComponent(encodedProduct));
+// Mengganti nama fungsi ini agar lebih jelas tujuannya: membuka modal.
+window.openProductDetailModal = window.handleProductClickFromChat;
 
-    const newProductDetailModal = document.createElement('ion-modal');
-    newProductDetailModal.id = `product-detail-modal-${product.id || Date.now()}`;
-    newProductDetailModal.innerHTML = `
-        <ion-header>
-            <ion-toolbar class="text-gray-700 px-4">
-                <ion-title>${product.title}</ion-title>
-                <ion-buttons slot="end">
-                    <ion-button onclick="document.getElementById('${newProductDetailModal.id}').dismiss()">Tutup</ion-button>
-                </ion-buttons>
-            </ion-toolbar>
-        </ion-header>
-        <ion-content class="ion-padding">
-            <img src="${product.image}" alt="${product.title}" class="w-full h-64 object-cover rounded-md mb-4" onerror="this.onerror=null;this.src='https://placehold.co/400x300/E0E0E0/333333?text=Gambar+Tidak+Tersedia';">
-            <h2 class="text-xl font-bold mb-2">${product.title}</h2>
-            ${product.price ? `<p class="text-gray-500 line-through">Harga Awal: Rp ${product.price}</p>` : ''}
-            <p class="text-purple-600 text-2xl font-bold mb-4">Rp ${product.discount}</p>
-            <p class="text-sm mb-4">${product.description || 'Tidak ada deskripsi rinci untuk produk ini.'}</p>
-
-            ${product.stok ? `<ion-chip class="px-4" color="${product.stok === 'Tersedia' ? 'success' : 'danger'}"><ion-label>${product.stok}</ion-label></ion-chip>` : ''}
-
-            ${(product.styles && product.styles.length > 0) ? `
-                <div class="mt-4">
-                    <h3 class="font-semibold text-md mb-2">Pilihan Warna:</h3>
-                    <div class="flex gap-2">
-                        ${product.styles.map(style => `
-                            <span class="w-8 h-8 rounded-full border border-gray-300" title="${style.name}" style="background-color: ${style.color}"></span>
-                        `).join('')}
-                    </div>
-                </div>
-            ` : ''}
-
-            <ion-button expand="block" class="mt-6" href="https://wa.me/6281234567890?text=Saya tertarik beli ${encodeURIComponent(product.title)}" target="_blank">
-                Beli Sekarang via WhatsApp
-                <ion-icon slot="end" name="logo-whatsapp"></ion-icon>
-            </ion-button>
-        </ion-content>
-    `;
-
-    document.body.appendChild(newProductDetailModal);
-    await newProductDetailModal.present();
-
-    newProductDetailModal.addEventListener('ionModalDidDismiss', () => {
-        newProductDetailModal.remove();
+// Perbarui event listener untuk tombol "Lihat Detail & Warna" di product grid
+document.addEventListener('DOMContentLoaded', () => {
+    // ... other initializations ...
+    document.querySelectorAll('.ask-ai-btn').forEach(button => {
+        const productData = JSON.parse(decodeURIComponent(button.dataset.product)); // Assume product data is stored in dataset for grid buttons
+        button.addEventListener('click', () => {
+            const targetChatMessages = window.innerWidth < 768 ? chatMessagesMobile : chatMessagesDesktop;
+            if (window.innerWidth < 768) {
+                mobileChatModal.present();
+            }
+            requestProductDetail(productData, targetChatMessages);
+        });
     });
-}
+});
+
 
 function showTypingIndicator(targetChatMessages) {
   const typing = document.createElement('div');
@@ -412,7 +420,7 @@ async function callGemini(message, cartItems, userId) {
 
 /**
  * Memproses aksi keranjang yang dikirim oleh AI.
- * [MODIFIED] Menangani viewProductDetails action.
+ * [MODIFIED] Tidak lagi menampilkan appendProductCard untuk viewProductDetails
  * @param {object} actionData - Objek JSON yang berisi detail aksi keranjang.
  * @param {HTMLElement} targetChatMessages - Elemen kontainer chat untuk menampilkan kartu produk.
  * @returns {boolean} True jika ada redirect, false jika tidak.
@@ -484,12 +492,11 @@ function processAiCartAction(actionData, targetChatMessages) { // Added targetCh
             }
             break;
         
-        // [MODIFIED] Handle viewProductDetails action
+        // [MODIFIED] Tidak lagi memanggil appendProductCard. Logic sudah di appendMessage.
         case 'viewProductDetails':
-            if (actionData.product) {
-                // Reuse appendProductCard to display the product details visually
-                appendProductCard(actionData.product, targetChatMessages);
-            } else {
+            // Logic to display product details as text is now handled directly in appendMessage.
+            // This case only exists to ensure the JSON action is recognized and processed.
+            if (!actionData.product) {
                 console.warn("viewProductDetails action: Missing product data.");
             }
             break;
@@ -532,25 +539,19 @@ async function handleChatSubmit(chatInput, chatSendBtn, targetChatMessages) {
 
   hideTypingIndicator(targetChatMessages);
 
+  // Periksa apakah ada JSON dalam respons AI sebelum memanggil appendMessage
   const { parsed, remaining: cleanResponse } = findJsonInText(aiResponse);
 
-  let redirected = false;
-  // If AI returns an array, it's typically product search results
-  if (parsed && Array.isArray(parsed)) {
-    parsed.forEach(prod => appendProductCard(prod, targetChatMessages));
+  // Jika ada JSON yang berhasil diparse, panggil appendMessage dengan JSON utuh
+  // agar logika di appendMessage bisa memproses aksi dan menampilkan teks sisanya
+  if (parsed) {
+      appendMessage(aiResponse, 'ai', targetChatMessages); // Kirim respons utuh ke appendMessage
+  } else if (cleanResponse) {
+      // Jika tidak ada JSON, atau parsing gagal, tampilkan hanya teks bersih
+      appendMessage(cleanResponse, 'ai', targetChatMessages);
+  } else {
+      appendMessage("Maaf, ada masalah dalam merespons. Bisa ulangi?", 'ai', targetChatMessages);
   }
-  // If AI returns an object with an action
-  else if (parsed && typeof parsed === 'object' && parsed.action) {
-      redirected = processAiCartAction(parsed, targetChatMessages); // Pass targetChatMessages
-  }
-
-  if (!redirected && cleanResponse) {
-    appendMessage(cleanResponse, 'ai', targetChatMessages);
-  } else if (!redirected) { 
-    // Only show fallback if no action was taken and no text was provided
-    appendMessage("Maaf, ada masalah dalam merespons. Bisa ulangi?", 'ai', targetChatMessages);
-  }
-
 
   chatInput.disabled = false;
   chatSendBtn.disabled = false;
@@ -585,18 +586,14 @@ async function requestProductDetail(product, targetChatMessages) {
 
     hideTypingIndicator(targetChatMessages);
 
+    // Periksa apakah ada JSON dalam respons AI sebelum memanggil appendMessage
     const { parsed, remaining } = findJsonInText(aiResponse);
-    let redirected = false;
-    if (parsed && Array.isArray(parsed)) {
-        parsed.forEach(p => appendProductCard(p, targetChatMessages));
-    }
-    else if (parsed && typeof parsed === 'object' && parsed.action) {
-        redirected = processAiCartAction(parsed, targetChatMessages); // Pass targetChatMessages
-    }
-    if (!redirected && remaining) {
+
+    if (parsed) {
+        appendMessage(aiResponse, 'ai', targetChatMessages); // Kirim respons utuh ke appendMessage
+    } else if (remaining) {
         appendMessage(remaining, 'ai', targetChatMessages);
-    } else if (!redirected) {
-         // Only show fallback if no action was taken and no text was provided
+    } else {
          appendMessage("Maaf, ada masalah dalam merespons detail produk. Bisa ulangi?", 'ai', targetChatMessages);
     }
 }
@@ -625,7 +622,7 @@ async function loadChatHistory(userId, desktopChatMessages, mobileChatMessages) 
     desktopChatMessages.innerHTML = '';
     mobileChatMessages.innerHTML = '';
 
-    const defaultWelcomeMessage = "Hai! Saya L Y Я A, asisten AI toko online ini. Tanyakan apa saja tentang produk kami! �";
+    const defaultWelcomeMessage = "Hai! Saya L Y Я A, asisten AI toko online ini. Tanyakan apa saja tentang produk kami! 🤗";
     let historyLoaded = false;
 
     try {
@@ -636,40 +633,10 @@ async function loadChatHistory(userId, desktopChatMessages, mobileChatMessages) 
             console.error("Failed to load chat history:", data.error);
         } else if (data.history && data.history.length > 0) {
             data.history.forEach(entry => {
-                let textToDisplay = entry.text;
-                let isActionHandled = false;
-
-                // [NEW] Coba parse JSON dari entri riwayat jika itu dari AI
-                if (entry.role === 'ai') {
-                    const { parsed, remaining } = findJsonInText(entry.text);
-                    
-                    if (parsed && typeof parsed === 'object' && parsed.action === 'viewProductDetails' && parsed.product) {
-                        appendProductCard(parsed.product, desktopChatMessages); // Display card on desktop
-                        appendProductCard(parsed.product, mobileChatMessages);   // Display card on mobile
-                        textToDisplay = remaining; // Use remaining text for message content
-                        isActionHandled = true;
-                    } else if (parsed && typeof parsed === 'object' && parsed.action) {
-                        // For other actions, just process the action (e.g., addToCart)
-                        // but don't re-display the text that contained the JSON
-                        processAiCartAction(parsed, desktopChatMessages); // Process action (no redirect on load)
-                        textToDisplay = remaining;
-                        isActionHandled = true;
-                    } else if (parsed && Array.isArray(parsed)) { // For product search results (arrays)
-                        parsed.forEach(p => appendProductCard(p, desktopChatMessages));
-                        parsed.forEach(p => appendProductCard(p, mobileChatMessages));
-                        textToDisplay = remaining;
-                        isActionHandled = true;
-                    } else {
-                        textToDisplay = remaining; // If no recognizable JSON, just use remaining text
-                    }
-                }
-
-                // Only append message if there's actual text content to display OR if it's a user message
-                // and the AI action wasn't fully displayed as a card/action
-                if (entry.role === 'user' || (textToDisplay && textToDisplay.trim().length > 0) || !isActionHandled) {
-                    appendMessage(textToDisplay, entry.role, desktopChatMessages, true);
-                    appendMessage(textToDisplay, entry.role, mobileChatMessages, true);
-                }
+                // Untuk riwayat, kita panggil appendMessage dengan teks asli
+                // Biarkan appendMessage menangani pemisahan JSON dan teks, serta tampilan
+                appendMessage(entry.text, entry.role, desktopChatMessages, true);
+                appendMessage(entry.text, entry.role, mobileChatMessages, true);
             });
             if (desktopChatMessages.scrollHeight > desktopChatMessages.clientHeight) {
                 desktopChatMessages.scrollTop = desktopChatMessages.scrollHeight;
@@ -860,12 +827,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   renderProducts();
 });
-        window.dismissModal = (modalId) => {
-            const modalToDismiss = document.getElementById(modalId);
-            if (modalToDismiss) {
-                modalToDismiss.dismiss();
-            }
-        }
+
+// Dismiss modal function
+window.dismissModal = (modalId) => {
+    const modalToDismiss = document.getElementById(modalId);
+        if (modalToDismiss) {
+        modalToDismiss.dismiss();
+    }
+}
 
 // Search
 document.getElementById('product-searchbar').addEventListener('ionInput', (e) => renderProducts(e.detail.value));
