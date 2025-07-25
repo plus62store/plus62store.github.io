@@ -5,7 +5,7 @@
       {
         "title": "Masker 3D Bordir",
         "slug": "masker-3d-bordir",
-        "id": "/product/masker-3d-bodir-3lapis-tasikmalaya",
+        "id": "product-masker-3d-bodir-3lapis-tasikmalaya",
         "category": "",
         "url": "/product/masker-3d-bodir-3lapis-tasikmalaya/",
         "sku": "masker3D",
@@ -77,7 +77,7 @@
       {
         "title": "Masker Bordir Setaman",
         "slug": "masker-bordir-setaman",
-        "id": "/product/masker-bordir-tasik-bunga-setaman",
+        "id": "product-masker-bordir-tasik-bunga-setaman",
         "category": "",
         "url": "/product/masker-bordir-tasik-bunga-setaman/",
         "sku": "setaman",
@@ -143,7 +143,7 @@
       {
         "title": "Masker Bordir Dahlia",
         "slug": "masker-bordir-dahlia",
-        "id": "/product/masker-bordir-tasik-dahlia",
+        "id": "product-masker-bordir-tasik-dahlia",
         "category": "",
         "url": "/product/masker-bordir-tasik-dahlia/",
         "sku": "dahlia",
@@ -203,7 +203,7 @@
       {
         "title": "Masker Bordir Ilalang",
         "slug": "masker-bordir-ilalang",
-        "id": "/product/masker-bordir-tasik-ilalang",
+        "id": "product-masker-bordir-tasik-ilalang",
         "category": "",
         "url": "/product/masker-bordir-tasik-ilalang/",
         "sku": "ilalang",
@@ -263,7 +263,7 @@
       {
         "title": "Masker Bordir Rosse",
         "slug": "masker-bordir-rosse",
-        "id": "/product/masker-bordir-tasik-rosse",
+        "id": "product-masker-bordir-tasik-rosse",
         "category": "",
         "url": "/product/masker-bordir-tasik-rosse/",
         "sku": "rosse",
@@ -323,7 +323,7 @@
       {
         "title": "Masker Bordir sMaya",
         "slug": "masker-bordir-smaya",
-        "id": "/product/masker-bordir-tasik-smaya",
+        "id": "product-masker-bordir-tasik-smaya",
         "category": "",
         "url": "/product/masker-bordir-tasik-smaya/",
         "sku": "smaya",
@@ -389,7 +389,7 @@
       {
         "title": "Masker Bordir Tulip",
         "slug": "masker-bordir-tulip",
-        "id": "/product/masker-bordir-tasik-tulip",
+        "id": "product-masker-bordir-tasik-tulip",
         "category": "",
         "url": "/product/masker-bordir-tasik-tulip/",
         "sku": "tulip",
@@ -455,7 +455,7 @@
       {
         "title": "Masker Bordir Mawar",
         "slug": "masker-bordir-mawar",
-        "id": "/product/masker-bordir-tasikmalaya-mawar",
+        "id": "product-masker-bordir-tasikmalaya-mawar",
         "category": "",
         "url": "/product/masker-bordir-tasikmalaya-mawar/",
         "sku": "mawar",
@@ -521,7 +521,7 @@
       {
         "title": "Masker Bordir Kucing",
         "slug": "masker-bordir-kucing",
-        "id": "/product/masker-bordir-tasikmalaya-motif-kucing",
+        "id": "product-masker-bordir-tasikmalaya-motif-kucing",
         "category": "",
         "url": "/product/masker-bordir-tasikmalaya-motif-kucing/",
         "sku": "bordirkucing",
