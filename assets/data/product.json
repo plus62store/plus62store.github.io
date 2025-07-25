@@ -10,7 +10,7 @@ permalink: /products.json
       {
         "title": "{{ item.title}}",
         "slug": "{{ item.title | slugify }}",
-        "id": "{{ item.id }}",
+        "id": "{{ item.id | slugify }}",
         "category": "{{ item.category }}",
         "url": "{{ item.url }}",
         "sku": "{{ item.sku }}",
