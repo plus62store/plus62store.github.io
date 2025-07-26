@@ -5,19 +5,19 @@
 
   <title>{{ page.title }} | {{site.title}}</title>
 
-  <meta name="description" content="{{ page.excerpt | strip_html | normalize_whitespace | truncate: 155 | escape | default: '{{site.description}}' }}">
+  <meta name="description" content="{{ page.excerpt | strip_html | normalize_whitespace | truncate: 155 | escape | default: {{site.description}} }}">
 
-  <meta name="keywords" content="UI Transformer, AI to Tailwind CSS, konversi desain ke kode, Tailwind CSS AI, L Y Я A, otomatisasi desain, developer tools, web design">
+  <meta name="keywords" content="UI Transformer, AI to OlShop, toko online, JEKYLL AI, L Y Я A, otomatisasi onlineshop, developer tools, web design, jekyll onlineshop">
 
-  <meta property="og:title" content="{{ page.title | default: '{{site.title}}' }}">
-  <meta property="og:description" content="{{ page.excerpt | strip_html | normalize_whitespace | truncate: 160 | escape | default: '{{site.description}}' }}">
+  <meta property="og:title" content="{{ page.title }} | {{ site.title }}">
+  <meta property="og:description" content="{{ page.excerpt | strip_html | normalize_whitespace | truncate: 160 | escape | default: {{site.description}} }}">
   <meta property="og:type" content="website">
   <meta property="og:url" content="{{ page.url | replace:'index.html','' | absolute_url }}">
   <meta property="og:image" content="{{site.url}}{{ '/assets/images/icon_x512.png' | relative_url }}"> <meta property="og:site_name" content="UI Transformer">
 
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="{{ page.title | default: '{{site.title}}' }}">
-  <meta name="twitter:description" content="{{ page.excerpt | strip_html | normalize_whitespace | truncate: 160 | escape | default: '{{site.description}}' }}">
+  <meta name="twitter:title" content="{{ page.title | default: {{site.title}} }}">
+  <meta name="twitter:description" content="{{ page.excerpt | strip_html | normalize_whitespace | truncate: 160 | escape | default: {{site.description}} }}">
   <meta name="twitter:image" content="{{site.url}}{{ '/assets/images/icon_x512.png' | relative_url }}"> <meta name="twitter:creator" content="@namatwitteranda"> <link rel="canonical" href="{{ page.url | replace:'index.html','' | absolute_url }}">
 
   {% feed_meta %}
