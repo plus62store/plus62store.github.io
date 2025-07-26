@@ -18,7 +18,7 @@ const aiActiveMobileElement = document.getElementById('ai-active-mobile');
 const aiOnlineMobileElement = document.getElementById('ai-online-mobile');
 
 const PRODUCT_LISTING_URL = "https://plus62store.github.io/products.json";
-const currentApiUrl = "https://gemini.sendaljepit.workers.dev"; // Updated to use the new API URL 
+const currentApiUrl = "http://localhost:8787"; // Updated to use the new API URL https://gemini.sendaljepit.workers.dev
 
 let currentUserId = null;
 
@@ -93,9 +93,12 @@ function findJsonInText(text) {
  * @returns {string} Teks terformat dari detail produk.
  */
 function formatProductAsText(product) {
-    let details = `*${product.title}*\n`;
-    details += `Harga: Rp ${product.discount} ${product.price && product.price !== product.discount ? `(_Harga Normal: Rp ${product.price}_)` : ''}\n`;
-    details += `Stok: ${product.stok}\n`;
+    let details = `*${product.title || 'Produk Tidak Diketahui'}*\n`; // Fallback untuk judul
+    // Menambahkan pemeriksaan untuk 'discount' dan 'price'
+    const displayDiscount = product.discount ? `Rp ${product.discount}` : 'Harga tidak tersedia';
+    const displayPrice = product.price && product.price !== product.discount ? `(_Harga Normal: Rp ${product.price}_)` : '';
+    details += `Harga: ${displayDiscount} ${displayPrice}\n`;
+    details += `Stok: ${product.stok || 'Informasi stok tidak tersedia'}\n`; // Fallback untuk stok
     if (product.description) {
         details += `Deskripsi: ${product.description}\n`;
     }
@@ -286,7 +289,7 @@ function showTypingIndicator(targetChatMessages) {
   typing.innerHTML = `
     <img src="https://lyra-ai-nine.vercel.app/logo.png" alt="LYRA" class="h-8 w-8 rounded-full mt-1 flex-shrink-0">
     <div class="ml-3">
-      <div class="bg-white p-3 rounded-lg chat-bubble-ai shadow">
+      <div class="">
         <div class="typing-indicator"><span></span><span></span><span></span></div>
       </div>
     </div>
@@ -603,8 +606,11 @@ async function loadChatHistory(userId, desktopChatMessages, mobileChatMessages) 
     }
 }
 
+
 /**
- * Fungsi untuk menghapus riwayat chat.
+ * Membersihkan riwayat chat dari UI dan KV.
+ * @param {HTMLElement} desktopChatMessages - Elemen chat desktop.
+ * @param {HTMLElement} mobileChatMessages - Elemen chat mobile.
  */
 async function clearChatHistory(desktopChatMessages, mobileChatMessages) {
     if (!currentUserId) {
@@ -613,65 +619,85 @@ async function clearChatHistory(desktopChatMessages, mobileChatMessages) {
     }
 
     const alert = document.createElement('ion-alert');
-    alert.header = 'Konfirmasi';
-    alert.message = 'Apakah Anda yakin ingin menghapus seluruh riwayat chat?';
+    alert.header = 'Konfirmasi Hapus Riwayat';
+    alert.message = 'Apakah Anda yakin ingin menghapus seluruh riwayat chat Anda? Tindakan ini tidak dapat dibatalkan.';
     alert.buttons = [
         {
             text: 'Batal',
             role: 'cancel',
-            cssClass: 'secondary',
-            handler: () => {
-                alert.dismiss(); // Use dismiss() instead of alert.remove()
-            }
+            handler: () => { /* No action needed */ },
         },
         {
             text: 'Hapus',
+            role: 'confirm',
             handler: async () => {
                 try {
                     const response = await fetch(`${currentApiUrl}/chat-history?userId=${currentUserId}`, {
                         method: 'DELETE',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
                     });
-
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(errorData.error || 'Gagal menghapus riwayat chat.');
-                    }
-
-                    desktopChatMessages.innerHTML = '';
-                    mobileChatMessages.innerHTML = '';
-
-                    const defaultWelcomeMessage = "Hai! Saya L Y Я A, asisten AI toko online ini. Tanyakan apa saja tentang produk kami! 🤗";
-                    appendMessage(defaultWelcomeMessage, 'ai', desktopChatMessages);
-                    appendMessage(defaultWelcomeMessage, 'ai', mobileChatMessages);
+                    const data = await response.json();
 
                     const toast = document.createElement('ion-toast');
-                    toast.message = 'Riwayat chat berhasil dihapus!';
-                    toast.duration = 2000;
-                    toast.color = 'success';
-                    document.body.appendChild(toast);
-                    await toast.present();
-                    toast.onDidDismiss(() => toast.remove());
-
-                } catch (error) {
-                    console.error("Error clearing chat history:", error);
-                    const toast = document.createElement('ion-toast');
-                    toast.message = `Error: ${error.message}`;
                     toast.duration = 3000;
-                    toast.color = 'danger';
+                    toast.position = 'bottom';
+
+                    if (response.ok) {
+                        desktopChatMessages.innerHTML = '';
+                        mobileChatMessages.innerHTML = '';
+                        desktopChatMessages.innerHTML = `
+                            <div class="flex items-start">
+                                <img src="https://lyra-ai-nine.vercel.app/logo.png" alt="LYRA" class="h-8 w-8 rounded-full mt-1">
+                                <div class="ml-3">
+                                    <div class="bg-gray-100 p-3 rounded-lg chat-bubble-ai">
+                                        <p class="text-sm">Riwayat chat Anda sudah dihapus, Kak! 👋</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        mobileChatMessages.innerHTML = `
+                            <div class="flex items-start">
+                                <img src="https://lyra-ai-nine.vercel.app/logo.png" alt="LYRA" class="h-8 w-8 rounded-full mt-1">
+                                <div class="ml-3">
+                                    <div class="bg-gray-100 p-3 rounded-lg chat-bubble-ai">
+                                        <p class="text-sm">Riwayat chat Anda sudah dihapus, Kak! 👋</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        toast.message = 'Riwayat chat berhasil dihapus!';
+                        toast.color = 'success';
+                    } else {
+                        console.error("Failed to delete chat history:", data.error);
+                        toast.message = `Gagal menghapus riwayat: ${data.error || 'Terjadi kesalahan.'}`;
+                        toast.color = 'danger';
+                    }
                     document.body.appendChild(toast);
                     await toast.present();
                     toast.onDidDismiss(() => toast.remove());
-                } finally {
-                    alert.dismiss(); // Use dismiss() instead of alert.remove()
+                } catch (error) {
+                    console.error("Error deleting chat history:", error);
+                    const toast = document.createElement('ion-toast');
+                    toast.message = `Terjadi kesalahan: ${error.message}`;
+                    toast.color = 'danger';
+                    toast.duration = 3000;
+                    toast.position = 'bottom';
+                    document.body.appendChild(toast);
+                    await toast.present();
+                    toast.onDidDismiss(() => toast.remove());
                 }
             },
         },
     ];
     document.body.appendChild(alert);
     await alert.present();
+
+    // Paksa remove ion-alert sepenuhnya setelah dismiss (fix bug header tertinggal di mobile)
+    alert.addEventListener('ionAlertDidDismiss', () => {
+        if (alert.parentNode) alert.parentNode.removeChild(alert);
+    });
+    alert.onDidDismiss(() => {
+        if (alert.parentNode) alert.parentNode.removeChild(alert);
+    });
 }
 
 // --- Real-time Clock Function ---
@@ -715,7 +741,7 @@ async function renderProducts(keyword = "") {
 
     filtered.forEach(product => {
       const card = document.createElement('ion-card');
-      card.className = 'transition duration-300 ease-in-out transform shadow-md';
+      card.className = 'card-product transition duration-300 ease-in-out transform shadow-md';
 
       card.innerHTML = `
         <div class="relative h-68 overflow-hidden">
@@ -728,7 +754,7 @@ async function renderProducts(keyword = "") {
         <ion-card-content>
           <div class="flex justify-end-safe gap-1 items-center">
             <ion-button fill="outline" size="small" color="primary" class="ask-ai-btn">
-              <ion-icon name="sparkles-outline" slot="start"></ion-icon>
+              <ion-icon name="sparkles-outline" slot="end"></ion-icon>
               <ion-label class="ml-2">Tanya AI</ion-label>
             </ion-button>
           </div>
