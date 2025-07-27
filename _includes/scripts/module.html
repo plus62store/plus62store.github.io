@@ -18,7 +18,7 @@ const aiActiveMobileElement = document.getElementById('ai-active-mobile');
 const aiOnlineMobileElement = document.getElementById('ai-online-mobile');
 
 const PRODUCT_LISTING_URL = "https://plus62store.github.io/products.json";
-const currentApiUrl = "https://gemini.sendaljepit.workers.dev"; // Updated to use the new API URL 
+const currentApiUrl = "http://localhost:8787"; // Updated to use the new API URL https://gemini.sendaljepit.workers.dev
 
 let currentUserId = null;
 
@@ -139,7 +139,13 @@ function appendMessage(text, sender, targetChatMessages, isHistorical = false) {
 
           // Cek jika ini adalah aksi yang harus ditampilkan sebagai teks produk
           if (typeof parsed === 'object' && parsed.action === 'viewProductDetails' && parsed.product) {
-              finalMessageText = remaining + '\n\n' + formatProductAsText(parsed.product); // Tambahkan detail produk sebagai teks
+              // [MODIFIED] Validasi produk sebelum menampilkannya
+              if (parsed.product.title) {
+                  finalMessageText = remaining + '\n\n' + formatProductAsText(parsed.product); // Tambahkan detail produk sebagai teks
+              } else {
+                  // Jika produk tidak valid (misal, tidak ada judul), tampilkan hanya narasi
+                  finalMessageText = remaining;
+              }
               actionHandled = true;
           } else if (Array.isArray(parsed)) { // Jika ini adalah array produk (misal dari hasil search)
               const productsAsText = parsed.map(p => formatProductAsText(p)).join('\n\n---\n\n');
@@ -217,7 +223,7 @@ function appendMessage(text, sender, targetChatMessages, isHistorical = false) {
  */
 function appendProductCard(product, targetChatMessages) {
   // Fungsi ini sekarang hanya untuk memicu modal detail atau tampilan grid, BUKAN untuk chat bubble.
-  // Jika Anda ingin kartu produk di chat, Anda perlu mengembalikan logika di appendMessage.
+  // Jika kamu ingin kartu produk di chat, kamu perlu mengembalikan logika di appendMessage.
   // Untuk saat ini, fungsi ini hanya dipanggil oleh handleProductClickFromChat (dari tombol "Lihat Detail & Warna" di kartu grid)
   // dan diubah namanya menjadi openProductDetailModal untuk lebih jelas.
   console.warn("appendProductCard (now openProductDetailModal) was called. It should only open a modal, not append to chat.");
@@ -370,90 +376,148 @@ async function callGemini(message, cartItems, userId) {
  * @param {HTMLElement} targetChatMessages - Elemen kontainer chat untuk menampilkan kartu produk.
  * @returns {boolean} True jika ada redirect, false jika tidak.
  */
-function processAiCartAction(actionData, targetChatMessages) { // Added targetChatMessages parameter
+function processAiCartAction(actionData, targetChatMessages) {
     if (typeof simpleCart === 'undefined') {
-        console.error("simpleCart is not defined. Make sure simpleCart.min.js is loaded.");
+        console.error("simpleCart is not defined. Make sure simpleCart.js is loaded.");
         return false;
     }
 
     let redirected = false;
 
     switch (actionData.action) {
-        case 'addToCart':
-            if (actionData.productName && actionData.price && actionData.quantity) {
+        case 'addToCart': {
+            const { title, price, quantity, image, warna, ukuran, berat } = actionData;
+            if (title && price && quantity) {
                 simpleCart.add({
-                    name: actionData.productName,
-                    price: actionData.price,
-                    quantity: actionData.quantity,
-                    thumb: actionData.image || 'https://placehold.co/50x50/E0E0E0/333333?text=NoImg',
-                    warna: actionData.warna || '-',
-                    ukuran: actionData.ukuran || '-',
-                    berat: actionData.berat || 0
+                    name: title,
+                    price,
+                    quantity,
+                    thumb: image || 'https://placehold.co/50x50/E0E0E0/333333?text=NoImg',
+                    warna: warna || '-',
+                    ukuran: ukuran || '-',
+                    berat: berat || 0
                 });
+                setTimeout(() => {   
+                    appendMessage(`Berhasil menambahkan *${quantity}x ${title}* ke keranjang!`, 'ai', targetChatMessages); 
+                }, 2000); // Delay 2 detik untuk efek loading
             } else {
-                console.warn("addToCart: Missing product details", actionData);
+                appendMessage("Maaf, saya butuh detail produk lengkap untuk menambahkannya ke keranjang.", 'ai', targetChatMessages);
             }
             break;
+        }
 
-        case 'removeFromCart':
-            if (actionData.productName) {
-                const itemsToRemove = simpleCart.find({ name: actionData.productName });
-                if (itemsToRemove.length > 0) {
-                    itemsToRemove.forEach(item => item.remove());
+        case 'removeFromCart': {
+            const { title } = actionData;
+            const item = simpleCart.find({ name: title })[0];
+            if (item) {
+                item.remove();
+                appendMessage(`*${title}* berhasil dihapus dari keranjang.`, 'ai', targetChatMessages);
+            } else {
+                appendMessage(`Maaf, *${title}* tidak ditemukan di keranjang kamu.`, 'ai', targetChatMessages);
+            }
+            break;
+        }
+
+        case 'updateCartQuantity': {
+            const { title, quantity } = actionData;
+            const item = simpleCart.find({ name: title })[0];
+            if (item) {
+                item.quantity(quantity);
+                appendMessage(`Jumlah *${title}* di keranjang diubah menjadi ${quantity}.`, 'ai', targetChatMessages);
+            } else {
+                appendMessage(`Maaf, *${title}* tidak ditemukan di keranjang kamu.`, 'ai', targetChatMessages);
+            }
+            break;
+        }
+
+        case 'decrementQuantity': {
+            const { title } = actionData;
+            const item = simpleCart.find({ name: title })[0];
+            if (item) {
+                item.decrement();
+                const qty = item.quantity();
+                if (qty > 0) {
+                    appendMessage(`Jumlah *${title}* dikurangi jadi ${qty}.`, 'ai', targetChatMessages);
                 } else {
-                    console.warn(`removeFromCart: ${actionData.productName} not found.`);
+                    appendMessage(`*${title}* berhasil dihapus dari keranjang.`, 'ai', targetChatMessages);
                 }
             } else {
-                console.warn("removeFromCart: Missing product name.");
+                appendMessage(`Maaf, *${title}* tidak ditemukan di keranjang kamu.`, 'ai', targetChatMessages);
             }
             break;
+        }
 
-        case 'updateCartQuantity':
-            if (actionData.productName && actionData.quantity !== undefined) {
-                const itemToUpdate = simpleCart.find({ name: actionData.productName });
-                if (itemToUpdate.length > 0) {
-                    itemToUpdate[0].quantity(actionData.quantity);
-                } else {
-                    console.warn(`updateCartQuantity: ${actionData.productName} not found.`);
-                }
+        case 'incrementQuantity': {
+            const { title } = actionData;
+            const item = simpleCart.find({ name: title })[0];
+            if (item) {
+                item.increment();
+                appendMessage(`Jumlah *${title}* ditambah jadi ${item.quantity()}.`, 'ai', targetChatMessages);
             } else {
-                console.warn("updateCartQuantity: Missing product name or quantity.");
+                appendMessage(`Maaf, *${title}* tidak ditemukan di keranjang kamu.`, 'ai', targetChatMessages);
             }
             break;
+        }
 
-        case 'emptyCart':
+        case 'changeItemColor': {
+            const { title, newColor } = actionData;
+            const item = simpleCart.find({ name: title })[0];
+            if (item) {
+                item.set('warna', newColor);
+                appendMessage(`Warna *${title}* diubah menjadi ${newColor}.`, 'ai', targetChatMessages);
+            } else {
+                appendMessage(`Maaf, *${title}* tidak ditemukan di keranjang kamu.`, 'ai', targetChatMessages);
+            }
+            break;
+        }
+
+        case 'emptyCart': {
             simpleCart.empty();
             break;
+        }
 
-        case 'viewCart':
+        case 'viewCart': {
+            if (cartContent.length > 0) {
+                appendMessage(`Ini isi keranjang kamu:
+${cartContent.join('\n')}`, 'ai', targetChatMessages);
+            } else {
+                appendMessage("Keranjang belanja kamu masih kosong. Yuk cari produk dulu!", 'ai', targetChatMessages);
+            }
+            const cartContent = [];
+            simpleCart.each(item => {
+                const name = item.get('name');
+                const qty = item.get('quantity');
+                const price = item.get('price');
+                const warna = item.get('warna');
+                cartContent.push(`${qty}x ${name} (Rp ${price})${warna !== '-' ? ` (Warna: ${warna})` : ''}`);
+            });
             break;
-            
-        case 'checkout':
-            if (actionData.redirectUrl) {
-                window.location.href = actionData.redirectUrl;
+        }
+
+        case 'checkout': {
+            const { redirectUrl } = actionData;
+            if (redirectUrl) {
+                appendMessage(`Oke! Saya arahkan kamu ke ${redirectUrl} untuk pembayaran.`, 'ai', targetChatMessages);
+                setTimeout(() => window.location.href = redirectUrl, 4000);
                 redirected = true;
             } else {
-                console.warn("Checkout action: Missing redirect URL.");
+                appendMessage("Maaf, saya tidak tahu ke mana harus mengarahkan kamu.", 'ai', targetChatMessages);
             }
             break;
-        
-        // [MODIFIED] Tidak lagi memanggil appendProductCard. Logic sudah di appendMessage.
+        }
+
         case 'viewProductDetails':
-            // Logic to display product details as text is now handled directly in appendMessage.
-            // This case only exists to ensure the JSON action is recognized and processed.
-            if (!actionData.product) {
-                console.warn("viewProductDetails action: Missing product data.");
-            }
+            // Handled in main response flow, tidak disini.
             break;
 
         default:
-            console.warn("Unknown cart action:", actionData.action);
+            appendMessage("Maaf, saya tidak mengerti perintah keranjang tersebut.", 'ai', targetChatMessages);
             break;
     }
-    simpleCart.update();
-    return redirected; 
-}
 
+    simpleCart.update();
+    return redirected;
+}
 
 /**
  * Meng-handle pengiriman pesan dari user.
@@ -476,25 +540,28 @@ async function handleChatSubmit(chatInput, chatSendBtn, targetChatMessages) {
       price: item.price(),
       image: item.get('thumb'),
       warna: item.get('warna'),
-      ukuran: item.get('ukuran'),
-      berat: item.get('berat')
+     // ukuran: item.get('ukuran'),
+     // berat: item.get('berat')
   }));
 
   const aiResponse = await callGemini(userMessage, currentCartItems, currentUserId);
 
   hideTypingIndicator(targetChatMessages);
 
-  // Periksa apakah ada JSON dalam respons AI sebelum memanggil appendMessage
+  // Periksa apakah ada JSON dalam respons AI
   const { parsed, remaining: cleanResponse } = findJsonInText(aiResponse);
 
-  // Jika ada JSON yang berhasil diparse, panggil appendMessage dengan JSON utuh
-  // agar logika di appendMessage bisa memproses aksi dan menampilkan teks sisanya
+  // Jika ada JSON yang berhasil diparse, proses aksinya terlebih dahulu
+  let actionHandled = false;
   if (parsed) {
-      appendMessage(aiResponse, 'ai', targetChatMessages); // Kirim respons utuh ke appendMessage
-  } else if (cleanResponse) {
-      // Jika tidak ada JSON, atau parsing gagal, tampilkan hanya teks bersih
+      actionHandled = processAiCartAction(parsed, targetChatMessages);
+  }
+
+  // Tampilkan teks narasi yang sudah bersih
+  if (cleanResponse.trim().length > 0) {
       appendMessage(cleanResponse, 'ai', targetChatMessages);
-  } else {
+  } else if (!actionHandled) {
+      // Jika tidak ada teks narasi dan tidak ada aksi yang ditangani, berikan pesan fallback
       appendMessage("Maaf, ada masalah dalam merespons. Bisa ulangi?", 'ai', targetChatMessages);
   }
 
@@ -523,8 +590,8 @@ async function requestProductDetail(product, targetChatMessages) {
         price: item.price(),
         image: item.get('thumb'),
         warna: item.get('warna'),
-        ukuran: item.get('ukuran'),
-        berat: item.get('berat')
+       // ukuran: item.get('ukuran'),
+       // berat: item.get('berat')
     }));
 
     const aiResponse = await callGemini(payloadString, currentCartItems, currentUserId);
@@ -606,7 +673,6 @@ async function loadChatHistory(userId, desktopChatMessages, mobileChatMessages) 
     }
 }
 
-
 /**
  * Membersihkan riwayat chat dari UI dan KV.
  * @param {HTMLElement} desktopChatMessages - Elemen chat desktop.
@@ -620,7 +686,7 @@ async function clearChatHistory(desktopChatMessages, mobileChatMessages) {
 
     const alert = document.createElement('ion-alert');
     alert.header = 'Konfirmasi Hapus Riwayat';
-    alert.message = 'Apakah Anda yakin ingin menghapus seluruh riwayat chat Anda? Tindakan ini tidak dapat dibatalkan.';
+    alert.message = 'Apakah kamu yakin ingin menghapus seluruh riwayat chat kamu? Tindakan ini tidak dapat mengembalikan data.';
     alert.buttons = [
         {
             text: 'Batal',
@@ -649,7 +715,7 @@ async function clearChatHistory(desktopChatMessages, mobileChatMessages) {
                                 <img src="https://lyra-ai-nine.vercel.app/logo.png" alt="LYRA" class="h-8 w-8 rounded-full mt-1">
                                 <div class="ml-3">
                                     <div class="bg-gray-100 p-3 rounded-lg chat-bubble-ai">
-                                        <p class="text-sm">Riwayat chat Anda sudah dihapus, Kak! 👋</p>
+                                        <p class="text-sm">Riwayat chat kamu sudah dihapus, Kak! 👋</p>
                                     </div>
                                 </div>
                             </div>
@@ -659,7 +725,7 @@ async function clearChatHistory(desktopChatMessages, mobileChatMessages) {
                                 <img src="https://lyra-ai-nine.vercel.app/logo.png" alt="LYRA" class="h-8 w-8 rounded-full mt-1">
                                 <div class="ml-3">
                                     <div class="bg-gray-100 p-3 rounded-lg chat-bubble-ai">
-                                        <p class="text-sm">Riwayat chat Anda sudah dihapus, Kak! 👋</p>
+                                        <p class="text-sm">Riwayat chat kamu sudah dihapus, Kak! 👋</p>
                                     </div>
                                 </div>
                             </div>
@@ -778,6 +844,59 @@ async function renderProducts(keyword = "") {
     console.error("Gagal fetch produk:", err);
     productGrid.innerHTML = `<div class="w-full text-center text-red-600 py-4 col-span-full">❌ Gagal memuat produk.</div>`;
   }
+}
+
+// --- SimpleCart.js Global Access ---
+// Memastikan simpleCart tersedia secara global atau diimpor jika menggunakan modul.
+if (typeof simpleCart === 'undefined') {
+    console.warn("simpleCart.js is not loaded. Cart functionalities will not work.");
+    // Dummy simpleCart object for development if simpleCart.js isn't loaded
+    window.simpleCart = {
+        items: [],
+        add: function(item) { console.log('Dummy simpleCart.add', item); this.items.push(item); },
+        empty: function() { console.log('Dummy simpleCart.empty'); this.items = []; },
+        total: function() { return this.items.reduce((sum, item) => sum + (item.price * item.quantity), 0); },
+        quantity: function() { return this.items.reduce((sum, item) => sum + item.quantity, 0); },
+        has: function(criteria) {
+            return this.items.some(item => {
+                for (const key in criteria) {
+                    if (item[key] !== criteria[key]) return false;
+                }
+                return true;
+            });
+        },
+        find: function(criteria) {
+            return this.items.filter(item => {
+                for (const key in criteria) {
+                    if (item[key] !== criteria[key]) return false;
+                }
+                return true;
+            });
+        },
+        each: function(callback) { this.items.forEach(callback); },
+        update: function() { console.log('Dummy simpleCart.update'); },
+        // [NEW] Tambahkan atau sesuaikan fungsi remove jika belum ada di simpleCart kamu
+        // Ini adalah asumsi. Jika simpleCart kamu memiliki method 'remove' yang berbeda, sesuaikan.
+        remove: function(productName) {
+            const initialLength = this.items.length;
+            this.items = this.items.filter(item => item.name !== productName);
+            console.log(`Dummy simpleCart.remove: Removed ${initialLength - this.items.length} items with name ${productName}`);
+            this.update(); // Panggil update untuk merefresh tampilan
+        },
+        get: function(index) { return this.items[index]; },
+        // Dummy setters/getters for price, quantity etc. for items
+        Item: function(options) {
+            this.name = options.name;
+            this.price = options.price;
+            this.quantity = options.quantity;
+            this.image = options.image;
+            this.warna = options.warna;
+           // this.ukuran = options.ukuran;
+           // this.berat = options.berat;
+            this.set = function(key, value) { this[key] = value; };
+            this.get = function(key) { return this[key]; };
+        }
+    };
 }
 
 // --- Initial Setup & Event Listeners ---
