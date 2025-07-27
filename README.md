@@ -16,6 +16,7 @@ Ini adalah proyek asisten chat AI yang terintegrasi dengan toko online **PLUS62S
  * 5.  Pembatasan Chat Harian menggunakan Cloudflare KV.
  * 6.  Peningkatan pemilihan URL gambar untuk AI.
  * 7.  [BARU] AI memberikan objek produk lebih lengkap untuk aksi 'viewProductDetails'.
+ * 8.  [BARU] AI mempunyai kemampuan memasukan product ke keranjang per item / warna / ukuran.
  *
  */
 
