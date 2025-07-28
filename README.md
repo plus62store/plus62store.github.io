@@ -16,7 +16,7 @@ Ini adalah proyek asisten chat AI yang terintegrasi dengan toko online **PLUS62S
  * 5.  Pembatasan Chat Harian menggunakan Cloudflare KV.
  * 6.  Peningkatan pemilihan URL gambar untuk AI.
  * 7.  [BARU] AI memberikan objek produk lebih lengkap untuk aksi 'viewProductDetails'.
- * 8.  [BARU] AI mempunyai kemampuan memasukan product ke keranjang per item / warna / ukuran.
+ * 8.  [BARU] AI mempunyai kemampuan memproses variasi produk (warna, ukuran, dll.) saat menambah ke keranjang.
  *
  */
 
@@ -52,7 +52,7 @@ Ini adalah proyek asisten chat AI yang terintegrasi dengan toko online **PLUS62S
 - **Jekyll**: Sebagai generator situs statis (diasumsikan untuk struktur dasar HTML).
 - **Ionic v8**: Untuk komponen UI yang modern dan responsif (modal, tombol, input, dll.).
 - **Tailwind CSS**: Untuk styling yang cepat dan responsif.
-- **simpleCart(js MODIFY)**: Pustaka JavaScript ringan untuk manajemen keranjang belanja di sisi klien.
+- **simpleCar.js (MODIFY)**: Pustaka JavaScript ringan untuk manajemen keranjang belanja di sisi klien.
 - **Marked.js & DOMPurify**: Untuk merender respons AI yang diformat Markdown dengan aman.
 
 ### Backend:
@@ -149,7 +149,7 @@ Pastikan Anda telah menyertakan CDN untuk Ionic v8 dan Tailwind CSS di semua fil
    - "Tambahkan 2 Masker Bordir Ilalang ke keranjang."
    - "Lihat keranjang."
    - "Kosongkan keranjang."
-   - "Aku mau bayar dong." (Ini akan mengarahkan ke `checkout.html` *manual)
+   - "Aku mau bayar dong." (Ini akan mengarahkan ke `checkout.html`)
 4. **Hapus Riwayat**: Klik tombol "Hapus Riwayat Chat" untuk membersihkan percakapan Anda.
 
 ## Pengembangan Lanjutan

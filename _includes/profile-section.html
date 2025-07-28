@@ -1,11 +1,12 @@
                         <div class="p-4 border-b border-gray-200">
+                            <div id="logout-section" class="hidden">
                             <div class="flex items-center space-x-3">
                                 <ion-avatar class="w-10 h-10">
                                     <img src="https://api.dicebear.com/7.x/thumbs/svg?seed=android" alt="Avatar">
                                 </ion-avatar>
                                 <div>
                                     <p class="font-medium text-gray-900">{{site.title}}</p>
-                                    <p class="text-xs text-gray-500">@plus62.olshop</p>
+                                    <p class="text-xs text-gray-500"><span id="user-display-name"></span></p>
                                 </div>
                             </div>
                             <div class="mt-3 flex items-center justify-between">
@@ -13,8 +14,94 @@
                                     <ion-icon name="cart-outline" class="text-gray-400 mr-2"></ion-icon>
                                     <span class="text-sm text-gray-600">Total Order <span class="simpleCart_quantity text-red-600"></span></span>
                                 </div>
-                                <ion-chip color="danger">
-                                    <ion-label class="text-white px-4 text-xs font-bold">Logout</ion-label>
-                                </ion-chip>
+                                <ion-button id="logout-btn" fill="clear" size="small" color="danger">Logout</ion-button>
+                            </div>
+                            </div>
+                            <div id="login-section" class="hidden">
+                            <div class="flex items-center space-x-3">
+                                <ion-avatar class="w-10 h-10">
+                                    <img src="https://api.dicebear.com/7.x/thumbs/svg?seed=android" alt="Avatar">
+                                </ion-avatar>
+                                <div>
+                                    <p class="font-medium text-gray-900">{{site.title}}</p>
+                                    <p class="text-xs text-gray-500"><span id="user-display-name">@plus62.olshop</span></p>
+                                </div>
+                            </div>
+                            <div class="mt-3 flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <ion-icon name="cart-outline" class="text-gray-400 mr-2"></ion-icon>
+                                    <span class="text-sm text-gray-600">Total Order <span class="simpleCart_quantity text-red-600"></span></span>
+                                </div>
+                                <ion-button id="google-sign-in-btn" expand="block" fill="solid" color="primary" class="max-w-xs">
+                                    <ion-icon slot="start" name="logo-google"></ion-icon>
+                                    Login
+                                </ion-button>
+                            </div>
                             </div>
                         </div>
+<script>
+        const loginSection = document.getElementById('login-section');
+        const logoutSection = document.getElementById('logout-section');
+        const userDisplayName = document.getElementById('user-display-name');
+        const googleSignInBtn = document.getElementById('google-sign-in-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+
+        // Function to handle Google Sign-In (menggunakan auth dari namespace global)
+        async function signInWithGoogle() {
+            try {
+                const provider = new firebase.auth.GoogleAuthProvider(); // Menggunakan GoogleAuthProvider dari namespace global
+                const result = await auth.signInWithPopup(provider); // Menggunakan auth instance global
+                console.log('User signed in:', result.user);
+                // Listener onAuthStateChanged akan menangani pembaruan UI
+            } catch (error) {
+                console.error('Error signing in with Google:', error);
+                const errorMessage = error.message;
+                const errorAlert = document.createElement('ion-alert');
+                errorAlert.header = 'Login Gagal';
+                errorAlert.message = `Terjadi kesalahan saat login: ${errorMessage}`;
+                errorAlert.buttons = ['OK'];
+                document.body.appendChild(errorAlert);
+                errorAlert.present();
+                errorAlert.onDidDismiss(() => errorAlert.remove());
+            }
+        }
+
+        // Function to handle Sign Out (menggunakan auth dari namespace global)
+        async function handleSignOut() {
+            try {
+                await auth.signOut(); // Menggunakan auth instance global
+                console.log('User signed out.');
+                // Listener onAuthStateChanged akan menangani pembaruan UI
+            } catch (error) {
+                console.error('Error signing out:', error);
+                const errorMessage = error.message;
+                const errorAlert = document.createElement('ion-alert');
+                errorAlert.header = 'Logout Gagal';
+                errorAlert.message = `Terjadi kesalahan saat logout: ${errorMessage}`;
+                errorAlert.buttons = ['OK'];
+                document.body.appendChild(errorAlert);
+                errorAlert.present();
+                errorAlert.onDidDismiss(() => errorAlert.remove());
+            }
+        }
+
+        // Firebase Auth State Listener (menggunakan auth dari namespace global)
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                // Pengguna sudah login
+                loginSection.classList.add('hidden');
+                logoutSection.classList.remove('hidden');
+                userDisplayName.textContent = user.displayName || user.email;
+            } else {
+                // Pengguna belum login
+                loginSection.classList.remove('hidden');
+                logoutSection.classList.add('hidden');
+                userDisplayName.textContent = '';
+            }
+        });
+
+    document.addEventListener('DOMContentLoaded', function() {
+            googleSignInBtn.addEventListener('click', signInWithGoogle);
+            logoutBtn.addEventListener('click', handleSignOut);
+        });
+</script>

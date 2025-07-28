@@ -200,7 +200,7 @@ function appendMessage(text, sender, targetChatMessages, isHistorical = false) {
 
   if (!isHistorical) {
     if (targetChatMessages === chatMessagesMobile) {
-        const ionContentEl = mobileChatModal.querySelector('ion-content');
+        const ionContentEl = mobileChatModal.querySelector('#chat-messages-mobile');
         if (ionContentEl && typeof ionContentEl.getScrollElement === 'function') {
             ionContentEl.getScrollElement().then(scrollEl => {
                 scrollEl.scrollTop = scrollEl.scrollHeight;
