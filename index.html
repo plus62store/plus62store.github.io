@@ -330,9 +330,11 @@
     <ion-modal id="cart-modal">
       <ion-header>
         <ion-toolbar>
-          <ion-title>🛒 Keranjang Belanja</ion-title>
+          <ion-title>Keranjang Belanja</ion-title>
           <ion-buttons slot="end">
-            <ion-button onclick="closeCartModal()">Tutup</ion-button>
+            <ion-button onclick="closeCartModal()">
+             <ion-icon name="close" slot="icon-only"></ion-icon>
+            </ion-button>
           </ion-buttons>
         </ion-toolbar>
       </ion-header>
@@ -349,8 +351,7 @@
         <ion-grid style="padding: 20px;">
           <ion-row>
             <ion-col>
-              <ion-button expand="block" color="success" onclick="checkout()" id="checkout-btn" style="display: none;">
-                💰 Checkout via WhatsApp
+              <ion-button expand="block" color="success" onclick="checkout()" id="checkout-btn" style="display: none;">Checkout via WhatsApp
                 <ion-icon name="logo-whatsapp" slot="end"></ion-icon>
               </ion-button>
             </ion-col>
@@ -462,9 +463,9 @@
 Apa yang bisa saya bantu? 😊
 
 *Contoh chat:*
-• "Warnanya ada apa aja?"
-• "Aku mau beli warna hitam 2 pcs"
-• "Ceritain detail produknya"`);
+• "Ada warna apa aja?"
+• "Aku mau beli"
+• "Detail produk"`);
 
       // Open modal
       modal.present();
@@ -595,7 +596,7 @@ Apa yang bisa saya bantu? 😊
 
         // Fallback response
         const fallback = [
-          "Maaf kak, lagi ada gangguan nih 😅 Coba lagi ya atau langsung pesan aja!",
+          "Maaf kak, lagi ada gangguan nih 😵‍💫 Coba lagi ya atau langsung pesan aja!",
           "Wah, koneksi lagi nggak stabil nih. Tapi produk ${currentProduct?.title} masih ready kok!",
           "Oops, error dikit. Tapi Maya masih siap bantu kamu pilih masker yang cocok! 😊"
         ];
