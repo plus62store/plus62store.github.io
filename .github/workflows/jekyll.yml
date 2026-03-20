@@ -3,7 +3,7 @@ name: Deploy Jekyll AI-PLUS62STORE Secret
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   build_and_deploy:
