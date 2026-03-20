@@ -48,5 +48,5 @@ jobs:
       - name: Deploy ke GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.BUKAN_GITHUB_TOKEN }}
           publish_dir: ./_site
