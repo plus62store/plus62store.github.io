@@ -19,6 +19,14 @@ jobs:
       AUTH_DOMAIN: ${{ secrets.AUTH_DOMAIN }}
       PROJECT_ID: ${{ secrets.PROJECT_ID }}
       APP_ID: ${{ secrets.APP_ID }}
+      WA_KEY: ${{ secrets.WA_KEY }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      STORAGE_BUCKET: ${{ secrets.STORAGE_BUCKET }}
+      SENDER_ID: ${{ secrets.SENDER_ID }}
+      MEASUREMENT_ID: ${{ secrets.MEASUREMENT_ID }}
+      PAYPAL_CLIENT_ID: ${{ secrets.PAYPAL_CLIENT_ID }}
+      MIDTRANS_CLIENT_KEY: ${{ secrets.MIDTRANS_CLIENT_KEY }}
+      MIDTRANS_URL: ${{ secrets.MIDTRANS_URL }}
 
     steps:
       - name: Checkout Repository
@@ -40,5 +48,5 @@ jobs:
       - name: Deploy ke GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ secrets.BUKAN_GITHUB_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./_site

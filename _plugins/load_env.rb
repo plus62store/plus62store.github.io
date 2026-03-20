@@ -2,11 +2,25 @@ require 'dotenv'
 Dotenv.load
 
 Jekyll::Hooks.register :site, :after_init do |site|
-  site.config['API_KEY'] = ENV['API_KEY']
-  site.config['AUTH_DOMAIN'] = ENV['AUTH_DOMAIN']
-  site.config['PROJECT_ID'] = ENV['PROJECT_ID']
-  site.config['APP_ID'] = ENV['APP_ID']
-  site.config['PAYPAL_CLIENT_ID'] = ENV['PAYPAL_CLIENT_ID']
-  site.config['MIDTRANS_CLIENT_KEY'] = ENV['MIDTRANS_CLIENT_KEY']
-  site.config['MIDTRANS_URL'] = ENV['MIDTRANS_URL']
+  # Create a hash for env variables if it doesn't exist
+  site.config['env'] ||= {}
+
+  [
+    'API_KEY',
+    'AUTH_DOMAIN',
+    'PROJECT_ID',
+    'APP_ID',
+    'PAYPAL_CLIENT_ID',
+    'MIDTRANS_CLIENT_KEY',
+    'MIDTRANS_URL',
+    'WA_KEY',
+    'DATABASE_URL',
+    'STORAGE_BUCKET',
+    'SENDER_ID',
+    'MEASUREMENT_ID'
+  ].each do |var|
+    value = ENV[var]
+    site.config[var] = value
+    site.config['env'][var] = value
+  end
 end
