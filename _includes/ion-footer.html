@@ -1,0 +1,137 @@
+
+      </ion-content>
+        <ion-footer collapse="fade" id="sticky-stop">
+  <ion-toolbar>
+<ion-chip disabled>
+<ion-label>Template By <span id="footer" title="{{site.dev}}">{{site.dev}}</span></ion-label>
+</ion-chip>
+    {% if page.layout == "default" %}
+    {% endif %}
+    <ion-buttons slot="end"><note>
+    <ion-button><ion-icon slot="icon-only" name="logo-github"></ion-icon></ion-button></note>
+    </ion-buttons>
+  </ion-toolbar>
+        </ion-footer>
+    </ion-app>
+<script>
+function myBlog() {
+  location.replace('/blog')
+}
+
+function myProduct() {
+  location.replace('/product')
+}
+
+function checkOut() {
+  location.replace('/p=p62s_checkout')
+}
+
+function myCart() {
+  location.replace('/p=p62s_cart')
+}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script>
+ function setDarkMode(isDark) {
+        var darkBtn = document.getElementById('darkBtn')
+        var lightBtn = document.getElementById('lightBtn')
+
+        if(isDark) {
+            lightBtn.style.display = "block"
+            darkBtn.style.display = "none"
+        } else {
+            lightBtn.style.display = "none"
+            darkBtn.style.display = "block"
+        }
+
+        document.body.classList.toggle("darkmode");
+    }
+
+//check localstorage
+if(localStorage.getItem('preferredTheme') == 'dark') {
+    setDarkMode(true)
+}
+
+function setDarkMode(isDark) {
+    var darkBtn = document.getElementById('darkBtn')
+    var lightBtn = document.getElementById('lightBtn')
+
+    if(isDark) {
+        lightBtn.style.display = "block"
+        darkBtn.style.display = "none" 
+    //tambahan localstorage
+        localStorage.setItem('preferredTheme', 'dark');
+    } else {
+        lightBtn.style.display = "none"
+        darkBtn.style.display = "block"
+     //tambahan localstorage
+        localStorage.removeItem('preferredTheme');
+    }
+
+    document.body.classList.toggle("darkmode");
+}
+
+var id_aktif;
+function on(clicked_id) { document.getElementById("overlay").style.display = "block";
+document.getElementById(clicked_id).style.display = "block";
+id_aktif = clicked_id;
+}
+function off() {
+document.getElementById("overlay").style.display = "none";
+document.getElementById(id_aktif).style.display = "none";
+}
+</script>
+
+<script type="text/javascript">
+function myBtpn() {
+  var copyText = document.getElementById("btpn");
+  copyText.select();
+  copyText.setSelectionRange(0, 99999)
+  document.execCommand("copy");
+  alert("Nomor rekening " + copyText.value + " Untuk BANK BTPN berhasil disalin, Silahkan melakukan pembayaran.");
+}
+</script>
+
+<script type="text/javascript">
+function myBri() {
+  var copyText = document.getElementById("bri");
+  copyText.select();
+  copyText.setSelectionRange(0, 99999)
+  document.execCommand("copy");
+  alert("Nomor rekening " + copyText.value + " Untuk BANK BRI berhasil disalin, Silahkan melakukan pembayaran.");
+}
+</script>
+
+<script>
+      const button = document.querySelector('note');
+      button.addEventListener('click', handleButtonClick);
+
+      async function handleButtonClick() {
+        const alert = await alertController.create({
+          message: '<h4><center><ion-note>Hallo <span id="user-display-name"></span></ion-note><p /><br /><ion-icon name="git-network" slot="start"></ion-icon> <ion-label>Fork This at <a href="https://github.com/daffadevhosting/ionic-jekyll">GitHub</ion-label> <ion-icon name="logo-github" slot="end"></ion-icon></a></center></h4>',
+          buttons: ['Nanti Saja'],
+        });
+
+        await alert.present();
+      }
+</script>
+<div id="overlay" onclick="off()"></div>
+  <div class="myModal" id="modal1">
+    <div class="modalBody" id="body">
+      <p>Untuk mengaktifkan kembali template,<br/>Mohon Jangan merubah/menghapus bagian footer<br/>Terima kasih.</p>
+    </div>
+  </div>
+    <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.umd.js"></script>
+    <script src="{{ '/assets/js/simpleCart.js?version=1.2' | relative_url }}"></script>
+    <script async src="{{ '/assets/js/main.js' | relative_url }}"></script>
+    <script src="{{ '/assets/js/form-order.js?version=1.0' | relative_url }}" type="text/javascript"></script>
+    <script src="{{ '/assets/js/question.js' | relative_url }}" type="text/javascript"></script>
+
+{% include jsScript.html %}
+<script>
+  if('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('{{ site.baseurl }}/sw.js')
+    })
+  }
+</script>

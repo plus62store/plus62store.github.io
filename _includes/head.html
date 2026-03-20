@@ -1,0 +1,277 @@
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light darkmode" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="google-site-verification" content="{{site.G-verify}}" />
+<script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+
+<script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<meta name="yandex-verification" content="42c9b7a5a8c7355c" />
+<meta http-equiv='cache-control' content='no-cache'>
+<meta http-equiv='expires' content='0'>
+<meta http-equiv='pragma' content='no-cache'>
+<title>{% if page.url == '/' %}{{ page.title }}{% elsif page.title %}{{ page.title }} @ {{ site.title }}{% endif %}</title>
+{% assign pagecontent_description = page.content | markdownify | replace: '.', '. ' | replace: '</h2>', ': ' | replace: '</h3>', ': ' | replace: '</h4>', ': ' | strip_html | strip_newlines | replace: '  ', ' ' | truncate: 160 %}
+<meta property="og:image" content="{{ page.image | prepend: site.baseurl | prepend: site.url }}"/>
+<meta name="description" content="{% if pagecontent_description.size > 10 %}{{ page.description }}{% else %}{{ site.description }}{% endif %}">
+
+<link rel="shortcut icon" type="image/png" href="{{site.baseurl}}/assets/images/logo/maskable_icon_x192.png">
+<link rel="shortcut icon" sizes="192x192" href="{{site.baseurl}}/assets/images/logo/maskable_icon_x192.png">
+<link rel="apple-touch-icon" href="{{site.baseurl}}/assets/images/logo/maskable_icon_x192.png">
+
+ <!-- Facebook integration -->
+<meta property="og:title" content="{{ page.title }}"/>
+{% if page.image %}<meta property="og:image" content="{{ page.image | prepend: site.baseurl | prepend: site.url }}"/>{% endif %}
+<meta property="og:url" content="{{ page.url | prepend: site.baseurl | prepend: site.url }}"/>
+    {% if page.url == '/product/' %}
+<meta property="og:type" content="product">
+    {% endif %}
+    {% if page.url == '/blog/' %}
+<meta property="og:type" content="article">
+    {% endif %}
+<meta property="og:site_name" content="{{ site.title }}"/>
+<meta property="og:description" content="{% if pagecontent_description.size > 10 %}{{ page.description }}{% else %}{{ site.description }}{% endif %}"/>
+
+<!-- Twitter integration -->
+<meta name="twitter:card" content="summary">
+{% if site.twitter_url %}<meta name="twitter:site" content="{{ site.twitter_url }}">{% endif %}
+<meta name="twitter:title" content="{{ page.title }}" />
+{% if page.image %}<meta name="twitter:image" content="{{ site.url }}{{ page.image }}" />{% endif %}
+<meta name="twitter:url" content="{{ site.url }}{{ page.url }}" />
+<meta name="twitter:description" content="{% if pagecontent_description.size > 10 %}{{ page.description }}{% else %}{{ site.description }}{% endif %}" />
+<link rel="canonical" href="{{ page.url | replace:'index.html','' | prepend: site.baseurl | prepend: site.url }}">
+<link rel="alternate" type="application/rss+xml" title="{{ site.title }}" href="{{ '/feed.xml' | prepend: site.baseurl | prepend: site.url }}">
+<link rel="sitemap" type="application/xml" title="Sitemap" href="{{ '/sitemap.xml' | prepend: site.baseurl | prepend: site.url }}" />
+     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+     <script>
+       function onSubmit(token) {
+         document.getElementById("whatsapp-order").submit();
+       }
+     </script>
+
+<script type="module" src="{{ '/assets/vendor/@ionic/core/dist/ionic/ionic.esm.js?v=6.0' | relative_url }}"></script>
+<script nomodule src="{{ '/assets/vendor/@ionic/core/dist/ionic/ionic.js?v=6.0' | relative_url }}"></script>
+<link rel="stylesheet" href="{{ '/assets/vendor/@ionic/core/css/ionic.bundle.css?v=6.0' | relative_url }}" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+<link href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.css" rel="stylesheet" />
+<script src="{{ '/assets/js/jquery-3.6.0.js' | relative_url }}"></script>
+<style>
+.fancybox__container.is-animated[aria-hidden=false] .fancybox__backdrop, .fancybox__container.is-animated[aria-hidden=false] .fancybox__caption, .fancybox__container.is-animated[aria-hidden=false] .fancybox__nav, .fancybox__container.is-animated[aria-hidden=false] .carousel__dots, .fancybox__container.is-animated[aria-hidden=false] .carousel__button.is-close{top: 0;color: #dc322f;}.fancybox__content :focus:not(.carousel__button.is-close){outline:none;}.fancybox__html5video, .fancybox__content, .fancybox__iframe{border-radius: 5px;}
+    </style>
+    <script type="module">
+      import { alertController } from "{{ '/assets/vendor/@ionic/core/dist/ionic/index.esm.js?v=6.0' | relative_url }}";
+      window.alertController = alertController;
+    </script>
+  <script type="module">
+    import { toastController } from "{{ '/assets/vendor/@ionic/core/dist/ionic/index.esm.js?v=6.0' | relative_url }}";
+    window.toastController = toastController;
+  </script>
+  <script type="module">
+    import { modalController } from "{{ '/assets/vendor/@ionic/core/dist/ionic/index.esm.js?v=6.0' | relative_url }}";
+    window.modalController = modalController;
+  </script>
+<link rel="stylesheet" href="{{ '/assets/css/style.css?v=1.21.2' | prepend: site.baseurl }}">
+<link rel="stylesheet" href="{{ '/assets/css/webshop.css?v=1.21.2' | prepend: site.baseurl }}">
+<link rel="stylesheet" href="{{ '/assets/css/darkmode.css' | prepend: site.baseurl }}">
+<link rel="stylesheet" href="{{ '/assets/css/scrollbar.css' | prepend: site.baseurl }}">
+<link rel="manifest" href="{{ '/manifest.json' | prepend: site.baseurl }}">
+
+    <!-- pwa -->
+    <meta name="Description" content="{{site.description}}" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="{{site.name}}" />
+    <link rel="apple-touch-icon" href="{{ '/assets/images/logo/maskable_icon_x192.png' | prepend: site.baseurl }}" />
+    <meta name="msapplication-TileImage" content="{{'/assets/images/logo/maskable_icon_x192.png' | prepend: site.baseurl}}" />
+    <meta name="msapplication-TileColor" content="#ffffff" />
+
+    <!-- Products FB Meta Tags -->
+    {% if page.layout == "shop" %}
+    <meta property="og:title" content="{{ page.title }}">
+    <meta property="og:description" content="{{ page.description }}">
+    <meta property="og:url" content="{{site.url}}{{page.url}}">
+    <meta property="og:image" content="{{ page.image }}">
+    <meta property="product:brand" content="Plus62Bordir">
+    <meta property="product:availability" content="in stock">
+    <meta property="product:condition" content="new">
+    <meta property="product:price:amount" content="{{ page.price }}">
+    <meta property="product:price:currency" content="IDR">
+    <meta property="product:retailer_item_id" content="{{page.sku}}">
+    <meta property="product:item_group_id" content="{{page.noID}}">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org/",
+  "@type": "Product",
+  "name": "{{ page.title }}",
+  "image": "{{ page.image }}",
+  "brand":"plus62bordir",
+  "offers": {
+    "@type": "Offer",
+    "priceCurrency": "IDR",
+    "price": "{{ page.price }}",
+    "sale_price": "{{ page.discount }}",
+    "availability": "https://schema.org/InStock",
+    "url": "{{site.baseurl}}{{page.url}}",
+    "priceValidUntil": "2025-01-01T00:00:00.000Z"
+  },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "{{page.rating}}",
+    "ratingCount": "{{page.rC}}",
+    "reviewCount": "{{page.riv}}",
+    "bestRating": "5.",
+    "worstRating": "1"
+  },
+  "review": {
+    "@type": "Review",
+    "author": {
+      "@type": "Person",
+      "name": "NdanG"
+    }
+  },
+  "description": "{{ page.description }}",
+  "sku": "{{page.sku}}",
+  "mpn": "{{page.mpn}}",
+  "productID": "{{page.noID}}"
+}
+</script>
+    {% endif %}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org/",
+  "@type": "WebSite",
+  "url": "{{site.url}}",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "/search?keyword={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
+    {% if page.url == '/product/' %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org/",
+  "@type": "LocalBusiness",
+  "name": "Plus62 Store",
+  "address": "Jl. Gn. Lingga, Cibeuti, Rt.003/012Kawalu - Tasikmalaya 46182.",
+  "image": "https://1.bp.blogspot.com/-1bWHHqO2Jt0/X2ZgjgIVRVI/AAAAAAAAFZ8/XCb6roqGxhIn-K34II1L8BuLDoAePrmsgCLcBGAsYHQ/s0/192x192.png",
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": " 5",
+    "ratingCount": "3550",
+    "bestRating": "3500",
+    "reviewCount": "2657"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": "-7.382312105672588",
+    "longitude": "108.19063653829551"
+  },
+  "openingHoursSpecification": {
+    "@type": "OpeningHoursSpecification",
+    "validFrom": "2021-01-01T00:00:00.000Z",
+    "validThrough": "3000-01-01T00:00:00.000Z",
+    "opens": "07:00",
+    "closes": "16:00",
+    "dayOfWeek": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday"
+    ]
+  },
+  "telephone": "081386267897",
+  "priceRange": "Rp. 22.000 - Rp. 185.000",
+  "department": [
+    {
+      "@type": "LocalBusiness",
+      "name": "Plus62 Store",
+      "address": "Jl. Gn. Lingga, Cibeuti, Rt.003/012\nKawalu - Tasikmalaya 46182.\n\nLihat di Google Maps",
+      "image": "https://1.bp.blogspot.com/-1bWHHqO2Jt0/X2ZgjgIVRVI/AAAAAAAAFZ8/XCb6roqGxhIn-K34II1L8BuLDoAePrmsgCLcBGAsYHQ/s0/192x192.png",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+    "ratingValue": " 5",
+    "ratingCount": "3550",
+    "bestRating": "3500",
+    "reviewCount": "2657"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": "-7.382304125745099",
+        "longitude": "108.19063653829551"
+      },
+      "openingHoursSpecification": {
+        "@type": "OpeningHoursSpecification",
+        "validFrom": "2021-01-01T00:00:00.000Z",
+        "validThrough": "3000-01-01T00:00:00.000Z",
+        "opens": "07:00",
+        "closes": "16:00",
+        "dayOfWeek": [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday"
+        ]
+      },
+      "telephone": "081386267897",
+      "priceRange": "Rp. 20.000",
+      "menu": "https://plus62store.my.id/product",
+      "url": "https://plus62store.my.id"
+    }
+  ],
+  "menu": "https://plus62store.my.id/product",
+  "servesCuisine": "Masker Bordir Manual",
+  "url": "https://plus62store.my.id"
+}
+</script>
+    {% endif %}
+    {% if page.layout == 'post' %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org/",
+  "@type": "Article",
+  "author": {
+    "@type": "Person",
+    "name": "NoBody"
+  },
+  "headline": "{{ page.title }}",
+  "image": {
+    "@type": "ImageObject",
+    "url": "{{ page.img }}"
+  },
+  "datePublished": "{{ page.date | date_to_xmlschema }}",
+  "publisher": {
+    "@type": "Organization",
+    "name": "NoBody",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://1.bp.blogspot.com/-1bWHHqO2Jt0/X2ZgjgIVRVI/AAAAAAAAFZ8/XCb6roqGxhIn-K34II1L8BuLDoAePrmsgCLcBGAsYHQ/s0/192x192.png"
+    }
+  },
+  "keywords": "{{ page.title }}",
+  "description": "{{ page.excerpt| strip_html }}"
+}
+</script>
+    {% endif %}
+    {% include fb-pixel.html %}
+    {% include onesignal.html %}
+    {% include analytics.html %}
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!-- Created with Jekyll - https://jekyllrb.com -->
+</head>
+  <body>
+    {% include preload.html %}
+    <ion-app> {% if page.url == "{{site.baseurl}}/" %}{% elsif page.url contains '/product/' or page.layout == 'default' %}
+    {% include ion-header.html %}{% elsif page.layout == 'webshop' or page.layout == 'checkout-page' %}{% include ion-header.html %}{% elsif page.layout == 'post' or page.layout == 'payment-page' %}{% include ion-header.html %}{% endif %}
+      <ion-content fullscreen>

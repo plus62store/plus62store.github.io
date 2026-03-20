@@ -1,829 +1,257 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Plus62store - AI Assistant</title>
+---
+layout: index
+title: Plus62 Store
+description: Static online-shop simpleCart jekyllrb & ionic v.6
+image: /image/logo/maskable_icon.png
+---
 
-  <!-- Ionic Core v8 via CDN -->
-  <script type="module" src="https://cdn.jsdelivr.net/npm/@ionic/core@8/dist/ionic/ionic.esm.js"></script>
-  <script nomodule src="https://cdn.jsdelivr.net/npm/@ionic/core@8/dist/ionic/ionic.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ionic/core@8/css/ionic.bundle.css" />
-
-  <!-- Include SimpleCart -->
-  <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-  <script src="simpleCart.js"></script>
-  <script src="main.js"></script>
-
-  <style>
-    :root {
-      --ion-safe-area-top: env(safe-area-inset-top);
-      --ion-safe-area-bottom: env(safe-area-inset-bottom);
-      --ion-safe-area-left: env(safe-area-inset-left);
-      --ion-safe-area-right: env(safe-area-inset-right);
-    }
-
-    body {
-      margin: 0;
-      padding: 0;
-      background: #f9f9f9;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
-
-    .product-grid {
-      display: grid;
-      gap: 16px;
-      padding: 16px;
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    @media (min-width: 768px) {
-      .product-grid {
-        grid-template-columns: repeat(4, 1fr);
+<style>
+:root {
+    --ion-safe-area-top: 20px;
+    --ion-safe-area-bottom: 22px;
       }
-    }
+ion-header, ion-footer{display: none !important;}
+       .slideOutLeft {
+  -webkit-animation-name: slideOutLeft;
+  animation-name: slideOutLeft;
+  -webkit-animation-duration: 4s;
+  animation-duration: 6s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+  -webkit-animation-iteration-count: infinite; 
+  animation-iteration-count: infinite;
+  }
+  @-webkit-keyframes slideOutLeft {
+  0% {
+  -webkit-transform: translateX(0);
+  transform: translateX(0);
+  }
+  100% {
+  visibility: hidden;
+  -webkit-transform: translateX(-100%);
+  transform: translateX(-100%);
+  }
+  }
+  @keyframes slideOutLeft {
+  0% {
+  -webkit-transform: translateX(0);
+  transform: translateX(0);
+  }
+  100% {
+  visibility: hidden;
+  -webkit-transform: translateX(-100%);
+  transform: translateX(-100%);
+  }
+  } 
 
-    .product-card {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      overflow: hidden;
-      transition: transform 0.2s, box-shadow 0.2s;
-      cursor: pointer;
-    }
+.lightSpeedIn {
+  -webkit-animation-name: lightSpeedIn;
+  animation-name: lightSpeedIn;
+  -webkit-animation-timing-function: ease-out;
+  animation-timing-function: ease-out;
+  -webkit-animation-duration: 4s;
+  animation-duration: 5s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+-webkit-animation-iteration-count: infinite; 
+animation-iteration-count: infinite;
+  }
+  @-webkit-keyframes lightSpeedIn {
+  0% {
+  -webkit-transform: translate3d(50%, 0, 0) skewX(-30deg);
+  transform: translate3d(50%, 0, 0) skewX(-30deg);
+  opacity: 0;
+  }
+  60% {
+  -webkit-transform: skewX(20deg);
+  transform: skewX(20deg);
+  opacity: 1;
+  }
+  80% {
+  -webkit-transform: skewX(-5deg);
+  transform: skewX(-5deg);
+  opacity: 1;
+  }
+  50% {
+  -webkit-transform: none;
+  transform: none;
+  opacity: 1;
+  }
+  }
+  @keyframes lightSpeedIn {
+  0% {
+  -webkit-transform: translate3d(50%, 0, 0) skewX(-30deg);
+  transform: translate3d(50%, 0, 0) skewX(-30deg);
+  opacity: 0;
+  }
+ 10% {
+  -webkit-transform: skewX(20deg);
+  transform: skewX(20deg);
+  opacity: 1;
+  }
+  30% {
+  -webkit-transform: skewX(-5deg);
+  transform: skewX(-5deg);
+  opacity: 1;
+  }
+  50% {
+  -webkit-transform: none;
+  transform: none;
+  opacity: 1;
+  }
+  } 
+.preloader{display:none!important}
+    </style>
+    
+  </head>
+  <body>
+    <ion-app>
+      <ion-content fullscreen class="ion-padding" scroll-y="false">
+    <ion-note id="WelcomeMessage"></ion-note>
+        <ion-slides>
+          <ion-slide>
+            <div class="slide">
+              <img src="assets/images/logo/plus62.webp" style="border-radius: 100%;"/>
+              <h2>Selamat Datang</h2>
+              <p>
+                WebShop <b>Plus62store</b> menawarkan berbagai macam jenis masker bordir yang aman dan nyaman dipakai sehari-hari.
+              </p>
+                <p class="slideOutLeft" style="margin-top:20px;">
+            <ion-chip disabled="true"><ion-icon color="dark" name="arrow-back-outline"></ion-icon><ion-label> Geser</ion-label></ion-chip>
+                </p>
+            </div>
+          </ion-slide>
 
-    .product-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-    }
+          <ion-slide>
+            <img src="assets/images/logo/WhatsApp.webp" />
+            <h2>Order mudah! via WhatsApp.</h2>
+            <p>
+              <b>Instant Checkout</b> dengan Form Contact WhatsApp,
+              mempermudah siapa saja melakukan orderan.
+            </p>
+          </ion-slide>
 
-    .product-image {
-      width: 100%;
-      height: 160px;
-      object-fit: cover;
-    }
+          <ion-slide>
+            <img src="assets/images/logo/24jam.webp" />
+            <h2>Online 1x24 Jam!</h2>
+            <p>
+              <b>CS (Customer Service)</b> kami akan dengan senang hati untuk melayani 24 Jam :)
+            </p>
+          </ion-slide>
 
-    .product-title {
-      font-size: 14px;
-      font-weight: 600;
-      padding: 8px 12px 4px;
-    }
+          <ion-slide>
+            <img src="https://img.freepik.com/free-icon/google_318-278809.jpg" />
+            <h2>Sign In</h2>
+            <p>Untuk melanjutkan silahkan Sign in dengan akun google anda.</p>
+            <ion-button id="sign-in-button" color="primary" style="margin-top:10px;"><ion-icon slot="start" name="logo-google"></ion-icon> Sign In</ion-button>
 
-    .product-price {
-      font-size: 14px;
-      color: #e74c3c;
-      padding: 0 12px 8px;
-    }
-
-    .product-stock {
-      font-size: 12px;
-      padding: 0 12px 8px;
-    }
-
-    /* PERBAIKAN CHAT MODAL STYLES */
-     .chat-container {
-      height: calc(100vh - 110px) !important; 
-      max-height: calc(100vh - 110px) !important;
-      display: flex;
-      flex-direction: column;
-      position: relative; 
-    }
-
-.message strong {
-  font-weight: 600;
-  color: inherit;
-}
-
-.message em {
-  font-style: italic;
-  color: #666;
-}
-
-.message code {
-  background: rgba(56, 128, 255, 0.1);
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-family: 'Courier New', monospace;
-  font-size: 0.9em;
-}
-
-.ai-message {
-  line-height: 1.5;
-}
-
-    .ai-message br {
-      margin-bottom: 8px;
-      display: block;
-      content: "";
-    }
-
-    .chat-messages {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px;
-      padding-bottom: 90px; 
-    }
-
-
-    .message {
-      margin-bottom: 12px;
-      max-width: 85%;
-      word-wrap: break-word;
-    }
-
-    .user-message {
-      width: fit-content;
-      margin-left: auto;
-      background: #3880ff;
-      color: white;
-      padding: 10px 14px;
-      border-radius: 18px 18px 4px 18px;
-    }
-
-    .ai-message {
-      margin-right: auto;
-      background: white;
-      color: #333;
-      padding: 10px 14px;
-      border-radius: 18px 18px 18px 4px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-
-    .chat-input-wrapper ion-input {
-      --padding-start: 16px;
-      --padding-end: 16px;
-      height: 44px;
-      padding-top: 10px; 
-      padding-bottom: 10px;
-    }
-
-    .chat-input-wrapper ion-button {
-      --padding-start: 12px;
-      --padding-end: 12px;
-      border-radius: 50%;
-      height: 44px;
-      width: 44px;
-      min-width: 44px;
-    }
-
-    /* Loading indicator */
-    .typing-indicator {
-      display: flex;
-      padding: 10px 14px;
-      background: white;
-      border-radius: 18px;
-      width: fit-content;
-      margin-bottom: 12px;
-    }
-
-    .typing-dot {
-      width: 8px;
-      height: 8px;
-      margin: 0 2px;
-      background: #ccc;
-      border-radius: 50%;
-      animation: typing 1.4s infinite;
-    }
-
-    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-
-    @keyframes typing {
-      0%, 60%, 100% { transform: translateY(0); }
-      30% { transform: translateY(-10px); }
-    }
-
-    /* FIX ION-MODAL STYLES */
-    ion-modal {
-      --height: auto;
-      --border-radius: 16px;
-      --box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    }
-
-    ion-modal::part(backdrop) {
-      background: rgba(0, 0, 0, 0.5);
-    }
-
-    ion-modal::part(content) {
-      overflow: hidden;
-    }
-
-    /* CART MODAL STYLES */
-    .cart-content {
-      max-height: 70vh;
-      overflow-y: auto;
-      padding-bottom: 80px;
-    }
-
-    /* EMPTY STATE */
-    .empty-cart-state {
-      text-align: center;
-      padding: 40px 20px;
-      color: #666;
-    }
-
-    .empty-cart-state ion-icon {
-      font-size: 64px;
-      color: #ccc;
-      margin-bottom: 16px;
-    }
-
-    /* MOBILE OPTIMIZATION */
-    @media (max-width: 768px) {
-      .chat-container {
-        height: calc(100vh - 56px - env(safe-area-inset-bottom)) !important;
+    <script type="module">
+      const firebaseConfig = {
+          apiKey: "{{ site.API_KEY }}",
+          authDomain: "{{ site.AUTH_DOMAIN }}",
+          databaseURL: "{{ site.DATABASE_URL }}",
+          projectId: "{{ site.PROJECT_ID }}",
+          storageBucket: "{{ site.STORAGE_BUCKET }}",
+          messagingSenderId: "{{ site.SENDER_ID }}",
+          appId: "{{ site.APP_ID }}",
+          measurementId: "{{ site.MEASUREMENT_ID }}"
+      };
+      firebase.initializeApp(firebaseConfig);
+      
+      const auth = firebase.auth();
+      
+      const userSignedInDiv = document.getElementById('user-signed-in');
+      const signInButton = document.getElementById('sign-in-button');
+      
+      function toggleUI() {
+        if (auth.currentUser) {
+          location.href = "{{site.baseurl}}/product";
+        } else {
+        }
       }
-
-      ion-modal {
-        --height: 100%;
-        --max-height: 100%;
-        --border-radius: 0;
-        --box-shadow: none;
-      }
-
-      ion-modal::part(content) {
-        border-radius: 0;
-      }
-
-      .product-grid {
-        padding: 12px;
-        gap: 12px;
-      }
-
-      .product-card {
-        border-radius: 8px;
-      }
-    }
-
-    /* SAFE AREA FOR NOTCH DEVICES */
-    @supports(padding: max(0px)) {
-      .chat-input-container {
-        padding-bottom: max(12px, env(safe-area-inset-bottom));
-      }
-
-      .chat-messages {
-        padding-top: max(16px, env(safe-area-inset-top));
-      }
-    }
-  </style>
-</head>
-<body>
-  <ion-app>
-    <ion-header>
-      <ion-toolbar color="primary">
-        <ion-title>Toko Masker Online</ion-title>
-        <ion-buttons slot="end">
-          <ion-button id="cart-button">
-            <ion-icon name="cart" slot="icon-only"></ion-icon>
-            <ion-badge color="danger" id="cart-count">0</ion-badge>
-          </ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
-
-    <ion-content fullscreen="true">
-      <div class="product-grid" id="productGrid"></div>
-    </ion-content>
-<ion-footer>
-  <ion-toolbar class="ion-padding">
-    <ion-label slot="end">
-      <span id="footer">DaffaDev</span>
-    </ion-label>
-  </ion-toolbar>
-</ion-footer>
-
-<ion-modal id="chat-modal">
-  <ion-header>
-    <ion-toolbar> <ion-title id="chat-title"> Shopping Assistant</ion-title> <ion-buttons slot="end">
-        <ion-button onclick="closeChatModal()">
-          <ion-icon name="close" slot="icon-only"></ion-icon>
-        </ion-button>
-      </ion-buttons>
-    </ion-toolbar>
-  </ion-header>
-  <ion-content class="chat-container">
-    <div class="chat-messages" id="chat-messages">
-      </div>
-
-    <div class="chat-input-container"></div>
-  </ion-content>
-<ion-footer>
-      <div class="chat-input-wrapper">
-<ion-toolbar>
-        <ion-input 
-          id="chat-input" 
-          placeholder="Ketik pesan..."
-          enterkeyhint="send"
-          clear-input="true"
-        ></ion-input>
-<ion-buttons slot="end">
-        <ion-button id="send-button" onclick="sendMessage()" fill="solid" color="primary">
-          <ion-icon name="send" slot="icon-only"></ion-icon>
-        </ion-button>
-</ion-buttons>
-</ion-toolbar>
-      </div>
-</ion-footer>
-</ion-modal>
-
-    <!-- Cart Modal - FIXED STRUCTURE -->
-    <ion-modal id="cart-modal">
-      <ion-header>
-        <ion-toolbar>
-          <ion-title>Keranjang Belanja</ion-title>
-          <ion-buttons slot="end">
-            <ion-button onclick="closeCartModal()">
-             <ion-icon name="close" slot="icon-only"></ion-icon>
-            </ion-button>
-          </ion-buttons>
-        </ion-toolbar>
-      </ion-header>
-      <ion-content class="cart-content">
-        <div id="simpleCart_items" class="simpleCart_items"></div>
-
-        <!-- Empty cart state -->
-        <div id="empty-cart" class="empty-cart-state" style="display: none;">
-          <ion-icon name="cart-outline"></ion-icon>
-          <h3>Keranjang Kosong</h3>
-          <p>Yuk tambahkan produk dulu!</p>
-        </div>
-
-        <ion-grid style="padding: 20px;">
-          <ion-row>
-            <ion-col>
-              <ion-button expand="block" color="success" onclick="checkout()" id="checkout-btn" style="display: none;">Checkout via WhatsApp
-                <ion-icon name="logo-whatsapp" slot="end"></ion-icon>
-              </ion-button>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
+      
+      signInButton.addEventListener('click', () => {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        auth.signInWithPopup(provider);
+      });
+      
+      auth.onAuthStateChanged(user => {
+        toggleUI();
+      });
+    </script>
+          </ion-slide>
+        </ion-slides>
       </ion-content>
-    </ion-modal>
-  </ion-app>
+    </ion-app>
 
+    <style>
+      ion-slides {
+        height: 100%;
+      }
+
+      .swiper-slide {
+        display: block;
+      }
+
+      .swiper-slide h2 {
+        margin-top: 2.8rem;
+      }
+
+      .swiper-slide img {
+        width: 192px;
+        max-height: 50%;
+        max-width: 80%;
+        margin: 60px 0 40px;
+        pointer-events: none;
+      }
+
+      b {
+        font-weight: 500;
+      }
+
+      p {
+        padding: 0 40px;
+        font-size: 14px;
+        line-height: 1.5;
+        color: var(--ion-color-step-600, #60646b);
+      }
+
+      p b {
+        color: var(--ion-text-color, #000000);
+      }
+    </style>
 <script>
-    // Konfigurasi SimpleCart
-    simpleCart({
-      cartColumns: [
-        { attr: "name", label: "Produk", view: "link" },
-        { attr: "price", label: "Harga", view: "currency" },
-        { attr: "warna", label: "Warna", view: "text" },
-        { attr: "ukuran", label: "Model", view: "text" },
-        { view: "decrement", label: false },
-        { attr: "quantity", label: 'Qty', view: "qty" },
-        { view: "increment", label: false },
-        { view: "remove", text: "Hapus", label: false }
-      ],
-      currency: "IDR",
-    });
+function myProduct() {
+  location.replace('/product')
+}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script>
+var slides = document.querySelector('ion-slides');
 
-    // AI Chat State
-    let currentProduct = null;
-    let chatSessionId = Date.now().toString(); // TAMBAHKAN session ID
-    const AI_API_URL = 'https://ai-plus62store.sendaljepit.workers.dev/api/chat';
-
-    // Helper functions
-    function parsePrice(priceStr) {
-      if (typeof priceStr === 'number') return priceStr;
-      if (!priceStr) return 0;
-      return parseInt(priceStr.toString().replace(/\./g, '')) || 0;
-    }
-
-    function formatPrice(price) {
-      if (typeof price === 'string') return price;
-      return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    }
-
-    // Load products
-    async function loadProducts() {
-      try {
-        const res = await fetch('https://plus62store.github.io/products.json');
-        const data = await res.json();
-
-        const container = document.getElementById('productGrid');
-        container.innerHTML = '';
-
-        data.product.forEach(item => {
-          const card = document.createElement('div');
-          card.className = 'product-card';
-
-          const stockColor = item.stok === 'Stok Habis' ? '#e74c3c' : '#27ae60';
-          const stockText = item.stok === 'Stok Habis' ? 'Stok Habis' : 'Tersedia';
-
-          card.innerHTML = `
-            <img class="product-image" src="${item.image}" alt="${item.title}" loading="lazy" />
-            <div class="product-title">${item.title}</div>
-            <div class="product-price">
-              ${item.price ? `<span style="text-decoration: line-through; color: #999; margin-right: 8px;">
-                Rp ${formatPrice(item.price)}
-              </span>` : ''}
-              <span style="font-weight: bold; color: #e74c3c;">
-                Rp ${formatPrice(item.discount)}
-              </span>
+slides.options = {
+  initialSlide: 0,
+  speed: 500
+}
+</script>
+<div class="hidden">
+          <ion-chip slot="end" onclick="setDarkMode(true)" id="darkBtn">
+            <div>
+            <ion-label style="display: none;">DarkMode</ion-label>
+            <ion-icon name="moon" color="dark"></ion-icon>
             </div>
-            <div class="product-stock" style="color: ${stockColor}">
-              ${stockText}
+          </ion-chip>
+          <ion-chip slot="end" onclick="setDarkMode(false)" id="lightBtn" style="display: none;">
+            <div>
+            <ion-label style="display: none;">LightMode</ion-label>
+            <ion-icon name="partly-sunny"></ion-icon>
             </div>
-            <div style="padding: 0 12px 8px; font-size: 11px; color: #3880ff;">
-              💬 Klik untuk chat AI
-            </div>
-          `;
-
-          card.addEventListener('click', () => openProductChat(item));
-          container.appendChild(card);
-        });
-
-        updateCartCount();
-      } catch (err) {
-        console.error('Gagal memuat produk:', err);
-        const container = document.getElementById('productGrid');
-        container.innerHTML = '<p style="text-align:center;color:red;">Gagal memuat data produk.</p>';
-      }
-    }
-
-    // Open chat for specific product - TAMBAHKAN RESET SESSION
-    function openProductChat(product) {
-      currentProduct = product;
-      chatSessionId = Date.now().toString(); // RESET SESSION SETIAP KALI CHAT BARU
-
-      const modal = document.getElementById('chat-modal');
-      const title = document.getElementById('chat-title');
-      const messages = document.getElementById('chat-messages');
-
-      if (!modal || !title || !messages) return;
-
-      title.textContent = `🤖 AI Assist - ${product.title}`;
-      messages.innerHTML = '';
-
-      // Initial AI message
-      const colors = product.styles?.map(s => s.name).join(', ') || 'berbagai pilihan';
-
-      addMessage('ai', `👋 **Hai! Saya Maya AI Assistant untuk ${product.title}**
-
-Apa yang bisa saya bantu? 😊
-
-*Contoh chat:*
-• "Ada warna apa aja?"
-• "Aku mau beli"
-• "Detail produk"`);
-
-      // Open modal
-      modal.present();
-
-      // Auto focus dan scroll setelah modal terbuka
-      setTimeout(() => {
-        const input = document.getElementById('chat-input');
-        if (input) input.setFocus();
-        scrollToBottom();
-      }, 300);
-    }
-
-    // Versi extended dengan lebih banyak markdown support
-    function addMessage(sender, text) {
-      const messages = document.getElementById('chat-messages');
-      if (!messages) return;
-
-      const messageDiv = document.createElement('div');
-      messageDiv.className = `message ${sender}-message`;
-
-      // Parse markdown dengan styling lebih baik
-      let htmlText = text
-        // Bold dengan ** atau __
-        .replace(/(\*\*|__)(.*?)\1/g, '<strong>$2</strong>')
-        // Italic dengan * atau _
-        .replace(/(\*|_)(.*?)\1/g, '<em>$2</em>')
-        // Line breaks
-        .replace(/\n/g, '<br>')
-        // Code/teletype dengan `
-        .replace(/`(.*?)`/g, '<code style="background:#f0f0f0;padding:2px 6px;border-radius:4px;font-family:monospace;">$1</code>')
-        // Bullet points dengan styling
-        .replace(/•/g, '<span style="display:inline-block;width:20px;color:#3880ff;">•</span>');
-
-      messageDiv.innerHTML = htmlText;
-
-      messages.appendChild(messageDiv);
-      scrollToBottom();
-    }
-
-    // Scroll to bottom function
-    function scrollToBottom() {
-      const messages = document.getElementById('chat-messages');
-      if (messages) {
-        setTimeout(() => {
-          messages.scrollTop = messages.scrollHeight;
-        }, 100);
-      }
-    }
-
-    // Show typing indicator
-    function showTyping() {
-      const messages = document.getElementById('chat-messages');
-      if (!messages) return;
-
-      const typingDiv = document.createElement('div');
-      typingDiv.className = 'typing-indicator';
-      typingDiv.id = 'typing-indicator';
-      typingDiv.innerHTML = `
-        <div class="typing-dot"></div>
-        <div class="typing-dot"></div>
-        <div class="typing-dot"></div>
-      `;
-      messages.appendChild(typingDiv);
-      scrollToBottom();
-    }
-
-    // Hide typing indicator
-    function hideTyping() {
-      const typing = document.getElementById('typing-indicator');
-      if (typing) typing.remove();
-    }
-
-    // PERBAIKI: Send message to AI dengan session ID
-    async function sendMessage() {
-      const input = document.getElementById('chat-input');
-      if (!input) return;
-
-      const message = input.value.trim();
-      if (!message) return;
-
-      // Clear input
-      input.value = '';
-
-      // Reset input height
-      input.style.height = 'auto';
-
-      // Add user message
-      addMessage('user', message);
-
-      // Show typing indicator
-      showTyping();
-
-      try {
-        // PERBAIKAN: Kirim sessionId ke API
-        const response = await fetch(AI_API_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            message: message,
-            productId: currentProduct?.id,
-            sessionId: chatSessionId  // KIRIM SESSION ID
-          })
-        });
-
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-        const aiData = await response.json();
-        hideTyping();
-
-        // Update session ID dari response
-        if (aiData.sessionId) {
-          chatSessionId = aiData.sessionId;
-        }
-
-        // Add AI response
-        if (aiData.response) {
-          addMessage('ai', aiData.response);
-        }
-
-        // Handle actions - HANYA JIKA ADA ACTION ADD TO CART
-        if (aiData.action?.type === 'addToCart' && aiData.action.data) {
-          handleAddToCart(aiData.action.data);
-        }
-
-      } catch (error) {
-        hideTyping();
-        console.error('Chat error:', error);
-
-        // Fallback response
-        const fallback = [
-          "Maaf kak, lagi ada gangguan nih 😵‍💫 Coba lagi ya atau langsung pesan aja!",
-          "Wah, koneksi lagi nggak stabil nih. Tapi produk ${currentProduct?.title} masih ready kok!",
-          "Oops, error dikit. Tapi Maya masih siap bantu kamu pilih masker yang cocok! 😊"
-        ];
-
-        const randomMsg = fallback[Math.floor(Math.random() * fallback.length)];
-        addMessage('ai', randomMsg.replace('${currentProduct?.title}', currentProduct?.title || 'ini'));
-      }
-    }
-
-    // Handle add to cart
-    function handleAddToCart(itemData) {
-      try {
-        const price = parsePrice(itemData.price);
-        const quantity = itemData.quantity || 1;
-        const warna = itemData.warna || 'pilihan';
-        const ukuran = itemData.ukuran || 'regular';
-        const productName = itemData.name || currentProduct?.title;
-
-        // Add to cart
-        simpleCart.add({
-          name: productName,
-          price: price,
-          quantity: quantity,
-          warna: warna,
-          ukuran: ukuran,
-          link: currentProduct?.url || '#',
-          berat: 100
-        });
-
-        updateCartCount();
-        updateCartModal();
-
-        // Success message - Moved to AI response, jadi tidak perlu pesan tambahan
-
-      } catch (error) {
-        console.error('Add to cart error:', error);
-        addMessage('ai', '😅 Ups, gagal nambahin ke keranjang. Coba lagi ya!');
-      }
-    }
-
-    // Get cart data
-    function getCartData() {
-      try {
-        const items = simpleCart.items();
-        return items.map(item => ({
-          name: item.get('name'),
-          price: item.get('price'),
-          quantity: item.get('quantity'),
-          warna: item.get('warna'),
-          ukuran: item.get('ukuran'),
-          total: item.get('price') * item.get('quantity')
-        }));
-      } catch (error) {
-        return [];
-      }
-    }
-
-    // Update cart count
-    function updateCartCount() {
-      try {
-        const count = simpleCart.quantity();
-        const cartCount = document.getElementById('cart-count');
-        if (cartCount) {
-          cartCount.textContent = count;
-        }
-      } catch (error) {
-        console.error('Update cart count error:', error);
-      }
-    }
-
-    // Update cart modal display
-    function updateCartModal() {
-      const items = simpleCart.items();
-      const emptyCart = document.getElementById('empty-cart');
-      const checkoutBtn = document.getElementById('checkout-btn');
-
-      if (items.length === 0) {
-        if (emptyCart) emptyCart.style.display = 'block';
-        if (checkoutBtn) checkoutBtn.style.display = 'none';
-      } else {
-        if (emptyCart) emptyCart.style.display = 'none';
-        if (checkoutBtn) checkoutBtn.style.display = 'block';
-      }
-    }
-
-    // PERBAIKAN: Close chat modal dengan reset session
-    function closeChatModal() {
-      const modal = document.getElementById('chat-modal');
-      if (modal) {
-        modal.dismiss();
-        currentProduct = null;
-        chatSessionId = Date.now().toString(); // RESET SESSION
-      }
-    }
-
-    // FIXED: Close cart modal
-    function closeCartModal() {
-      const modal = document.getElementById('cart-modal');
-      if (modal) modal.dismiss();
-    }
-
-    // Checkout function
-    function checkout() {
-      const cartModal = document.getElementById('cart-modal');
-      if (cartModal) cartModal.dismiss();
-
-      if (simpleCart.quantity() === 0) {
-        alert('Keranjang masih kosong nih!');
-        return;
-      }
-
-      // WhatsApp order
-      window.WhatsAppOrder();
-    }
-
-    // WhatsApp integration
-    window.WhatsAppOrder = function() {
-      const items = simpleCart.items();
-      if (items.length === 0) {
-        alert('Keranjang kosong!');
-        return;
-      }
-
-      let message = `Halo Admin Plus62 Store! 😊\n\nSaya mau order:\n\n`;
-
-      items.forEach((item, index) => {
-        message += `${index + 1}. ${item.get('name')}\n`;
-        message += `   Warna: ${item.get('warna') || '-'}\n`;
-        message += `   Model: ${item.get('ukuran') || 'regular'}\n`;
-        message += `   Jumlah: ${item.get('quantity')} pcs\n`;
-        message += `   Harga: Rp ${formatPrice(item.get('price'))}\n\n`;
-      });
-
-      message += `Total: Rp ${formatPrice(simpleCart.total())}\n\n`;
-      message += `Mohon diproses ya! 🙏`;
-
-      const phone = '6281234567890';
-      const encoded = encodeURIComponent(message);
-      window.open(`https://wa.me/${phone}?text=${encoded}`, '_blank');
-    };
-
-    // Initialize with proper event listeners
-    document.addEventListener('DOMContentLoaded', function() {
-      console.log('🚀 Initializing Plus62 Store...');
-
-      // Load products
-      setTimeout(loadProducts, 500);
-
-      // Cart updates
-      if (typeof simpleCart !== 'undefined') {
-        simpleCart.bind('update', function() {
-          updateCartCount();
-          updateCartModal();
-        });
-      }
-
-      // Setup chat input
-      const chatInput = document.getElementById('chat-input');
-      const sendBtn = document.getElementById('send-button');
-
-      if (chatInput) {
-        // Enter key to send
-        chatInput.addEventListener('keypress', function(e) {
-          if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            sendMessage();
-          }
-        });
-
-        // Auto-resize textarea
-        chatInput.addEventListener('input', function() {
-          this.style.height = 'auto';
-          this.style.height = (this.scrollHeight) + 'px';
-        });
-      }
-
-      if (sendBtn) {
-        sendBtn.addEventListener('click', sendMessage);
-      }
-
-      // Setup cart button
-      const cartBtn = document.getElementById('cart-button');
-      if (cartBtn) {
-        cartBtn.addEventListener('click', function() {
-          const modal = document.getElementById('cart-modal');
-          if (modal) {
-            updateCartModal();
-            modal.present();
-          }
-        });
-      }
-
-      // Initial chat greeting
-      setTimeout(() => {
-        const messages = document.getElementById('chat-messages');
-        if (messages && messages.children.length === 0) {
-          addMessage('ai', '👋 **Selamat datang di AI Shopping Assistant!**\n\nKlik produk untuk mulai ngobrol dengan AI!');
-        }
-      }, 1000);
-    });
-
-    // Handle keyboard show/hide on mobile
-    if ('visualViewport' in window) {
-      const viewport = window.visualViewport;
-
-      viewport.addEventListener('resize', () => {
-        scrollToBottom();
-      });
-
-      viewport.addEventListener('scroll', () => {
-        scrollToBottom();
-      });
-    }
-
-    // Handle back button on Android/iOS
-    document.addEventListener('backbutton', function(e) {
-      const chatModal = document.getElementById('chat-modal');
-      const cartModal = document.getElementById('cart-modal');
-
-      if (chatModal && chatModal.isConnected && chatModal.style.display !== 'none') {
-        closeChatModal();
-        e.preventDefault();
-      } else if (cartModal && cartModal.isConnected && cartModal.style.display !== 'none') {
-        closeCartModal();
-        e.preventDefault();
-      }
-    }, false);
-  </script>
-</body>
-</html>
+          </ion-chip>
+</div>
+<script  src="{{ '/assets/js/script.js' | prepend: site.baseurl }}"></script>
+
+<script type="text/javascript">
+var Messages = new Date,
+    Jams = Messages.getHours();
+document.getElementById("WelcomeMessage").innerHTML = 5 <= Jams && Jams <= 11 ? "Selamat Pagi" : 12 <= Jams && Jams <= 15 ? "Selamat Siang" : 15 <= Jams && Jams <= 17 ? "Selamat Sore" : 18 <= Jams && Jams <= 23 ? "Selamat malam" : "Selamat malam menjelang pagi";
+</script>

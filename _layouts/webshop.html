@@ -1,0 +1,57 @@
+---
+layout: compress
+---
+<!DOCTYPE html>
+<html lang="en">
+
+    {% include head.html %}
+
+    <div id="webshop" class="shop-container">
+     <div class="etalase">
+      {{ content }}
+     </div>
+    </div>
+    {% include widget-footer.html %}
+
+    {% include ion-footer.html %}
+<ion-modal  trigger="trigger-cart" id="Cart">
+<ion-modal-header collapse="fade" translucent="true">
+        <ion-toolbar>
+<ion-title>Keranjang Belanja</ion-title>
+    <ion-buttons slot="end">
+      <ion-button onClick="dismissCart()">
+        <ion-icon slot="icon-only" name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+        </ion-toolbar>
+     </ion-modal-header>
+<ion-content>
+<style>.keranjang-box .simpleCart_items {max-height: 330px!important;padding: 10px;}@media only screen and (max-width:767px){.keranjang-box .simpleCart_items {max-height: 640px!important;}}</style>
+    {% include keranjang.html %}
+</ion-content>
+</ion-modal>
+<script>
+  const sheetModal = document.querySelector('#sheetOrder');
+  const cardModal = document.querySelector('#Cart');
+
+  sheetModal.breakpoints = [0.0, 0.6, 0.0];
+  sheetModal.initialBreakpoint = 0.6;
+  
+  cardModal.swipeToClose = true;
+  cardModal.presentingElement = document.querySelector('ion-app');
+
+async function dismissCart() {
+  await cardModal.dismiss({
+    'dismissed': true
+  });
+}
+
+async function dismissWa() {
+  await sheetModal.dismiss({
+    'dismissed': true
+  });
+}
+
+</script>
+
+</html>
