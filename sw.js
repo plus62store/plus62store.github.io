@@ -35,10 +35,10 @@ workbox.precaching.precacheAndRoute([
   { url: '/product/masker-bordir-tasik-ilalang/', revision: '2021-02-02' },
   { url: '/product/masker-bordir-tasik-dahlia/', revision: '2021-02-01' },
   { url: '/product/mukena-garcella-rayon-premium/', revision: '2020-05-22' },
-  { url: '/', revision: '202603210303' },
-  { url: '/product', revision: '202603210303' },
-  { url: '/assets/css/style.css', revision: '202603210303' },
-  { url: '/assets/css/webshop.css', revision: '202603210303' }
+  { url: '/', revision: '202603210325' },
+  { url: '/product', revision: '202603210325' },
+  { url: '/assets/css/style.css', revision: '202603210325' },
+  { url: '/assets/css/webshop.css', revision: '202603210325' }
 ])
 
 registerRoute(
