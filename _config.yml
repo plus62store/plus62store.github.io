@@ -9,7 +9,7 @@ description: Jual Masker Bordir Tasikmalaya..
 baseurl: "" 
 url: ""
 twitter_username: x1666
-github_username:  daffadevhosting
+github_username: daffadevhosting
 fb-pixel: 904845437026791
 fb-appID: 437300347340287
 fb-admin: 158878762428839
@@ -19,6 +19,16 @@ signal-id: ec75b8ee-8401-422f-ab4b-305d44cc7d8a
 safari-web-ID: web.onesignal.auto.0f4ef0fc-d020-4184-9066-253532c318fc
 G-verify: 
 comen: 30234
+
+#firebase
+WA_KEY: 0811222333
+SITE_KEY: 
+API_KEY: AIzaSyDGYGM4xah-coe60HdhbglBQyD3uYDevdA
+AUTH_DOMAIN: plus62webstore.firebaseapp.com
+DATABASE_URL: https://plus62webstore-default-rtdb.asia-southeast1.firebasedatabase.app
+PROJECT_ID: plus62webstore
+SENDER_ID: 994891709388
+APP_ID: 1:994891709388:web:8dc826a78000e9aaf73b69
 
 # Build settings
 plugins:
