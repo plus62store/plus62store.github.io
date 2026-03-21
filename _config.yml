@@ -21,14 +21,14 @@ G-verify:
 comen: 30234
 
 #firebase
-WA_KEY: "<%= ENV['WA_KEY'] %>"
-SITE_KEY: "<%= ENV['SITE_KEY'] %>"
-API_KEY: "<%= ENV['API_KEY'] %>"
-AUTH_DOMAIN: "<%= ENV['AUTH_DOMAIN'] %>"
-DATABASE_URL: "<%= ENV['DATABASE_URL'] %>"
-PROJECT_ID: "<%= ENV['PROJECT_ID'] %>"
-SENDER_ID: "<%= ENV['SENDER_ID'] %>"
-APP_ID: "<%= ENV['APP_ID'] %>"
+WA_KEY: 0811222333
+SITE_KEY: 
+API_KEY: AIzaSyDGYGM4xah-coe60HdhbglBQyD3uYDevdA
+AUTH_DOMAIN: plus62webstore.firebaseapp.com
+DATABASE_URL: https://plus62webstore-default-rtdb.asia-southeast1.firebasedatabase.app
+PROJECT_ID: plus62webstore
+SENDER_ID: 994891709388
+APP_ID: 1:994891709388:web:8dc826a78000e9aaf73b69
 
 # Build settings
 plugins:
