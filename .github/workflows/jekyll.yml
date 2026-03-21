@@ -37,7 +37,6 @@ jobs:
           APP_ID: ${{ secrets.APP_ID }}
           WA_KEY: ${{ secrets.WA_KEY }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          STORAGE_BUCKET: ${{ secrets.STORAGE_BUCKET }}
           SENDER_ID: ${{ secrets.SENDER_ID }}
 
       - name: Deploy ke GitHub Pages
