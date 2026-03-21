@@ -2,6 +2,7 @@ _site
 _styles
 .DS_Store
 .jekyll
+.jekyll-cache
 .bundle
 .env
 .sass-cache
