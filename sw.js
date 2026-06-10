@@ -6,7 +6,7 @@ const { CacheableResponse } = workbox.cacheableResponse;
 
 workbox.core.setCacheNameDetails({
   prefix: '',
-  suffix: '2026-03'
+  suffix: '2026-06'
 });
 
 registerRoute(
@@ -35,10 +35,10 @@ workbox.precaching.precacheAndRoute([
   { url: '/product/masker-bordir-tasik-ilalang/', revision: '2021-02-02' },
   { url: '/product/masker-bordir-tasik-dahlia/', revision: '2021-02-01' },
   { url: '/product/mukena-garcella-rayon-premium/', revision: '2020-05-22' },
-  { url: '/', revision: '202603210434' },
-  { url: '/product', revision: '202603210434' },
-  { url: '/assets/css/style.css', revision: '202603210434' },
-  { url: '/assets/css/webshop.css', revision: '202603210434' }
+  { url: '/', revision: '202606100632' },
+  { url: '/product', revision: '202606100632' },
+  { url: '/assets/css/style.css', revision: '202606100632' },
+  { url: '/assets/css/webshop.css', revision: '202606100632' }
 ])
 
 registerRoute(
