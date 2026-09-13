@@ -1,0 +1,363 @@
+---
+title: Kebijakan Pengembalian & Pengembalian Dana
+permalink: /return_plicy
+---
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kebijakan Pengembalian & Pengembalian Dana</title>
+
+  <!-- Ionic Core v8 CDN CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ionic/core@8/css/ionic.bundle.css" />
+
+  <!-- Ionic Core v8 CDN JS (ESM & nomodule fallback) -->
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@ionic/core@8/dist/ionic/ionic.esm.js"></script>
+  <script nomodule src="https://cdn.jsdelivr.net/npm/@ionic/core@8/dist/ionic/ionic.js"></script>
+
+  <!-- Ionicons JS -->
+  <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@7/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://cdn.jsdelivr.net/npm/ionicons@7/dist/ionicons/ionicons.js"></script>
+
+  <style>
+    :root {
+      --ion-color-primary: #0f172a;
+      --ion-color-primary-rgb: 15, 23, 42;
+      --ion-color-primary-contrast: #ffffff;
+      --ion-color-primary-shade: #0d1425;
+      --ion-color-primary-tint: #272e3f;
+
+      --ion-color-secondary: #2563eb;
+      --ion-color-secondary-rgb: 37, 99, 235;
+      --ion-color-secondary-contrast: #ffffff;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    .policy-container {
+      max-width: 840px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    .header-card {
+      border-left: 4px solid var(--ion-color-primary);
+      margin-bottom: 20px;
+    }
+
+    .step-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background-color: var(--ion-color-secondary);
+      color: white;
+      font-size: 14px;
+      font-weight: bold;
+      margin-right: 10px;
+    }
+
+    .table-container {
+      overflow-x: auto;
+      margin: 16px 0;
+    }
+
+    table.custom-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    table.custom-table th {
+      background-color: var(--ion-color-primary);
+      color: white;
+      text-align: left;
+      padding: 10px 12px;
+      font-weight: 600;
+    }
+
+    table.custom-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    table.custom-table tr:nth-child(even) {
+      background-color: rgba(241, 245, 249, 0.5);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      table.custom-table tr:nth-child(even) {
+        background-color: rgba(30, 41, 59, 0.5);
+      }
+      table.custom-table td {
+        border-bottom-color: #334155;
+      }
+    }
+
+    .badge-in-stock {
+      --background: #dcfce7;
+      --color: #166534;
+      font-weight: 600;
+    }
+
+    .badge-out-stock {
+      --background: #fee2e2;
+      --color: #991b1b;
+      font-weight: 600;
+    }
+
+    .contact-item ion-icon {
+      font-size: 20px;
+      margin-right: 12px;
+      color: var(--ion-color-secondary);
+    }
+  </style>
+</head>
+<body>
+  <ion-app>
+    <!-- Header Navigation Bar -->
+    <ion-header class="ion-no-border">
+      <ion-toolbar color="primary">
+        <ion-title>Kebijakan Pengembalian & Refund</ion-title>
+        <ion-buttons slot="end">
+          <ion-button id="printBtn">
+            <ion-icon slot="icon-only" name="print-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <!-- Main Content Area -->
+    <ion-content class="ion-padding">
+      <div class="policy-container">
+
+        <!-- Banner Informasi Utama -->
+        <ion-card class="header-card">
+          <ion-card-header>
+            <ion-card-subtitle>Syarat & Ketentuan Layanan Pelanggan</ion-card-subtitle>
+            <ion-card-title>Kebijakan Pengembalian Barang & Dana</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            Terima kasih telah berbelanja bersama kami. Kami berkomitmen untuk memastikan kepuasan Anda dalam setiap pembelian. Dokumen ini menjelaskan syarat, ketentuan, serta prosedur lengkap mengenai pengembalian produk dan pengembalian dana (refund).
+            <br><br>
+            <small><strong>Berlaku Efektif:</strong> 1 Januari 2026 | <strong>Ref Dokumen:</strong> POL-RET-2026-V1</small>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-accordion-group value="sec-1" expand="inset">
+          
+          <!-- 1. Syarat Utama Pengembalian -->
+          <ion-accordion value="sec-1">
+            <ion-item slot="header" color="light">
+              <ion-icon name="checkmark-circle-outline" slot="start" color="primary"></ion-icon>
+              <ion-label><strong>1. Syarat & Ketentuan Pengembalian</strong></ion-label>
+            </ion-item>
+            <div class="ion-padding" slot="content">
+              <p>Pengajuan pengembalian barang dapat dilakukan dalam jangka waktu <strong>30 hari kalender</strong> sejak produk diterima oleh pembeli. Produk yang dikembalikan wajib memenuhi kriteria berikut:</p>
+              <ion-list lines="none">
+                <ion-item>
+                  <ion-icon name="checkbox-outline" slot="start" color="secondary"></ion-icon>
+                  <ion-label class="ion-text-wrap">Produk belum pernah digunakan, dicuci, atau diubah bentuknya.</ion-label>
+                </ion-item>
+                <ion-item>
+                  <ion-icon name="checkbox-outline" slot="start" color="secondary"></ion-icon>
+                  <ion-label class="ion-text-wrap">Produk berada dalam kemasan asli beserta label, tag, dan aksesori yang lengkap.</ion-label>
+                </ion-item>
+                <ion-item>
+                  <ion-icon name="checkbox-outline" slot="start" color="secondary"></ion-icon>
+                  <ion-label class="ion-text-wrap">Menyertakan bukti pembelian sah (Nomor Pesanan / Faktur Pembelian).</ion-label>
+                </ion-item>
+              </ion-list>
+            </div>
+          </ion-accordion>
+
+          <!-- 2. Produk yang Tidak Dapat Dikembalikan -->
+          <ion-accordion value="sec-2">
+            <ion-item slot="header" color="light">
+              <ion-icon name="close-circle-outline" slot="start" color="primary"></ion-icon>
+              <ion-label><strong>2. Produk Non-Returnable (Pengecualian)</strong></ion-label>
+            </ion-item>
+            <div class="ion-padding" slot="content">
+              <p>Beberapa kategori produk tidak dapat dikembalikan demi alasan higienis, keamanan, atau sifat barang tersebut:</p>
+              
+              <div class="table-container">
+                <table class="custom-table">
+                  <thead>
+                    <tr>
+                      <th>Kategori Produk</th>
+                      <th>Status Pengembalian</th>
+                      <th>Catatan Khusus</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Produk Kustom / Bordir Nama</td>
+                      <td><ion-badge color="danger">Non-Returnable</ion-badge></td>
+                      <td>Kecuali terdapat cacat produksi.</td>
+                    </tr>
+                    <tr>
+                      <td>Barang Perishable / Higienis</td>
+                      <td><ion-badge color="danger">Non-Returnable</ion-badge></td>
+                      <td>Masker yang segelnya sudah terbuka, pakaian dalam.</td>
+                    </tr>
+                    <tr>
+                      <td>Produk Diskon Akhir / Clearance</td>
+                      <td><ion-badge color="danger">Non-Returnable</ion-badge></td>
+                      <td>Produk yang ditandai <i>Final Sale</i>.</td>
+                    </tr>
+                    <tr>
+                      <td>Produk Standar Non-Custom</td>
+                      <td><ion-badge color="success">Dapat Dikembalikan</ion-badge></td>
+                      <td>Memenuhi syarat batas 30 hari.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </ion-accordion>
+
+          <!-- 3. Alur Pengembalian Barang -->
+          <ion-accordion value="sec-3">
+            <ion-item slot="header" color="light">
+              <ion-icon name="git-network-outline" slot="start" color="primary"></ion-icon>
+              <ion-label><strong>3. Langkah-Langkah Pengajuan (Prosedur)</strong></ion-label>
+            </ion-item>
+            <div class="ion-padding" slot="content">
+              <ion-list lines="full">
+                <ion-item>
+                  <span class="step-number">1</span>
+                  <ion-label class="ion-text-wrap">
+                    <h3><strong>Kirim Pengajuan</strong></h3>
+                    <p>Hubungi Customer Support melalui email/WhatsApp dengan menyertakan foto/video kondisi produk dan nomor pesanan.</p>
+                  </ion-label>
+                </ion-item>
+                <ion-item>
+                  <span class="step-number">2</span>
+                  <ion-label class="ion-text-wrap">
+                    <h3><strong>Dapatkan Nomor RMA</strong></h3>
+                    <p>Tim kami akan memeriksa kelayakan dan memberikan Kode Otorisasi Pengembalian (RMA) beserta alamat tujuan.</p>
+                  </ion-label>
+                </ion-item>
+                <ion-item>
+                  <span class="step-number">3</span>
+                  <ion-label class="ion-text-wrap">
+                    <h3><strong>Kemas & Kirim Produk</strong></h3>
+                    <p>Kemas produk secara aman beserta nomor RMA di dalam paket, lalu kirimkan melalui kurir pilihan Anda.</p>
+                  </ion-label>
+                </ion-item>
+                <ion-item>
+                  <span class="step-number">4</span>
+                  <ion-label class="ion-text-wrap">
+                    <h3><strong>Inspeksi & Refund</strong></h3>
+                    <p>Setelah pengiriman diterima gudang kami, inspeksi kualitas dilakukan maksimal dalam 3 hari kerja sebelum dana diproses.</p>
+                  </ion-label>
+                </ion-item>
+              </ion-list>
+            </div>
+          </ion-accordion>
+
+          <!-- 4. Estimasi Waktu Refund -->
+          <ion-accordion value="sec-4">
+            <ion-item slot="header" color="light">
+              <ion-icon name="wallet-outline" slot="start" color="primary"></ion-icon>
+              <ion-label><strong>4. Ketentuan & Estimasi Pengembalian Dana</strong></ion-label>
+            </ion-item>
+            <div class="ion-padding" slot="content">
+              <p>Pengembalian dana akan diproses menggunakan metode pembayaran awal yang Anda gunakan saat melakukan transaksi:</p>
+              
+              <div class="table-container">
+                <table class="custom-table">
+                  <thead>
+                    <tr>
+                      <th>Metode Pembayaran</th>
+                      <th>Estimasi Waktu</th>
+                      <th>Keterangan</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Transfer Bank / Virtual Account</td>
+                      <td>1 – 3 Hari Kerja</td>
+                      <td>Langsung ditransfer balik ke rekening pembeli.</td>
+                    </tr>
+                    <tr>
+                      <td>E-Wallet (OVO, Dana, ShopeePay)</td>
+                      <td>1 x 24 Jam</td>
+                      <td>Refund masuk ke saldo aplikasi e-wallet.</td>
+                    </tr>
+                    <tr>
+                      <td>Kartu Kredit / Debit</td>
+                      <td>5 – 10 Hari Kerja</td>
+                      <td>Tergantung siklus tagihan bank penerbit.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </ion-accordion>
+
+          <!-- 5. Produk Rusak / Cacat -->
+          <ion-accordion value="sec-5">
+            <ion-item slot="header" color="light">
+              <ion-icon name="alert-circle-outline" slot="start" color="primary"></ion-icon>
+              <ion-label><strong>5. Produk Cacat atau Salah Kirim</strong></ion-label>
+            </ion-item>
+            <div class="ion-padding" slot="content">
+              <p>Apabila produk yang Anda terima dalam keadaan rusak, cacat produksi, atau salah varian/jumlah:</p>
+              <p>Mohon laporkan kepada kami dalam batas waktu maksimal <strong>48 jam (2 hari)</strong> sejak paket diterima menurut status kurir. Seluruh ongkos kirim pengembalian dan pengiriman ulang produk pengganti akan ditanggung 100% oleh kami.</p>
+            </div>
+          </ion-accordion>
+
+        </ion-accordion-group>
+
+        <!-- Kartu Kontak Layanan -->
+        <ion-card class="ion-margin-top">
+          <ion-card-header color="primary">
+            <ion-card-title>Bantuan & Layanan Pelanggan</ion-card-title>
+            <ion-card-subtitle style="color: rgba(255,255,255,0.8);">Hubungi kami jika memiliki pertanyaan lebih lanjut</ion-card-subtitle>
+          </ion-card-header>
+          <ion-card-content class="ion-padding-top">
+            <ion-list lines="none">
+              <ion-item class="contact-item">
+                <ion-icon name="mail-outline" slot="start"></ion-icon>
+                <ion-label>
+                  <h3>Email Support</h3>
+                  <p>support@tokoanda.com</p>
+                </ion-label>
+              </ion-item>
+              <ion-item class="contact-item">
+                <ion-icon name="logo-whatsapp" slot="start"></ion-icon>
+                <ion-label>
+                  <h3>WhatsApp Layanan</h3>
+                  <p>+62 812-3456-7890 (Senin - Sabtu, 08:00 - 17:00 WIB)</p>
+                </ion-label>
+              </ion-item>
+              <ion-item class="contact-item">
+                <ion-icon name="location-outline" slot="start"></ion-icon>
+                <ion-label class="ion-text-wrap">
+                  <h3>Alamat Pengembalian Produk</h3>
+                  <p>Gudang Retur Toko, Jl. Perintis Kemerdekaan No. 100, Tasikmalaya, Jawa Barat 46115</p>
+                </ion-label>
+              </ion-item>
+            </ion-list>
+          </ion-card-content>
+        </ion-card>
+
+      </div>
+    </ion-content>
+  </ion-app>
+
+  <script>
+    // Fitur tombol cetak dokumen
+    document.getElementById('printBtn').addEventListener('click', () => {
+      window.print();
+    });
+  </script>
+</body>
+</html>
