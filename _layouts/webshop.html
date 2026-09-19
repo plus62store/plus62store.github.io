@@ -7,7 +7,7 @@ layout: compress
     {% include head.html %}
 
     <div id="webshop" class="shop-container">
-     <div class="etalase">
+    <div class="etalase{% if page.layout == 'shop' %} product-detail-layout{% endif %}">
       {{ content }}
      </div>
     </div>
