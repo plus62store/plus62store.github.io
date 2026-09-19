@@ -1,0 +1,255 @@
+:root {
+  --ui-primary: #0f766e;
+  --ui-primary-strong: #115e59;
+  --ui-accent: #f59e0b;
+  --ui-danger: #dc2626;
+  --ui-bg: #f7f8f6;
+  --ui-surface: #ffffff;
+  --ui-surface-muted: #eef1ee;
+  --ui-text: #17211f;
+  --ui-text-muted: #66736f;
+  --ui-border: #d9e0dc;
+  --ui-radius: 4px;
+  --ui-shadow: 0 1px 2px rgba(23, 33, 31, 0.08);
+  --ion-color-primary: var(--ui-primary);
+  --ion-color-primary-rgb: 15, 118, 110;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: var(--ui-primary-strong);
+  --ion-color-primary-tint: #159a8f;
+  --ion-background-color: var(--ui-bg);
+  --ion-text-color: var(--ui-text);
+  --ion-border-color: var(--ui-border);
+  --ion-toolbar-background: var(--ui-surface);
+  --ion-item-background: var(--ui-surface);
+  --ion-card-background: var(--ui-surface);
+  --ion-color-step-50: var(--ui-surface);
+  --ion-color-step-100: var(--ui-surface-muted);
+  --ion-color-step-150: #e5eae6;
+  --ion-color-step-200: var(--ui-border);
+}
+
+html,
+body {
+  background: var(--ui-bg);
+  color: var(--ui-text);
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+}
+
+body {
+  font-size: 16px;
+}
+
+a,
+a:active,
+a:hover {
+  color: var(--ui-primary);
+}
+
+ion-header,
+ion-toolbar {
+  --background: var(--ui-surface);
+  --border-color: var(--ui-border);
+  --box-shadow: none;
+}
+
+ion-toolbar {
+  border-bottom: 1px solid var(--ui-border);
+}
+
+ion-chip,
+ion-avatar,
+ion-button,
+ion-card,
+ion-item,
+ion-input,
+ion-textarea,
+ion-select,
+ion-modal,
+ion-popover {
+  --border-radius: var(--ui-radius);
+}
+
+ion-chip {
+  --background: var(--ui-surface-muted);
+  --color: var(--ui-text);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius);
+}
+
+ion-button {
+  --border-radius: var(--ui-radius);
+  --box-shadow: none;
+  --background-activated: var(--ui-primary-strong);
+  font-weight: 700;
+  text-transform: none;
+}
+
+ion-button[fill="outline"] {
+  --border-width: 1px;
+  --border-color: var(--ui-primary);
+  --color: var(--ui-primary);
+}
+
+ion-badge,
+.simpleCart_quantity {
+  --background: var(--ui-danger);
+  --color: #ffffff;
+  border-radius: 3px !important;
+}
+
+ion-card {
+  --box-shadow: none;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius);
+  box-shadow: var(--ui-shadow);
+  margin: 12px 8px;
+}
+
+ion-card-header {
+  padding: 14px 14px 6px;
+}
+
+ion-card-content {
+  padding: 8px 14px 14px;
+}
+
+ion-item {
+  --background: var(--ui-surface);
+  --border-color: var(--ui-border);
+  --inner-border-width: 0 0 1px 0;
+  --highlight-color-focused: var(--ui-primary);
+}
+
+ion-content {
+  --background: var(--ui-bg);
+}
+
+#webshop {
+  padding: 8px 0 24px;
+}
+
+.grid {
+  max-width: 234.5px;
+  overflow: hidden;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.grid:hover {
+  border-color: var(--ui-primary);
+  box-shadow: 0 2px 5px rgba(23, 33, 31, 0.12);
+}
+
+.shop-header {
+  text-align: left;
+}
+
+.subtitle {
+  color: var(--ui-text);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.price,
+.page-price {
+  color: var(--ui-primary-strong);
+  font-weight: 800;
+  text-shadow: none;
+}
+
+.entry-description {
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius);
+  box-shadow: none;
+  background: var(--ui-surface);
+}
+
+select.form-control,
+.input-groupQ {
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius);
+  background: var(--ui-surface);
+}
+
+.input-groupQ:focus-within,
+select.form-control:focus {
+  border-color: var(--ui-primary);
+  outline: 2px solid rgba(15, 118, 110, 0.16);
+}
+
+a.fav_btn {
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius);
+  background: var(--ui-surface);
+}
+
+.img_post .overlay {
+  border-radius: var(--ui-radius);
+  background: rgba(23, 33, 31, 0.84);
+}
+
+.modal-content,
+.myModal,
+.highlight {
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius);
+  box-shadow: var(--ui-shadow);
+}
+
+.myModal .header {
+  border-radius: var(--ui-radius) var(--ui-radius) 0 0;
+  border: 0;
+  background: var(--ui-primary);
+}
+
+.wrapper-footer {
+  border-top: 1px solid var(--ui-border);
+  border-bottom: 1px solid var(--ui-border);
+  background: var(--ui-surface);
+}
+
+body.darkmode {
+  --ui-bg: #151a18;
+  --ui-surface: #1d2421;
+  --ui-surface-muted: #27312d;
+  --ui-text: #edf3ef;
+  --ui-text-muted: #aab8b1;
+  --ui-border: #3a4842;
+  --ui-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  --ion-background-color: var(--ui-bg);
+  --ion-text-color: var(--ui-text);
+  --ion-border-color: var(--ui-border);
+  --ion-toolbar-background: var(--ui-surface);
+  --ion-item-background: var(--ui-surface);
+  --ion-card-background: var(--ui-surface);
+}
+
+body.darkmode ion-button[fill="outline"] {
+  --color: #6ee7d8;
+  --border-color: #6ee7d8;
+}
+
+body.darkmode .price,
+body.darkmode .page-price {
+  color: #6ee7d8;
+}
+
+@media (max-width: 767.98px) {
+  #webshop {
+    padding-top: 4px;
+  }
+
+  .grid {
+    margin: 5px 4px;
+  }
+
+  ion-card {
+    margin: 8px 4px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grid {
+    transition: none;
+  }
+}

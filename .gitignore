@@ -1,11 +1,33 @@
-_site
-_styles
-.DS_Store
-.jekyll
-.jekyll-cache
-.bundle
+# Jekyll build and cache
+_site/
+_styles/
+.jekyll/
+.jekyll-cache/
+.sass-cache/
+
+# Local Ruby and dependency files
+.bundle/
+vendor/bundle/
+
+# Environment and local secrets
 .env
-.sass-cache
+.env.*
+!.env.example
+
+# Node dependencies and logs
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Project-specific generated or local files
 gulpfile.js
-node_modules
 package-lock.json
+Gemfile.lock
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Editor settings
+.idea/
