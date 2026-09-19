@@ -1,4 +1,27 @@
 //<![CDATA[
+async function showOrderAlert(message) {
+	var alert = document.createElement('ion-alert');
+	alert.header = 'Data pesanan';
+	alert.message = message;
+	alert.buttons = ['OK'];
+	document.body.appendChild(alert);
+	await alert.present();
+}
+
+async function showOrderConfirm() {
+	var alert = document.createElement('ion-alert');
+	alert.header = 'Kirim pesanan?';
+	alert.message = 'Pesanan akan dikirim ke WhatsApp untuk diproses.';
+	alert.buttons = [
+		{ text: 'Batal', role: 'cancel' },
+		{ text: 'Kirim', role: 'confirm' }
+	];
+	document.body.appendChild(alert);
+	await alert.present();
+	var result = await alert.onDidDismiss();
+	return result.role === 'confirm';
+}
+
 $('#AdminToko').val('0813-8626-7897');
 $('.whatsapp-btn').click(function () {
 $('#whatsapp-order').toggleClass('toggle');});
@@ -9,69 +32,73 @@ $('#whatsapp-order').toggleClass('toggle');});
 		});
 		var reg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
 
-function WhatsApp() {
+async function WhatsApp() {
 			var ph = '';
 			if ($('#whatsapp-order .nama').val() == '') {
 				ph = $('#whatsapp-order .nama').attr('placeholder');
-				alert(ph + ' Wajib Dicantumkan');
+				await showOrderAlert(ph + ' Wajib Dicantumkan');
 				$('#whatsapp-order .nama').focus();
 				return false;
             } else if ($('#whatsapp-order .nomor').val() == '') {
                 ph = $('#whatsapp-order .nomor').attr('placeholder');
-                alert(ph + ' Harus Tercantum');
+                await showOrderAlert(ph + ' Harus Tercantum');
                 $('#whatsapp-order .nomor').focus();
 				return false;
             } else if ($('#whatsapp-order .email').val() == '') {
                 ph = $('#whatsapp-order .email').attr('placeholder');
-                alert(ph + ' Harus Tercantum');
+                await showOrderAlert(ph + ' Harus Tercantum');
                 $('#whatsapp-order .email').focus();
 				return false;
 			} else if ($('#whatsapp-order .alamat').val() == '') {
 				ph = $('#whatsapp-order .alamat').attr('placeholder');
-				alert(ph + ' Mohon Diisi Sesuai Lokasi Pengiriman');
+				await showOrderAlert(ph + ' Mohon Diisi Sesuai Lokasi Pengiriman');
 				$('#whatsapp-order .alamat').focus();
                 return false;
 			} else if ($('#whatsapp-order .kota').val() == '') {
 				ph = $('#whatsapp-order .kota').attr('placeholder');
-				alert(ph + ' Mohon Diisi Sesuai Lokasi Pengiriman');
+				await showOrderAlert(ph + ' Mohon Diisi Sesuai Lokasi Pengiriman');
 				$('#whatsapp-order .kota').focus();
                 return false;
 			} else if ($('#whatsapp-order .provinsi').val() == '') {
 				ph = $('#whatsapp-order .provinsi').attr('placeholder');
-				alert(ph + ' Mohon Diisi Sesuai Lokasi Pengiriman');
+				await showOrderAlert(ph + ' Mohon Diisi Sesuai Lokasi Pengiriman');
 				$('#whatsapp-order .provinsi').focus();
                 return false;
 			} else if ($('#whatsapp-order .kodepos').val() == '') {
 				ph = $('#whatsapp-order .kodepos').attr('placeholder');
-				alert(ph + ' Mohon Diisi Sesuai Lokasi Pengiriman');
+				await showOrderAlert(ph + ' Mohon Diisi Sesuai Lokasi Pengiriman');
 				$('#whatsapp-order .kodepos').focus();
                 return false;
             } else if ($('#whatsapp-order .qty').val() == '') {
                 ph = $('#whatsapp-order .qty').attr('placeholder');
-                alert('Jumlah Item Tidak Boleh ' + ph + ' pcs');
+                await showOrderAlert('Jumlah Item Tidak Boleh ' + ph + ' pcs');
                 $('#whatsapp-order .qty').focus();
 				return false;
             } else if ($('#whatsapp-order .bayar').val() == '') {
 				ph = $('#whatsapp-order .bayar').attr('placeholder');
-				alert(ph + ' Metode?');
+				await showOrderAlert(ph + ' Metode?');
 				$('#whatsapp-order .bayar').focus();
 				return false;
 			} else if ($('#whatsapp-order .warna').val() == '') {
 				ph = $('#whatsapp-order .warna').attr('placeholder');
-				alert('Silahkan pilih ' + ph);
+				await showOrderAlert('Silahkan pilih ' + ph);
 				$('#whatsapp-order .warna').focus();
 				return false;
 			} else if ($('#whatsapp-order .tali').val() == '') {
 				ph = $('#whatsapp-order .tali').attr('placeholder');
-				alert('Silahkan pilih ' + ph);
+				await showOrderAlert('Silahkan pilih ' + ph);
 				$('#whatsapp-order .tali').focus();
 				return false;
 			} else if ($('#whatsapp-order .informasi').val() == '') {
 				ph = $('#whatsapp-order .informasi').attr('placeholder');
-				alert('Silahkan pilih ' + ph);
+				await showOrderAlert('Silahkan pilih ' + ph);
 				$('#whatsapp-order .informasi').focus();
 				return false;
 			} else {
+				if (!await showOrderConfirm()) {
+					return false;
+				}
+
 				// Check Device (Mobile/Desktop)
 				var url_wa = 'https://web.whatsapp.com/send';
 				if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
