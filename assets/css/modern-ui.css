@@ -162,6 +162,19 @@ ion-content {
   padding: 0 12px;
 }
 
+.etalase.product-detail-layout {
+  display: block;
+  grid-template-columns: none;
+  gap: 0;
+  padding: 0;
+}
+
+.product-detail-layout > .post-product {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+}
+
 article.post-shop {
   min-width: 0;
   width: 100%;
@@ -456,6 +469,10 @@ body.darkmode .like-btn:not(.clicked) ion-icon {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px;
     padding: 0 8px;
+  }
+
+  .etalase.product-detail-layout {
+    padding: 0;
   }
 
   article.post-shop {
