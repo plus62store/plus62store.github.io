@@ -6,15 +6,13 @@ Jekyll::Hooks.register :site, :after_init do |site|
   site.config['env'] ||= {}
 
   [
+    'WA_KEY',
+    'SITE_KEY',
     'API_KEY',
     'AUTH_DOMAIN',
+    'DATABASE_URL',
     'PROJECT_ID',
     'APP_ID',
-    'PAYPAL_CLIENT_ID',
-    'MIDTRANS_CLIENT_KEY',
-    'MIDTRANS_URL',
-    'WA_KEY',
-    'DATABASE_URL',
     'SENDER_ID'
   ].each do |var|
     value = ENV[var]
