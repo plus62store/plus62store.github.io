@@ -46,7 +46,7 @@ layout: webshop
 </div>
         	<div class="style-picker">
             {% for style in page.styles %}
-              <div id="product-{{ forloop.index }}" {% if forloop.first %} class="item_color" {% endif %} style="text-align:center;width:75px;border-radius:25px;padding:8px;background-color:{{ style.color }};cursor:pointer;box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);">
+              <div id="product-{{ forloop.index }}" data-image="{{ style.image_path | escape }}" {% if forloop.first %} class="item_color" {% endif %} style="text-align:center;width:75px;border-radius:25px;padding:8px;background-color:{{ style.color }};cursor:pointer;box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);">
 <span style="color:#fff">{{ style.name }}</span></div>
             {% endfor %}
         	</div>
@@ -86,12 +86,69 @@ layout: webshop
 </ion-card-header>
 <ion-card-content style="padding:10px;">
 
-          <select class="item form-control item_model" style="display:{{page.display}};" {{page.outstock}}>
-        <label>Model Tali</label>
-            {% for tali in page.tali %}
-              <option value="{{ tali }}"> {{ tali }} </option>
-            {% endfor %}
-          </select>
+          <div class="custom-select" style="display:{{page.display}};">
+            <label for="model-tali">Model Tali</label>
+            <select id="model-tali" class="item form-control item_model custom-select-native" {{page.outstock}} aria-label="Model Tali">
+              {% for tali in page.tali %}
+                <option value="{{ tali }}">{{ tali }}</option>
+              {% endfor %}
+            </select>
+            <button class="custom-select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" aria-controls="model-tali-options">
+              <span class="custom-select-value">{{ page.tali.first }}</span>
+              <ion-icon name="chevron-down-outline" aria-hidden="true"></ion-icon>
+            </button>
+            <div id="model-tali-options" class="custom-select-options" role="listbox" aria-label="Pilihan Model Tali">
+              {% for tali in page.tali %}
+                <button type="button" role="option" data-value="{{ tali | escape }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">{{ tali }}</button>
+              {% endfor %}
+            </div>
+          </div>
+
+<script>
+  document.querySelectorAll('.custom-select').forEach(function (customSelect) {
+    var nativeSelect = customSelect.querySelector('.custom-select-native');
+    var trigger = customSelect.querySelector('.custom-select-trigger');
+    var value = customSelect.querySelector('.custom-select-value');
+    var options = customSelect.querySelector('.custom-select-options');
+
+    function closeOptions() {
+      trigger.setAttribute('aria-expanded', 'false');
+      customSelect.classList.remove('is-open');
+      document.body.classList.remove('custom-select-sheet-open');
+      if (options.parentElement === document.body) {
+        customSelect.appendChild(options);
+      }
+    }
+
+    trigger.addEventListener('click', function () {
+      var isOpen = trigger.getAttribute('aria-expanded') === 'true';
+      if (!isOpen) {
+        document.body.appendChild(options);
+        document.body.classList.add('custom-select-sheet-open');
+      }
+      trigger.setAttribute('aria-expanded', String(!isOpen));
+      customSelect.classList.toggle('is-open', !isOpen);
+    });
+
+    options.querySelectorAll('[role="option"]').forEach(function (option) {
+      option.addEventListener('click', function () {
+        nativeSelect.value = option.dataset.value;
+        value.textContent = option.textContent;
+        options.querySelectorAll('[role="option"]').forEach(function (item) {
+          item.setAttribute('aria-selected', String(item === option));
+        });
+        nativeSelect.dispatchEvent(new Event('change', { bubbles: true }));
+        closeOptions();
+      });
+    });
+
+    document.addEventListener('click', function (event) {
+      if (!customSelect.contains(event.target)) {
+        closeOptions();
+      }
+    });
+  });
+</script>
 
 <div id="input_div">
     <div class="input-groupQ">

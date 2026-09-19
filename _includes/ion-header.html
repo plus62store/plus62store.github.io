@@ -117,15 +117,21 @@
      
        function toggleUI() {
          if (auth.currentUser) {
-           userDisplayName.textContent = auth.currentUser.displayName;
-           userEmail.textContent = auth.currentUser.email;
+           if (userDisplayName) {
+             userDisplayName.textContent = auth.currentUser.displayName || auth.currentUser.email || '';
+           }
+           if (userEmail) {
+             userEmail.textContent = auth.currentUser.email || '';
+           }
          } else {
            location.href = "{{site.baseurl}}/";
          }
        }
-       signOutButton.addEventListener('click', () => {
-         auth.signOut();
-       });
+       if (signOutButton) {
+         signOutButton.addEventListener('click', () => {
+           auth.signOut();
+         });
+       }
        
        auth.onAuthStateChanged(user => {
          toggleUI();
